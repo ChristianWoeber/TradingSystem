@@ -58,7 +58,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// </summary>
         /// <param name="sender">der Sender (der Pm)</param>
         /// <param name="e">die event args</param>
-        private void OnPortfolioAsOfChanged(object sender, EventArgs e)
+        private void OnPortfolioAsOfChanged(object sender, DateTime dateTime)
         {
             //den aktuellen Portfolio Wert setzen
             CalculateCurrentPortfolioValue();

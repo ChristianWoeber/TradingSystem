@@ -8,6 +8,7 @@ using HelperLibrary.Extensions;
 using HelperLibrary.Interfaces;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
+using NLog;
 using NUnit.Framework;
 using TradingSystemTests.Helper;
 using TradingSystemTests.Models;
@@ -19,12 +20,23 @@ namespace TradingSystemTests.TestCases
     {
         private Dictionary<int, IPriceHistoryCollection> _priceHistoryDictionary;
 
-        //[SetUp]
-        //public void Init()
-        //{
-        //    if (_priceHistoryDictionary == null)
-        //        _priceHistoryDictionary = TestHelper.CreateTestDictionary("EuroStoxx50Member.xlsx");
-        //}
+        [SetUp]
+        public void Init()
+        {
+            //if (_priceHistoryDictionary == null)
+            //    _priceHistoryDictionary = TestHelper.CreateTestDictionary("EuroStoxx50Member.xlsx");
+
+            var config = new NLog.Config.LoggingConfiguration();
+
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "DEBUG_TEST.txt" };
+            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile);
+
+            NLog.LogManager.Configuration = config;
+
+        }
 
         private Dictionary<int, List<TransactionItem>> LoadHistory(string filename)
         {
@@ -134,7 +146,7 @@ namespace TradingSystemTests.TestCases
 
         }
 
-        [TestCase("01.01.2005", 7, "SimpleBacktestTransactions.csv", true, true)]
+        [TestCase("01.01.2005", 3, "SimpleBacktestTransactions.csv", true, true)]
         public void SimpleBacktestTest(string startDate, int testYears, string temporaryFilename, bool showTransactions, bool clearOldFile)
         {
             var filename = Path.Combine(Path.GetTempPath(), temporaryFilename);
@@ -163,6 +175,12 @@ namespace TradingSystemTests.TestCases
             //scoring Provider registrieren
             pm.RegisterScoringProvider(scoringProvider);
 
+            var logger = NLog.LogManager.GetCurrentClassLogger();
+            pm.PortfolioAsofChanged += (sender, args) =>
+            {
+                logger.Info($"{args.ToShortDateString()} {pm.PortfolioValue}");
+            };
+
             //einen BacktestHandler erstellen
             var candidatesProvider = new CandidatesProvider(scoringProvider);
 
@@ -183,6 +201,7 @@ namespace TradingSystemTests.TestCases
 
             Trace.TraceInformation($"aktuelles Ergebnis kumuliert: {factor:P} {Environment.NewLine}aktuelles Ergebnis p.a.: {result - 1:P}");
         }
+
 
         [TestCase("CashTest.txt", "15.10.2017")]
         public void TestCash(string filename, string asof)
