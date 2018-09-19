@@ -23,8 +23,9 @@ namespace HelperLibrary.Interfaces
         /// Methode für das Berechnen des LossLimits
         /// </summary>
         /// <param name="candidate"></param>
+        /// <param name="averagePrice"></param>
         /// <returns></returns>
-        bool HasStopLoss(TradingCandidate candidate);
+        bool HasStopLoss(TradingCandidate candidate, decimal? averagePrice);
 
         /// <summary>
         /// Die Methode berechnet die Limits auf täglicher basis

@@ -46,7 +46,7 @@ namespace TradingSystemTests.Models
                     return;
 
                 //dann ist das Ende des Backtest erreicht
-                if (date >= endDateTime)
+                if (date >= endDateTime || date >= DateTime.Today.GetBusinessDay(false))
                     return;
 
                 var candidates = _candidatesProvider.GetCandidates(date, PriceHistoryOption.NextItem)?.ToList();

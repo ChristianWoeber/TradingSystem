@@ -1,10 +1,5 @@
 ﻿using HelperLibrary.Database.Interfaces;
 using HelperLibrary.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HelperLibrary.Trading
 {
@@ -22,5 +17,10 @@ namespace HelperLibrary.Trading
             ScoringResult = scoring;
         }
 
+        public override string ToString()
+        {
+            return
+                $"Name: {Record.Name} | Id: {Record.SecurityId} | Score: {ScoringResult.Score} | Asof: {ScoringResult.Asof} Price: {Record.AdjustedPrice}";
+        }
     }
 }

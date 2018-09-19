@@ -6,6 +6,7 @@ using System.Linq;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Extensions;
 using HelperLibrary.Interfaces;
+using HelperLibrary.Parsing;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
 using NLog;
@@ -28,13 +29,13 @@ namespace TradingSystemTests.TestCases
 
             var config = new NLog.Config.LoggingConfiguration();
 
-            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "DEBUG_TEST.txt" };
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "DEBUG_TEST.txt", ArchiveOldFileOnStartup = true};
             var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
             config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
             config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile);
 
-            NLog.LogManager.Configuration = config;
+            LogManager.Configuration = config;
 
         }
 
@@ -146,7 +147,7 @@ namespace TradingSystemTests.TestCases
 
         }
 
-        [TestCase("01.01.2005", 3, "SimpleBacktestTransactions.csv", true, true)]
+        [TestCase("01.01.2007", 3, "SimpleBacktestTransactions.csv", true, true)]
         public void SimpleBacktestTest(string startDate, int testYears, string temporaryFilename, bool showTransactions, bool clearOldFile)
         {
             var filename = Path.Combine(Path.GetTempPath(), temporaryFilename);
@@ -176,9 +177,10 @@ namespace TradingSystemTests.TestCases
             pm.RegisterScoringProvider(scoringProvider);
 
             var logger = NLog.LogManager.GetCurrentClassLogger();
+            logger.Info("ENTWICKLUNG PORTFOLIO:");
             pm.PortfolioAsofChanged += (sender, args) =>
             {
-                logger.Info($"{args.ToShortDateString()} {pm.PortfolioValue}");
+                logger.Info($"{args.ToShortDateString()} | {pm.PortfolioValue}");
             };
 
             //einen BacktestHandler erstellen
@@ -193,13 +195,16 @@ namespace TradingSystemTests.TestCases
             //schau nach ob in dem generierten File etwas drinnen steht
             using (var rd = new StreamReader(File.Open(filename, FileMode.Open)))
             {
-                var transactions = rd.ReadToEnd();
-                Assert.IsTrue(!string.IsNullOrEmpty(transactions));
+                var output = rd.ReadToEnd();
+                var transactions = SimpleTextParser.GetListOfType<TransactionItem>(rd.ReadToEnd());
+                Assert.IsTrue(!string.IsNullOrEmpty(output));
+                Assert.IsTrue(transactions.Count > 10);
+                Trace.TraceInformation($"Anzahl der Transaktionen :{transactions.Count}");
             }
             var factor = pm.PortfolioValue / pm.PortfolioSettings.InitialCashValue;
             var result = Math.Pow((double)factor, (double)1 / testYears);
 
-            Trace.TraceInformation($"aktuelles Ergebnis kumuliert: {factor:P} {Environment.NewLine}aktuelles Ergebnis p.a.: {result - 1:P}");
+            Trace.TraceInformation($"aktuelles Ergebnis kumuliert: {factor:P} {Environment.NewLine}aktuelles Ergebnis p.a.: {result - 1:P}");          
         }
 
 

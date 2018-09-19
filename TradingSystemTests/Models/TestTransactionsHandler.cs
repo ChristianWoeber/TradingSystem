@@ -44,7 +44,7 @@ namespace TradingSystemTests.Models
         #region Public Properties
 
         public IPortfolio CurrentPortfolio => GetCurrentPortfolio();
-    
+
 
         #region Index
 
@@ -132,7 +132,7 @@ namespace TradingSystemTests.Models
             //einfachster Fall es gibt nur eine Transaktion (ein opening dann erhöhe ich die
             //summe um Shares * aktueller Preis
             if (pastTransactions.Count == 1 || pastTransactions[0].Shares < 0)
-                return pastTransactions[0].EffectiveAmountEur/ pastTransactions[0].Shares;
+                return pastTransactions[0].EffectiveAmountEur / pastTransactions[0].Shares;
 
             decimal averagePrice = 0;
             //sonst muss ich den mittleren Preis zurückgeben, da die Position ja aufgebaut / nachgekauft wurde

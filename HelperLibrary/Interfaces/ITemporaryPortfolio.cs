@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HelperLibrary.Database.Models;
+using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
 
 namespace HelperLibrary.Interfaces
@@ -25,7 +26,13 @@ namespace HelperLibrary.Interfaces
         /// <param name="isTemporary"></param>
         void AddRange(IEnumerable<TransactionItem> items, bool isTemporary = true);
 
- 
+        /// <summary>
+        /// gibt zuurück ob die transaktion temporär ist
+        /// </summary>
+        /// <param name="secId">die SecId</param>
+        /// <returns></returns>
+        bool IsTemporary(int secId);
+
         /// <summary>
         /// Methode zum Speichern der Transaktionen
         /// </summary>
@@ -40,7 +47,7 @@ namespace HelperLibrary.Interfaces
         /// <summary>
         ///Flag das angibt ob es zu Änderungen gekommen ist
         /// </summary>
-        bool HasChanges { get;  }
+        bool HasChanges { get; }
 
 
         /// <summary>
@@ -55,6 +62,6 @@ namespace HelperLibrary.Interfaces
         /// <param name="asof"></param>
         void RebuildPortfolio(IScoringProvider scoringProvider, DateTime asof);
 
-      
+
     }
 }

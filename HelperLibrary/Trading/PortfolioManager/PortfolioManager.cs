@@ -52,12 +52,12 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// </summary>
         public IEnumerable<TransactionItem> CurrentPortfolio => TransactionsHandler.CurrentPortfolio;
 
-
         /// <summary>
         /// EventCallback wird gefeuert wenn sich das asof Datum erhöht
         /// </summary>
         /// <param name="sender">der Sender (der Pm)</param>
         /// <param name="e">die event args</param>
+        /// <param name="dateTime">das asof Datum für TestZwecke</param>
         private void OnPortfolioAsOfChanged(object sender, DateTime dateTime)
         {
             //den aktuellen Portfolio Wert setzen
@@ -99,9 +99,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             //Den Bewertungszeitpunkt setzen      
             PortfolioAsof = asof;
 
-            //wenn von aussen keine neuen Kandidaten kommen, kann ich einfach die bestehenden investments neu berechnen
             //das bestehenden Portfolio evaluieren und mit dem neuen Score in die Candidatenliste einfügen 
-
             candidates.AddRange(RankCurrentPortfolio());
 
             //Nur wenn es bereits ein CurrentPortfolio gibt
@@ -112,11 +110,9 @@ namespace HelperLibrary.Trading.PortfolioManager
                 {
                     if (grp.Count() <= 1)
                         continue;
-
                     candidates.Remove(grp.First());
                 }
             }
-
             //Portfolio Regeln anwenden
             ApplyPortfolioRules(candidates.OrderByDescending(x => x.ScoringResult).ToList());
         }
@@ -131,6 +127,10 @@ namespace HelperLibrary.Trading.PortfolioManager
             // Wenn keine Kandidaten vorhanden sind, wir das Portfolio nicht geändert
             if (candidates.Count <= 0)
                 return;
+
+            //liste mit den besten Kandiaten die, aktuelle verdrängen werden
+            var bestCandidatesNotInvestedIn = new List<TradingCandidate>();
+
             //check Candidates
             foreach (var candidate in candidates)
             {
@@ -152,51 +152,20 @@ namespace HelperLibrary.Trading.PortfolioManager
                     var averagePrice = TransactionsHandler.GetAveragePrice(candidate.Record.SecurityId, PortfolioAsof);
 
                     //es wird nur an Handelstagen aufgestockt
-                    //HINT: Achtung ich ergleich immer mit dem original score... sollte ich besser weiterschleifen oder über den Preis machen??
-                    //PerformanceHandler ?
                     if (candidate.ScoringResult.Score > lastScore.Score && PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay)
                     {
-                        //Position wurde bereits einmal mit Target 10% eröffnet
-                        if (currentWeight.Value.IsBetween(new decimal(0.01), new decimal(0.18)))
-                        {
-                            //wird nun auf 20% aufgestockt
-                            AdjustTemporaryPortfolio(PortfolioSettings.MaximumInitialPositionSize * 2, TransactionType.Changed, candidate, true);
-                            continue;
-                        }
-                        //schon einaml aufgestockt
-                        if (currentWeight.Value.IsBetween(new decimal(0.18), new decimal(0.28)))
-                        {
-                            //wird auf den maximal Wert aufgestockt
-                            AdjustTemporaryPortfolio(PortfolioSettings.MaximumPositionSize, TransactionType.Changed, candidate, true);
-                            continue;
-                        }
-                        //maximum
-                        if (currentWeight > new decimal(0.28))
-                        {
-                            //wird nicht mehr aufgestockt
-                            //der nächst bessere Candidate wird berücksichtigt
-                            continue;
-                        }
+                        AdjustPortfolioBuy(currentWeight.Value, candidate);
                     }
                     //dann ist der aktuelle Score gefallen
                     //hier die Stops checken
-                    else if (StopLossSettings.HasStopLoss(candidate))
+                    else if (StopLossSettings.HasStopLoss(candidate, averagePrice))
                     {
-                        //Position wurde bereits einmal mit Target 10% eröffnet und wird totalverkauft
-                        if (currentWeight.Value.IsBetween(new decimal(0.01), new decimal(0.18)))
-                        {
-                            AdjustTemporaryPortfolio(0, TransactionType.Close, candidate, true);
+                        //wenn die aktuelle Haltedauer kürzer ist als das minimum der Strategie, dann probier ich gegen den nächsten zu tauschen
+                        if (IsBelowMinimumHoldingPeriode(candidate))
                             continue;
-                        }
 
-                        if (currentWeight.Value.IsBetween(new decimal(0.18), new decimal(0.28)))
-                        {
-                            //wird auf den maximal Wert aufgestockt
-                            AdjustTemporaryPortfolio(PortfolioSettings.MaximumInitialPositionSize, TransactionType.Changed, candidate, true);
-                            continue;
-                        }
-
-                        AdjustTemporaryPortfolio((decimal)StopLossSettings.ReductionValue * currentWeight.Value, TransactionType.Changed, candidate, true);
+                        //sonst stop realisieren
+                        AdjustPortfolioSell(currentWeight.Value, candidate);
                         continue;
                     }
                 }
@@ -210,17 +179,143 @@ namespace HelperLibrary.Trading.PortfolioManager
                 }
                 else
                 {
+                    //Ich muss mir hier die Positionen merken, die aktuell den höchsten Score haben und aktuell nicht im Portfolio sind und auch kein
+                    //cash dafür vorhanden ist, dann muss ich das Portfolio ebenso rebuilden => damit die schwächtsen verdrängen
+                    //eventuell ein Setting einbauen die zulässt wieviele pro trading tag verdrängt werden ?
+
+                    if (PortfolioAsof.DayOfWeek != PortfolioSettings.TradingDay)
+                        break;
+
+                    if (bestCandidatesNotInvestedIn.Count < 10 && remainingCash < PortfolioSettings.MaximumInitialPositionSize * PortfolioValue)
+                    {
+                        bestCandidatesNotInvestedIn.Add(candidate);
+                        continue;
+                    }
+
                     // Wenn der Wert für das ramining Cash >=0 ist veranlage ich sonst break ich aus der foreach
                     if (remainingCash < PortfolioSettings.MaximumInitialPositionSize * PortfolioValue)
                         break;
-
-                    // AdjustTemporaryPortfolio(PortfolioSettings.MaximumInitialPositionSize, TransactionType.Open, candidate);
                 }
             }
+
+            //Wenn es Kandidaten gibt, die besser als bestende sind, will ich umschichten
+            if (bestCandidatesNotInvestedIn.Count > 0)
+                RebalancedTemporaryPortfolio(bestCandidatesNotInvestedIn, candidates);
+
             //Das Portfolio rebuilden
             TemporaryPortfolio.RebuildPortfolio(ScoringProvider, PortfolioAsof);
         }
 
+        private void AdjustPortfolioBuy(decimal currentWeight, TradingCandidate candidate)
+        {
+            //Position wurde bereits einmal mit Target 10% eröffnet
+            if (currentWeight.IsBetween(new decimal(0.08), new decimal(0.18)))
+            {
+                //wird nun auf 20% aufgestockt
+                AdjustTemporaryPortfolio(PortfolioSettings.MaximumInitialPositionSize * 2, TransactionType.Changed, candidate, true);
+            }
+
+            //schon einaml aufgestockt
+            else if (currentWeight.IsBetween(new decimal(0.18), new decimal(0.28)))
+            {
+                //wird auf den maximal Wert aufgestockt
+                AdjustTemporaryPortfolio(PortfolioSettings.MaximumPositionSize, TransactionType.Changed, candidate, true);
+            }
+            //maximum
+            else
+            {
+                //wird nicht mehr aufgestockt
+                //der nächst bessere Candidate wird berücksichtigt
+
+            }
+        }
+
+        private void AdjustPortfolioSell(decimal currentWeight, TradingCandidate candidate)
+        {
+            //Position wurde bereits einmal mit Target 10% eröffnet und wird totalverkauft
+            if (currentWeight.IsBetween(new decimal(0.01), new decimal(0.18)))
+            {
+                AdjustTemporaryPortfolio(0, TransactionType.Close, candidate, true);
+            }
+            else if (currentWeight.IsBetween(new decimal(0.18), new decimal(0.28)))
+            {
+                //wird auf den maximal Wert aufgestockt
+                AdjustTemporaryPortfolio(PortfolioSettings.MaximumInitialPositionSize, TransactionType.Changed, candidate, true);
+            }
+            else
+                AdjustTemporaryPortfolio((decimal)StopLossSettings.ReductionValue * currentWeight, TransactionType.Changed, candidate, true);
+        }
+
+        private void RebalancedTemporaryPortfolio([NotNull] List<TradingCandidate> bestCandidates, [NotNull] List<TradingCandidate> allCandidates)
+        {
+            // zuerst schau ich ob der ersten candidate in der Liste einen besseren Score hat als der aktuelle
+            var best = bestCandidates[0];
+            var investedCandidates = allCandidates.Where(x => TransactionsHandler.IsActiveInvestment(x.Record.SecurityId) == true).ToList();
+
+            if (investedCandidates.Count == 0)
+                return;
+
+            //wenn der beste Kandiadat keinen höheren Score als der aktuell schlechteste hat brauch ich mir die anderen erst gar nicht anzusehen
+            if (best.ScoringResult.Score < investedCandidates[investedCandidates.Count - 1].ScoringResult.Score)
+                return;
+
+            //der aktuelle index in der investedCandidates Liste
+            var investedIdx = 1;
+
+            //gibt mir den ncähsten Kandiaten zum Austauschen zurück
+            TradingCandidate GetNextInvestedCandiateToReplace() => investedCandidates[investedCandidates.Count - investedIdx];
+
+            //Hier werden nur die Kandidaten ausgetauscht
+            foreach (var notInvestedCandidate in bestCandidates)
+            {
+                //wenn er berties im Temporären Portfolio ist zum nächst besseren
+                if (TemporaryPortfolio.IsTemporary(notInvestedCandidate.Record.SecurityId))
+                    continue;
+
+                //wenn er berties investiert ist weiter
+                if (TransactionsHandler.IsActiveInvestment(notInvestedCandidate.Record.SecurityId) == true)
+                    continue;
+
+                while (investedIdx < investedCandidates.Count)
+                {
+                    investedIdx++;
+                    var currentWorstInvestedCandidate = GetNextInvestedCandiateToReplace();
+
+                    //wenn der nicht investierte Kandidate schlechter ist als der investierte ignorieren
+                    if (notInvestedCandidate.ScoringResult.Score <= currentWorstInvestedCandidate.ScoringResult.Score)
+                        continue;
+
+                    var currentInvestedWeight = TransactionsHandler.GetWeight(currentWorstInvestedCandidate.Record.SecurityId);
+                    if (currentInvestedWeight == null)
+                        throw new ArgumentException("Achtung die Security mit Id: " + currentWorstInvestedCandidate.Record.SecurityId +
+                                                    " hat keinen gültigen Wert für ihr Gewicht!");
+
+                    //wenn kleiner als die mimimum holding periode weiter
+                    if (IsBelowMinimumHoldingPeriode(currentWorstInvestedCandidate))
+                        continue;
+
+                    //investierten Verkaufen
+                    AdjustPortfolioSell(currentInvestedWeight.Value, currentWorstInvestedCandidate);
+                    //neuen kaufen
+                    AdjustTemporaryPortfolio(PortfolioSettings.MaximumInitialPositionSize, TransactionType.Open, notInvestedCandidate);
+                    //weiter gehen in der foreach
+                    break;
+                }
+            }
+
+
+
+        }
+
+        private bool IsBelowMinimumHoldingPeriode(TradingCandidate currentWorstInvestedCandidate)
+        {
+            //immer das opening holen
+            var openingItem =
+                TransactionsHandler.GetSingle(currentWorstInvestedCandidate.Record.SecurityId, TransactionType.Open);
+
+            //wenn die aktuelle Haltedauer kürzer ist als das minimum der Strategie, dann probier ich gegen den nächsten zu tauschen
+            return (PortfolioAsof - openingItem.TransactionDateTime).Days < PortfolioSettings.MinimumHoldingPeriodeInDays;
+        }
 
         protected override IEnumerable<TradingCandidate> RankCurrentPortfolio()
         {
@@ -397,8 +492,9 @@ namespace HelperLibrary.Trading.PortfolioManager
                 if (price == null)
                     throw new NullReferenceException($"Achtung GetTradingRecord hat zum dem Datum {PortfolioAsof} null zurückgegeben für die SecId {transactionItem.SecurityId}");
 
+                //updaten der Stop Loss Limits
                 StopLossSettings.UpdateDailyLimits(transactionItem, price, PortfolioAsof);
-
+                //summe erhöhen
                 sumInvested += transactionItem.Shares * price.Value;
             }
 

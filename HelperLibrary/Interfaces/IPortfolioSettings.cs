@@ -46,6 +46,11 @@ namespace HelperLibrary.Interfaces
         /// <summary>
         /// der Initiale Portfolio Wert zum Starten
         /// </summary>
-       decimal InitialCashValue { get; }
+        decimal InitialCashValue { get; }
+
+        /// <summary>
+        /// die mindest Halte dauer einer Position
+        /// </summary>
+        int MinimumHoldingPeriodeInDays { get; set; }
     }
 }

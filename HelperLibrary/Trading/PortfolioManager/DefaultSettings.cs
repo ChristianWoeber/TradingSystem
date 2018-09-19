@@ -30,14 +30,13 @@ namespace HelperLibrary.Trading.PortfolioManager
         public decimal LossLimit { get; set; }
 
         /// <summary>
-        /// Gibt zurück ob es die aktuelle Positon ausstoppt
+        /// Gibt zurück ob es die aktuelle Position ausstoppt
         /// </summary>
         /// <param name="candidate">der Trading Candidate</param>
+        /// <param name="averagePrice">der average Preis aller Transaktionen</param>
         /// <returns></returns>
-        public bool HasStopLoss(TradingCandidate candidate)
+        public bool HasStopLoss(TradingCandidate candidate, decimal? averagePrice)
         {
-            //TODO: Den Average Preis noch berücksichtigen?
-
             if (candidate == null)
                 throw new ArgumentException("Der Preis darf nicht null sein");
 
@@ -47,7 +46,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             var currentPrice = candidate.Record.AdjustedPrice;
             var volatility = candidate.ScoringResult.Volatility;
 
-            return currentPrice < stopLossMeta.High * (1 - volatility);
+            return currentPrice < stopLossMeta.High * (1 - volatility) || currentPrice < averagePrice * (1 - volatility);
         }
 
 
@@ -140,5 +139,10 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Der Initiale Portfolio Wert
         /// </summary>
         public decimal InitialCashValue { get; }
+
+        /// <summary>
+        /// Die Haltedauer bevor die Position abgeschichtet oder ausgetauscht werden darf
+        /// </summary>
+        public int MinimumHoldingPeriodeInDays { get; set; } = 14;
     }
 }

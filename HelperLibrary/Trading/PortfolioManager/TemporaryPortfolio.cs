@@ -35,7 +35,6 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #endregion
 
-
         #region TryHasCash
 
 
@@ -67,6 +66,12 @@ namespace HelperLibrary.Trading.PortfolioManager
         #endregion
 
         #region Save
+
+        public bool IsTemporary(int secId)
+        {
+            var transaction = _items.OrderByDescending(x=>x.TransactionDateTime).FirstOrDefault(x => x.SecurityId == secId);
+            return transaction != null && transaction.IsTemporary;
+        }
 
         public void SaveTransactions(ISaveProvider provider = null)
         {
@@ -146,16 +151,16 @@ namespace HelperLibrary.Trading.PortfolioManager
         //TODO: Rebuild implementieren
         public void RebuildPortfolio(IScoringProvider scoreProvider, DateTime asof)
         {
+            //Wenn alle Items als temporär geflaggt sind, handelt es sich um bestehnde neue investments, dann brauch ich nicht abschichten, weil die besten Kandiaten schon im portfolio sind 
+            if (_items.TrueForAll(x => x.IsTemporary))
+                return;
+
             //bzw, wenn noch Cash verfügbar ist brauch ich nichts unternehemen
             if (TryHasCash(out var remainingCash))
                 return;
 
             // Wenn es keien Änderungen gibt
             if (!HasChanges)
-                return;
-
-            //Wenn alle Items als temporär geflaggt sind, handelt es sich um bestehnde neue investments, dann brauch ich nicht abschichten, weil die besten Kandiaten schon im portfolio sind 
-            if (_items.TrueForAll(x => x.IsTemporary))
                 return;
 
             //Wenn kein Item als temporär gekennzeichnet ist, dann hat sich im Portfolio nichts geändert und ich breche an dieser Stelle ab
@@ -181,12 +186,12 @@ namespace HelperLibrary.Trading.PortfolioManager
                 {
                     //die Position mit dem schlechtesten Score abschichten, bzw. TotalVerkaufen
                     // _adjustmentProvider.AdjustTemporaryPortfolio(0, TransactionType.Close, candidate, true);
-                
-                        //wenn auch nach dem Verkauf noch kein Cash zur Verfügnug steht
-                        //schichte ich weiter ab, TryHasCash gibt erst true zurück, wenn sich eine neue Position ausgeht
-                        //hier reicht mit aber, dass ich Deckung am CashAccount hab (dann gehen sich alle temporären Transaktionen
-                        //aus und ich kann breaken
-                        if (!TryHasCash(out var remainingNewCash))
+
+                    //wenn auch nach dem Verkauf noch kein Cash zur Verfügnug steht
+                    //schichte ich weiter ab, TryHasCash gibt erst true zurück, wenn sich eine neue Position ausgeht
+                    //hier reicht mit aber, dass ich Deckung am CashAccount hab (dann gehen sich alle temporären Transaktionen
+                    //aus und ich kann breaken
+                    if (!TryHasCash(out var remainingNewCash))
                     {
                         //die Position mit dem schlechtesten Score abschichten, bzw. TotalVerkaufen
                         //wenn true zurückgegeben wird, dannn reicht die eine position aus und ich kann breaken, sonst schichte ich weiter ab
@@ -203,6 +208,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 break;
             }
         }
+
 
         #endregion
 
