@@ -32,7 +32,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         }
 
 
-        public event EventHandler<DateTime> PortfolioAsofChanged;
+        public event EventHandler<DateTime> PortfolioAsofChangedEvent;
 
         /// <summary>
         /// die Einstellungen zu den StopLoss Limits
@@ -66,7 +66,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             set
             {
                 _portfolioAsof = value;
-                PortfolioAsofChanged?.Invoke(this, PortfolioAsof);
+                PortfolioAsofChangedEvent?.Invoke(this, PortfolioAsof);
             }
         }
 

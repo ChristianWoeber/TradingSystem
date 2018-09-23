@@ -69,7 +69,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public bool IsTemporary(int secId)
         {
-            var transaction = _items.OrderByDescending(x=>x.TransactionDateTime).FirstOrDefault(x => x.SecurityId == secId);
+            var transaction = _items.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault(x => x.SecurityId == secId);
             return transaction != null && transaction.IsTemporary;
         }
 
@@ -108,15 +108,15 @@ namespace HelperLibrary.Trading.PortfolioManager
                 if (item.Shares < 0)
                 {
                     _cashManager.Cash += Math.Abs(item.EffectiveAmountEur);
-                    if (Debugger.IsAttached)
-                        Trace.TraceInformation("Cash erhöht um " + Math.Abs(item.EffectiveAmountEur));
+                    //if (Debugger.IsAttached)
+                    //    Trace.TraceInformation("Cash erhöht um " + Math.Abs(item.EffectiveAmountEur));
 
                 }
                 else
                 {
                     _cashManager.Cash -= Math.Abs(item.EffectiveAmountEur);
-                    if (Debugger.IsAttached)
-                        Trace.TraceInformation("Cash verringert um " + Math.Abs(item.EffectiveAmountEur));
+                    //if (Debugger.IsAttached)
+                    //    Trace.TraceInformation("Cash verringert um " + Math.Abs(item.EffectiveAmountEur));
                 }
             }
 
@@ -168,25 +168,26 @@ namespace HelperLibrary.Trading.PortfolioManager
                 return;
 
             //sonst muss ich zusätzlches Cash schaffen, indem ich den schlechtesten Kandiaten verkaufe
-            var list = new List<TradingCandidate>();
+            var notTemporarylist = new List<TradingCandidate>();
+            var temporaryList = new List<TradingCandidate>();
 
             //alle nicht temporären = bestehenden Investments stehen zum Abschichten zur Verfügung
-            foreach (var currentInvestment in _items.Where(x => !x.IsTemporary))
+            foreach (var currentInvestment in _items.Where(x => x.Shares > 0))
             {
                 var score = scoreProvider.GetScore(currentInvestment.SecurityId, asof);
                 var record = scoreProvider.GetTradingRecord(currentInvestment.SecurityId, asof);
-
-                list.Add(new TradingCandidate(record, score));
+                if (!currentInvestment.IsTemporary)
+                    notTemporarylist.Add(new TradingCandidate(record, score));
+                else
+                    temporaryList.Add(new TradingCandidate(record, score));
             }
 
             while (true)
             {
+                //TODO: MinimumHolding Period berücksichtigen
                 //nach schlechtesten aufsteigen sortieren
-                foreach (var candidate in list.OrderBy(x => x.ScoringResult.Score))
+                foreach (var candidate in notTemporarylist.OrderBy(x => x.ScoringResult.Score))
                 {
-                    //die Position mit dem schlechtesten Score abschichten, bzw. TotalVerkaufen
-                    // _adjustmentProvider.AdjustTemporaryPortfolio(0, TransactionType.Close, candidate, true);
-
                     //wenn auch nach dem Verkauf noch kein Cash zur Verfügnug steht
                     //schichte ich weiter ab, TryHasCash gibt erst true zurück, wenn sich eine neue Position ausgeht
                     //hier reicht mit aber, dass ich Deckung am CashAccount hab (dann gehen sich alle temporären Transaktionen
@@ -203,7 +204,18 @@ namespace HelperLibrary.Trading.PortfolioManager
                     if (remainingNewCash > 0)
                         break;
 
+                    //alle nicht temporären = bestehenden Investments stehen zum Abschichten zur Verfügung
+                    //sonst muss ich die temporären nach score kicken
+                    //sonst muss ich zusätzlches Cash schaffen, indem ich den schlechtesten temporären Kandiaten verkaufe
+                    foreach (var temporaryCandidate in temporaryList.OrderBy(x => x.ScoringResult.Score))
+                    {
+                       
+                        if (_adjustmentProvider.AdjustTemporaryPortfolioToCashPuffer(remainingNewCash, TransactionType.Changed, temporaryCandidate))
+                            break;
+                    }
+
                 }
+           
                 //breaken aus der while
                 break;
             }

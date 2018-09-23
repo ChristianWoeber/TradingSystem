@@ -41,7 +41,8 @@ namespace TradingSystemTests.Models
             var end = endDateTime?.GetBusinessDay(false) ?? DateTime.Today;
             while (true)
             {
-                Trace.TraceInformation("aktuelles Datum: " + date.ToShortDateString());
+                if (date.IsUltimo()|| date.IsBusinessDayUltimo())
+                    Trace.TraceInformation("aktuelles Datum: " + date.ToShortDateString());
                 if (date >= _startDateTime)
                     return;
 

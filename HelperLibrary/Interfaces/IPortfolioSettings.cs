@@ -52,5 +52,10 @@ namespace HelperLibrary.Interfaces
         /// die mindest Halte dauer einer Position
         /// </summary>
         int MinimumHoldingPeriodeInDays { get; set; }
+
+        /// <summary>
+        /// Dieser Puffer in % wird zum aktuellen Score des Kandiaten hinzugefügt, nur wenn der Besser ist wird umgeschichtet
+        /// </summary>
+        decimal ReplaceBufferPct { get; set; }
     }
 }

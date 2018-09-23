@@ -35,7 +35,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <param name="candidate">der Trading Candidate</param>
         /// <param name="averagePrice">der average Preis aller Transaktionen</param>
         /// <returns></returns>
-        public bool HasStopLoss(TradingCandidate candidate, decimal? averagePrice)
+        public bool HasStopLoss(TradingCandidate candidate, decimal? averagePrice, ScoringResult lastScore)
         {
             if (candidate == null)
                 throw new ArgumentException("Der Preis darf nicht null sein");
@@ -46,7 +46,16 @@ namespace HelperLibrary.Trading.PortfolioManager
             var currentPrice = candidate.Record.AdjustedPrice;
             var volatility = candidate.ScoringResult.Volatility;
 
-            return currentPrice < stopLossMeta.High * (1 - volatility) || currentPrice < averagePrice * (1 - volatility);
+            //wenn der Candidat gar keinen gültigen Score mehr hat muss ich ihn
+            //natürlich zuerst kicken
+            //if (!candidate.ScoringResult.IsValid)
+            //    return true;
+
+            ////der Change mehr oder gleich von 4 Sigmas ist hau ich die Position raus
+            //if (lastScore.Score  * (1 - volatility * 5) > candidate.ScoringResult.Score)
+            //    return true;
+
+            return currentPrice <= stopLossMeta.High * (1 - volatility) || currentPrice <= averagePrice * (1 - volatility);
         }
 
 
@@ -144,5 +153,11 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Die Haltedauer bevor die Position abgeschichtet oder ausgetauscht werden darf
         /// </summary>
         public int MinimumHoldingPeriodeInDays { get; set; } = 14;
+
+        /// <summary>
+        /// ReplaceBufferPce +1 * Score dammit wird der aktuelle Score beim vergleichen mit einem anderen Kandidaten erhöht, schichte nur in Positionen um die "deutlich vielversprechender" sind
+        /// Muss 20% besser sein
+        /// </summary>
+        public decimal ReplaceBufferPct { get; set; } = new decimal(0.2);
     }
 }

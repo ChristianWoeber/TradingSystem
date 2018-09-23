@@ -1,4 +1,6 @@
-﻿namespace HelperLibrary.Interfaces
+﻿using System;
+
+namespace HelperLibrary.Interfaces
 {
     public interface ICashManager
     {
@@ -12,5 +14,9 @@
         /// </summary>
         decimal Cash { get; set; }
 
+        /// <summary>
+        /// Das event das gefeuert wird wenn sich der Cash Value ändert
+        /// </summary>
+        event EventHandler CashChangedEvent;
     }
 }

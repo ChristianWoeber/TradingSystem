@@ -3,6 +3,7 @@ using System;
 using HelperLibrary.Collections;
 using System.Collections.Generic;
 using HelperLibrary.Database.Interfaces;
+using HelperLibrary.Enums;
 
 namespace HelperLibrary.Trading
 {
@@ -31,7 +32,7 @@ namespace HelperLibrary.Trading
 
             //Das Datum des NAVs der in der PriceHistoryCollection gefunden wurde
             var priceHistoryRecordAsOf = priceHistory.Get(date, PriceHistoryOption.NextItem)?.Asof;
-            if(priceHistoryRecordAsOf == null)
+            if (priceHistoryRecordAsOf == null)
                 return new ScoringResult();
 
             //die 250 Tages Performance
@@ -50,6 +51,7 @@ namespace HelperLibrary.Trading
             var performance30 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-30), date, null, PriceHistoryOption.NextItem);
             var performance90 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-90), date, null, PriceHistoryOption.NextItem);
             var volatility = priceHistory.Calc.GetVolatilityMonthly(date.AddDays(-250), date, null, PriceHistoryOption.NextItem);
+            var maxDrawDown = priceHistory.Calc.GetMaximumDrawdown(date.AddDays(-250), date, CaclulationOption.Adjusted);
 
             // Das Ergebnis returnen
             return new ScoringResult
@@ -59,14 +61,15 @@ namespace HelperLibrary.Trading
                 Performance30 = performance30,
                 Performance90 = performance90,
                 Performance250 = performance250,
+                MaxDrawdown = maxDrawDown,
                 Volatility = volatility,
             };
         }
 
         public ITradingRecord GetTradingRecord(int securityId, DateTime asof)
         {
-            return !PriceHistoryStorage.TryGetValue(securityId, out var priceHistoryCollection) 
-                ? null 
+            return !PriceHistoryStorage.TryGetValue(securityId, out var priceHistoryCollection)
+                ? null
                 : priceHistoryCollection.Get(asof);
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using HelperLibrary.Enums;
 using HelperLibrary.Interfaces;
 
@@ -13,6 +14,8 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         private readonly PortfolioManager _portfolioManager;
         private readonly IPortfolioSettings _settings;
+        private decimal _cash;
+
 
         #endregion
 
@@ -22,9 +25,11 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             _portfolioManager = portfolioManager;
             _settings = portfolioManager.PortfolioSettings;
-        }        
+        }
 
         #endregion
+
+        public event EventHandler CashChangedEvent;
 
         //TODO: Cash und PortfolioValue verknüpfen
         public bool TryHasCash(out decimal remainingCash)
@@ -64,6 +69,14 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// der aktuelle Cash Bestand
         /// </summary>
-        public decimal Cash { get; set; }
+        public decimal Cash
+        {
+            get => _cash;
+            set
+            {
+                _cash = value;
+                CashChangedEvent?.Invoke(this, EventArgs.Empty);
+            }
+        }
     }
 }

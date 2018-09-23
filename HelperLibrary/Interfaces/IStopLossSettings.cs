@@ -25,7 +25,7 @@ namespace HelperLibrary.Interfaces
         /// <param name="candidate"></param>
         /// <param name="averagePrice"></param>
         /// <returns></returns>
-        bool HasStopLoss(TradingCandidate candidate, decimal? averagePrice);
+        bool HasStopLoss(TradingCandidate candidate, decimal? averagePrice, ScoringResult lastScore);
 
         /// <summary>
         /// Die Methode berechnet die Limits auf täglicher basis

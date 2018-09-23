@@ -10,6 +10,7 @@ using HelperLibrary.Parsing;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
 using NLog;
+using NLog.Layouts;
 using NUnit.Framework;
 using TradingSystemTests.Helper;
 using TradingSystemTests.Models;
@@ -27,16 +28,21 @@ namespace TradingSystemTests.TestCases
             //if (_priceHistoryDictionary == null)
             //    _priceHistoryDictionary = TestHelper.CreateTestDictionary("EuroStoxx50Member.xlsx");
 
+            //ConfigureLogger();
+
+        }
+
+        private static void ConfigureLogger(string name = null)
+        {
             var config = new NLog.Config.LoggingConfiguration();
 
-            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "DEBUG_TEST.txt", ArchiveOldFileOnStartup = true};
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = name ?? "DEBUG_TEST.txt", ArchiveOldFileOnStartup = true};
             var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
             config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
             config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile);
 
             LogManager.Configuration = config;
-
         }
 
         private Dictionary<int, List<TransactionItem>> LoadHistory(string filename)
@@ -75,12 +81,11 @@ namespace TradingSystemTests.TestCases
             //einen BacktestHandler erstellen
             var backtestHandler = new CandidatesProvider(scoringProvider);
 
-
             //die Candidatenliste zurückgeben lassen
             var candidates = backtestHandler.GetCandidates(date);
 
             //dem Portfolio Manager die potentiellen Kandidaten übergeben
-            pm.PassInCandidates(candidates?.ToList() ?? new List<TradingCandidate>(), date);
+            pm.PassInCandidates(candidates.Where(x => x.ScoringResult.IsValid)?.ToList() ?? new List<TradingCandidate>(), date);
 
             //Transaktionen speichern und im File anzeigen
             pm.TemporaryPortfolio.SaveTransactions(new TestSaveProvider(filename));
@@ -121,7 +126,6 @@ namespace TradingSystemTests.TestCases
             //einen CandidatesProvider erstellen
             var candidatesProvider = new CandidatesProvider(scoringProvider);
 
-
             //die Candidatenliste zurückgeben lassen
             var candidates = candidatesProvider.GetCandidates(date);
 
@@ -147,9 +151,11 @@ namespace TradingSystemTests.TestCases
 
         }
 
-        [TestCase("01.01.2007", 3, "SimpleBacktestTransactions.csv", true, true)]
-        public void SimpleBacktestTest(string startDate, int testYears, string temporaryFilename, bool showTransactions, bool clearOldFile)
+        [TestCase("01.01.2005", 14, "LongTermBacktestTransactions.csv", true, true, "Backtest_PortfolioValue_LongTerm.csv")]
+        public void SimpleBacktestTest(string startDate, int testYears, string temporaryFilename, bool showTransactions, bool clearOldFile, string logName)
         {
+            //TODO : File aich auf NLOG umstellen
+
             var filename = Path.Combine(Path.GetTempPath(), temporaryFilename);
             if (clearOldFile && File.Exists(filename))
                 File.Delete(filename);
@@ -157,6 +163,9 @@ namespace TradingSystemTests.TestCases
             {
                 using (var file = File.Create(filename)) { }
             }
+
+            //NLog konfigurieren
+            ConfigureLogger(logName);
 
             //datum parsen
             var date = DateTime.Parse(startDate);
@@ -176,11 +185,16 @@ namespace TradingSystemTests.TestCases
             //scoring Provider registrieren
             pm.RegisterScoringProvider(scoringProvider);
 
-            var logger = NLog.LogManager.GetCurrentClassLogger();
+            var logger = LogManager.GetLogger(logName);
             logger.Info("ENTWICKLUNG PORTFOLIO:");
-            pm.PortfolioAsofChanged += (sender, args) =>
+            pm.PortfolioAsofChangedEvent += (sender, args) =>
             {
                 logger.Info($"{args.ToShortDateString()} | {pm.PortfolioValue}");
+            };
+
+            pm.CashHandler.CashChangedEvent += (sender, args) =>
+            {
+                logger.Info($"{args :N}");
             };
 
             //einen BacktestHandler erstellen
@@ -196,7 +210,7 @@ namespace TradingSystemTests.TestCases
             using (var rd = new StreamReader(File.Open(filename, FileMode.Open)))
             {
                 var output = rd.ReadToEnd();
-                var transactions = SimpleTextParser.GetListOfType<TransactionItem>(rd.ReadToEnd());
+                var transactions = SimpleTextParser.GetListOfType<TransactionItem>(output);
                 Assert.IsTrue(!string.IsNullOrEmpty(output));
                 Assert.IsTrue(transactions.Count > 10);
                 Trace.TraceInformation($"Anzahl der Transaktionen :{transactions.Count}");
@@ -204,7 +218,7 @@ namespace TradingSystemTests.TestCases
             var factor = pm.PortfolioValue / pm.PortfolioSettings.InitialCashValue;
             var result = Math.Pow((double)factor, (double)1 / testYears);
 
-            Trace.TraceInformation($"aktuelles Ergebnis kumuliert: {factor:P} {Environment.NewLine}aktuelles Ergebnis p.a.: {result - 1:P}");          
+            Trace.TraceInformation($"aktuelles Ergebnis kumuliert: {factor:P} {Environment.NewLine}aktuelles Ergebnis p.a.: {result - 1:P}");
         }
 
 
