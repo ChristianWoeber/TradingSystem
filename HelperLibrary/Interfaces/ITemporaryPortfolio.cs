@@ -49,19 +49,16 @@ namespace HelperLibrary.Interfaces
         /// </summary>
         bool HasChanges { get; }
 
-
         /// <summary>
         ///Löscht des Temporäre Portfolio
         /// </summary>
         void Clear();
 
         /// <summary>
-        /// Methode zum evaluieren des Temporären Portfolios
+        /// Gibt mir ein aktuelles Item aus dem Temporären Portdolio zurück
         /// </summary>
-        /// <param name="scoringProvider">der scpring Provider</param>
-        /// <param name="asof"></param>
-        void RebuildPortfolio(IScoringProvider scoringProvider, DateTime asof);
-
-
+        /// <param name="candidateSecurityId"></param>
+        /// <returns></returns>
+        TransactionItem Get(int candidateSecurityId);
     }
 }

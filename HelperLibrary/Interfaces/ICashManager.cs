@@ -17,6 +17,6 @@ namespace HelperLibrary.Interfaces
         /// <summary>
         /// Das event das gefeuert wird wenn sich der Cash Value ändert
         /// </summary>
-        event EventHandler CashChangedEvent;
+        event EventHandler<DateTime> CashChangedEvent;
     }
 }

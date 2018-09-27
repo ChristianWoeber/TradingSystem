@@ -97,7 +97,7 @@ namespace TradingSystemTests.Models
         public decimal? GetWeight(int secid, DateTime? asof = null)
         {
             return asof == null
-                ? CurrentPortfolio[secid]?.TargetWeight ?? -1
+                ? CurrentPortfolio[secid]?.TargetWeight
                 : this[asof.Value]?.FirstOrDefault(x => x.SecurityId == secid)?.TargetWeight;
         }
 
@@ -126,8 +126,14 @@ namespace TradingSystemTests.Models
 
         public decimal? GetAveragePrice(int secid, DateTime asof)
         {
+            if (CurrentPortfolio[secid] == null)
+                return null;
+
             //bekomme hier schon die sortierten, aktiven Transaktionen einer SecurityId
-            var pastTransactions = Get(secid, true).ToList();
+            var pastTransactions = Get(secid, true)?.ToList();
+
+            if (pastTransactions == null)
+                return null;
 
             //einfachster Fall es gibt nur eine Transaktion (ein opening dann erhöhe ich die
             //summe um Shares * aktueller Preis

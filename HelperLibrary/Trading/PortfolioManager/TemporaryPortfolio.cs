@@ -143,83 +143,90 @@ namespace HelperLibrary.Trading.PortfolioManager
             _items.Clear();
         }
 
+        public TransactionItem Get(int candidateSecurityId)
+        {
+            var item = _items.FirstOrDefault(x => x.SecurityId == candidateSecurityId && x.IsTemporary);
+            if (item == null)
+                throw new NullReferenceException($"mit der {candidateSecurityId} konnte kein temporäöres item gefunden werden");
+            return item;
+        }
 
         #endregion
 
         #region RebuildTemporaryPortfolio
 
         //TODO: Rebuild implementieren
-        public void RebuildPortfolio(IScoringProvider scoreProvider, DateTime asof)
-        {
-            //Wenn alle Items als temporär geflaggt sind, handelt es sich um bestehnde neue investments, dann brauch ich nicht abschichten, weil die besten Kandiaten schon im portfolio sind 
-            if (_items.TrueForAll(x => x.IsTemporary))
-                return;
+        //public void RebuildPortfolio(IScoringProvider scoreProvider, DateTime asof)
+        //{
+        //    //Wenn alle Items als temporär geflaggt sind, handelt es sich um bestehnde neue investments, dann brauch ich nicht abschichten, weil die besten Kandiaten schon im portfolio sind 
+        //    if (_items.TrueForAll(x => x.IsTemporary))
+        //        return;
 
-            //bzw, wenn noch Cash verfügbar ist brauch ich nichts unternehemen
-            if (TryHasCash(out var remainingCash))
-                return;
+        //    //bzw, wenn noch Cash verfügbar ist brauch ich nichts unternehemen
+        //    if (TryHasCash(out var remainingCash))
+        //        return;
 
-            // Wenn es keien Änderungen gibt
-            if (!HasChanges)
-                return;
+        //    // Wenn es keien Änderungen gibt
+        //    if (!HasChanges)
+        //        return;
 
-            //Wenn kein Item als temporär gekennzeichnet ist, dann hat sich im Portfolio nichts geändert und ich breche an dieser Stelle ab
-            if (_items.TrueForAll(x => !x.IsTemporary))
-                return;
+        //    //Wenn kein Item als temporär gekennzeichnet ist, dann hat sich im Portfolio nichts geändert und ich breche an dieser Stelle ab
+        //    if (_items.TrueForAll(x => !x.IsTemporary))
+        //        return;
 
-            //sonst muss ich zusätzlches Cash schaffen, indem ich den schlechtesten Kandiaten verkaufe
-            var notTemporarylist = new List<TradingCandidate>();
-            var temporaryList = new List<TradingCandidate>();
+        //    //sonst muss ich zusätzlches Cash schaffen, indem ich den schlechtesten Kandiaten verkaufe
+        //    var notTemporarylist = new List<ITradingCandidateBase>();
+        //    var temporaryList = new List<ITradingCandidateBase>();
 
-            //alle nicht temporären = bestehenden Investments stehen zum Abschichten zur Verfügung
-            foreach (var currentInvestment in _items.Where(x => x.Shares > 0))
-            {
-                var score = scoreProvider.GetScore(currentInvestment.SecurityId, asof);
-                var record = scoreProvider.GetTradingRecord(currentInvestment.SecurityId, asof);
-                if (!currentInvestment.IsTemporary)
-                    notTemporarylist.Add(new TradingCandidate(record, score));
-                else
-                    temporaryList.Add(new TradingCandidate(record, score));
-            }
+        //    //alle nicht temporären = bestehenden Investments stehen zum Abschichten zur Verfügung
+        //    foreach (var currentInvestment in _items.Where(x => x.Shares > 0))
+        //    {
+        //        var score = scoreProvider.GetScore(currentInvestment.SecurityId, asof);
+        //        var record = scoreProvider.GetTradingRecord(currentInvestment.SecurityId, asof);
+        //        if (!currentInvestment.IsTemporary)
+        //            notTemporarylist.Add(new Candidate(record, score));
+        //        else
+        //            temporaryList.Add(new Candidate(record, score));
+        //    }
 
-            while (true)
-            {
-                //TODO: MinimumHolding Period berücksichtigen
-                //nach schlechtesten aufsteigen sortieren
-                foreach (var candidate in notTemporarylist.OrderBy(x => x.ScoringResult.Score))
-                {
-                    //wenn auch nach dem Verkauf noch kein Cash zur Verfügnug steht
-                    //schichte ich weiter ab, TryHasCash gibt erst true zurück, wenn sich eine neue Position ausgeht
-                    //hier reicht mit aber, dass ich Deckung am CashAccount hab (dann gehen sich alle temporären Transaktionen
-                    //aus und ich kann breaken
-                    if (!TryHasCash(out var remainingNewCash))
-                    {
-                        //die Position mit dem schlechtesten Score abschichten, bzw. TotalVerkaufen
-                        //wenn true zurückgegeben wird, dannn reicht die eine position aus und ich kann breaken, sonst schichte ich weiter ab
-                        if (_adjustmentProvider.AdjustTemporaryPortfolioToCashPuffer(remainingNewCash, TransactionType.Changed, candidate))
-                            break;
-                        continue;
-                    }
+        //    while (true)
+        //    {
+        //        //TODO: MinimumHolding Period berücksichtigen
+        //        //nach schlechtesten aufsteigen sortieren
+        //        foreach (var candidate in notTemporarylist.OrderBy(x => x.ScoringResult.Score))
+        //        {
+        //            //wenn auch nach dem Verkauf noch kein Cash zur Verfügnug steht
+        //            //schichte ich weiter ab, TryHasCash gibt erst true zurück, wenn sich eine neue Position ausgeht
+        //            //hier reicht mit aber, dass ich Deckung am CashAccount hab (dann gehen sich alle temporären Transaktionen
+        //            //aus und ich kann breaken
+        //            if (!TryHasCash(out var remainingNewCash))
+        //            {
+        //                //die Position mit dem schlechtesten Score abschichten, bzw. TotalVerkaufen
+        //                //wenn true zurückgegeben wird, dannn reicht die eine position aus und ich kann breaken, sonst schichte ich weiter ab
+        //                if (_adjustmentProvider.AdjustTemporaryPortfolioToCashPuffer(remainingNewCash, TransactionType.Changed, candidate))
+        //                    break;
+        //                continue;
+        //            }
 
-                    if (remainingNewCash > 0)
-                        break;
+        //            if (remainingNewCash > 0)
+        //                break;
 
-                    //alle nicht temporären = bestehenden Investments stehen zum Abschichten zur Verfügung
-                    //sonst muss ich die temporären nach score kicken
-                    //sonst muss ich zusätzlches Cash schaffen, indem ich den schlechtesten temporären Kandiaten verkaufe
-                    foreach (var temporaryCandidate in temporaryList.OrderBy(x => x.ScoringResult.Score))
-                    {
-                       
-                        if (_adjustmentProvider.AdjustTemporaryPortfolioToCashPuffer(remainingNewCash, TransactionType.Changed, temporaryCandidate))
-                            break;
-                    }
+        //            //alle nicht temporären = bestehenden Investments stehen zum Abschichten zur Verfügung
+        //            //sonst muss ich die temporären nach score kicken
+        //            //sonst muss ich zusätzlches Cash schaffen, indem ich den schlechtesten temporären Kandiaten verkaufe
+        //            foreach (var temporaryCandidate in temporaryList.OrderBy(x => x.ScoringResult.Score))
+        //            {
 
-                }
-           
-                //breaken aus der while
-                break;
-            }
-        }
+        //                if (_adjustmentProvider.AdjustTemporaryPortfolioToCashPuffer(remainingNewCash, TransactionType.Changed, temporaryCandidate))
+        //                    break;
+        //            }
+
+        //        }
+
+        //        //breaken aus der while
+        //        break;
+        //    }
+        //}
 
 
         #endregion

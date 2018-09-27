@@ -78,14 +78,14 @@ namespace TradingSystemTests.Models
                         continue;
                     }
 
-                    RankCandidates(new List<TradingCandidate>(), asof, ref date);
+                    RankCandidates(new List<ITradingCandidateBase>(), asof, ref date);
                     continue;
                 }
                 RankCandidates(candidates, asof, ref date);
             }
         }
 
-        private void RankCandidates(List<TradingCandidate> candidates, DateTime? asof, ref DateTime date)
+        private void RankCandidates(List<ITradingCandidateBase> candidates, DateTime? asof, ref DateTime date)
         {
             //NAVDatum initieren
             if (_lastNavDateTime == null)

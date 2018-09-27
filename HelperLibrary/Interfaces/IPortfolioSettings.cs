@@ -57,5 +57,11 @@ namespace HelperLibrary.Interfaces
         /// Dieser Puffer in % wird zum aktuellen Score des Kandiaten hinzugefügt, nur wenn der Besser ist wird umgeschichtet
         /// </summary>
         decimal ReplaceBufferPct { get; set; }
+
+        /// <summary>
+        /// Dieser Puffer wird vom maximum der position Size abgezogen, ist der kandidat darunter wird er auf das maximum aufgestockt 
+        /// sonst ist er bereits am maximum
+        /// </summary>
+        decimal MaximumPositionSizeBuffer { get; set; }
     }
 }

@@ -23,9 +23,8 @@ namespace HelperLibrary.Interfaces
         /// Methode für das Berechnen des LossLimits
         /// </summary>
         /// <param name="candidate"></param>
-        /// <param name="averagePrice"></param>
         /// <returns></returns>
-        bool HasStopLoss(TradingCandidate candidate, decimal? averagePrice, ScoringResult lastScore);
+        bool HasStopLoss(TradingCandidate candidate);
 
         /// <summary>
         /// Die Methode berechnet die Limits auf täglicher basis
@@ -36,9 +35,21 @@ namespace HelperLibrary.Interfaces
         void UpdateDailyLimits(TransactionItem transactionItem, decimal? price, DateTime portfolioAsof);
 
         /// <summary>
-        /// Die Methode berechnet die Limits auf täglicher basis
+        /// Die bekommt die transaktion und entscheidet auf Basis des Transaktionstypen ob sie hinzugefügt oder geadded wird
         /// </summary>
         /// <param name="transactionItem"></param>
         void AddOrRemoveDailyLimit(TransactionItem transactionItem);
+
+        /// <summary>
+        /// die mindesthaltedauer nachdem ein Stop ausgelöst wurde (soll gleich am nächsten Tag wieeder ein Stop ausgelöst werden? )
+        /// </summary>
+        int MinimumStopHoldingPeriodeInDays { get; set; }
+
+        /// <summary>
+        /// Gibt zurück ab welchem Time-Lag in tagen die Positon wider ausgestoppt werden darf 
+        /// </summary>
+        /// <param name="candidate"></param>
+        /// <returns></returns>
+        bool IsBelowMinimumStopHoldingPeriod(TradingCandidate candidate);
     }
 }

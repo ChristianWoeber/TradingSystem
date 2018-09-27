@@ -112,12 +112,14 @@
     <Compile Include="Interfaces\IStopLossSettings.cs" />
     <Compile Include="Interfaces\ITemporaryPortfolio.cs" />
     <Compile Include="Interfaces\ISaveProvider.cs" />
+    <Compile Include="Trading\Candidate.cs" />
     <Compile Include="Trading\PortfolioManager\CashManager.cs" />
     <Compile Include="Interfaces\ICashManager.cs" />
     <Compile Include="Interfaces\ITransactionsHandler.cs" />
     <Compile Include="Interfaces\IPortfolio.cs" />
     <Compile Include="Interfaces\ITransactionsCacheProvider.cs" />
     <Compile Include="Interfaces\IAdjustmentProvider.cs" />
+    <Compile Include="Trading\PortfolioManager\DefaultStopLossSettings.cs" />
     <Compile Include="Trading\ScoringResult.cs" />
     <Compile Include="Interfaces\IScoringProvider.cs" />
     <Compile Include="Interfaces\IScoringResult.cs" />

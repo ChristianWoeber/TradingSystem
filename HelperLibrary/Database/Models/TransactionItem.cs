@@ -35,7 +35,7 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Der Gegenwert in EUR - Berechnet mit dem zuletzt verfügbaren Preis
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(TargetAmountEur),"Amount" })]
+        [InputMapping(KeyWords = new[] { nameof(TargetAmountEur), "Amount" })]
         [Column(Storage = "AMOUNT_EUR")]
         public decimal TargetAmountEur { get; set; }
 
@@ -83,9 +83,15 @@ namespace HelperLibrary.Database.Models
         /// </summary>
         public bool IsTemporary { get; set; }
 
+        /// <summary>
+        /// Für Debugzwecke
+        /// </summary>
+        public string Name { get; set; }
+
+
         public override string ToString()
         {
-            return $"TradeDate: {TransactionDateTime}_ID: {SecurityId}_Shares: {Shares}_Target Weight: {TargetWeight}_TransactionType: {(TransactionType)TransactionType}";
+            return $"TradeDate: {TransactionDateTime}_ID: {SecurityId}_Shares: {Shares}_Target Weight: {TargetWeight}_TransactionType: {(TransactionType)TransactionType} IsTemporary:{IsTemporary} {Name}";
         }
 
 

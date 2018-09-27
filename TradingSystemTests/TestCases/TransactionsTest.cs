@@ -127,7 +127,7 @@ namespace TradingSystemTests.TestCases
 
             var date = DateTime.Parse(asof);
             //TestCandidate erstellen
-            var testCandidate = new TradingCandidate(tesQuote, testScoringResult);
+            var testCandidate = new Candidate(tesQuote, testScoringResult);
             //transaktionen erstellen
             var transactions = TestHelper.CreateTestCollection<TransactionItem>(filename);
             //pm erstellen
@@ -135,7 +135,7 @@ namespace TradingSystemTests.TestCases
             //scoringprovider registrieren
             pm.RegisterScoringProvider(new ScoringProvider(_priceHistoryCollection));
             //testcandidaten übergeben
-            pm.PassInCandidates(new List<TradingCandidate> { testCandidate }, date);
+            pm.PassInCandidates(new List<ITradingCandidateBase> { testCandidate }, date);
 
             Assert.IsTrue(pm.CurrentPortfolio.Count() == 11, "in der Has Cash Methode stimmt etwas nicht");
         }

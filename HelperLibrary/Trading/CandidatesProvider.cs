@@ -15,10 +15,10 @@ namespace HelperLibrary.Trading
             _scoringProvider = scoring;
         }
 
-        public IEnumerable<TradingCandidate> GetCandidates(DateTime startDateInput, PriceHistoryOption option = PriceHistoryOption.PreviousItem )
+        public IEnumerable<ITradingCandidateBase> GetCandidates(DateTime startDateInput, PriceHistoryOption option = PriceHistoryOption.PreviousItem)
         {
             //init Liste mit candidaten
-            var listWithCandidates = new List<TradingCandidate>();
+            var listWithCandidates = new List<Candidate>();
 
             //ich itereriere die Collection von priceHistory
             foreach (var priceHistory in _scoringProvider.PriceHistoryStorage.Values)
@@ -29,7 +29,7 @@ namespace HelperLibrary.Trading
                     continue;
 
                 //add candidate
-                listWithCandidates.Add(new TradingCandidate(priceHistory.Get(startDateInput, option), score));
+                listWithCandidates.Add(new Candidate(priceHistory.Get(startDateInput, option), score));
             }
 
             return listWithCandidates.Count == 0

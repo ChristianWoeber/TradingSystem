@@ -3,6 +3,7 @@ using HelperLibrary.Enums;
 using HelperLibrary.Interfaces;
 using System;
 using System.Collections.Generic;
+using HelperLibrary.Calculations;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
@@ -14,98 +15,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         }
     }
 
-    public class DefaultStopLossSettings : IStopLossSettings
-    {
-
-        /// <summary>
-        /// Der Wert um den die Stücke reduzoert werden sollen, wenn das Scoring oder die Bwetertung abnimmt, Position aber noch im Portfolio bleibt
-        /// </summary>
-        public double ReductionValue => (double)1 / 2;
-
-
-        /// <summary>
-        /// Das Stop Loss Limt - der Wert wird bei Positionseröffnung gesetzt und dananch bei jedem Allokationslauf angepasst - trailing limit
-        /// Ist der 1- OpeningPrice / CurrentPrice
-        /// </summary>
-        public decimal LossLimit { get; set; }
-
-        /// <summary>
-        /// Gibt zurück ob es die aktuelle Position ausstoppt
-        /// </summary>
-        /// <param name="candidate">der Trading Candidate</param>
-        /// <param name="averagePrice">der average Preis aller Transaktionen</param>
-        /// <returns></returns>
-        public bool HasStopLoss(TradingCandidate candidate, decimal? averagePrice, ScoringResult lastScore)
-        {
-            if (candidate == null)
-                throw new ArgumentException("Der Preis darf nicht null sein");
-
-            if (!_limitDictionary.TryGetValue(candidate.Record.SecurityId, out var stopLossMeta))
-                throw new ArgumentException("An dieser Stelle muss es ein Limit geben");
-
-            var currentPrice = candidate.Record.AdjustedPrice;
-            var volatility = candidate.ScoringResult.Volatility;
-
-            //wenn der Candidat gar keinen gültigen Score mehr hat muss ich ihn
-            //natürlich zuerst kicken
-            //if (!candidate.ScoringResult.IsValid)
-            //    return true;
-
-            ////der Change mehr oder gleich von 4 Sigmas ist hau ich die Position raus
-            //if (lastScore.Score  * (1 - volatility * 5) > candidate.ScoringResult.Score)
-            //    return true;
-
-            return currentPrice <= stopLossMeta.High * (1 - volatility) || currentPrice <= averagePrice * (1 - volatility);
-        }
-
-
-        public void AddOrRemoveDailyLimit(TransactionItem transactionItem)
-        {
-            switch (transactionItem.TransactionType)
-            {
-                case (int)TransactionType.Open:
-                    {
-                        if (!_limitDictionary.ContainsKey(transactionItem.SecurityId))
-                            _limitDictionary.Add(transactionItem.SecurityId, new StopLossMeta(transactionItem.EffectiveAmountEur / transactionItem.Shares, transactionItem.TransactionDateTime));
-                        break;
-                    }
-                case (int)TransactionType.Close:
-                    _limitDictionary.Remove(transactionItem.SecurityId);
-                    break;
-            }
-        }
-
-        private readonly Dictionary<int, StopLossMeta> _limitDictionary = new Dictionary<int, StopLossMeta>();
-
-        public void UpdateDailyLimits(TransactionItem transactionItem, decimal? price, DateTime asof)
-        {
-            if (price == null)
-                throw new ArgumentException("Achtung der Preis darf nicht null sein!");
-
-            if (!_limitDictionary.TryGetValue(transactionItem.SecurityId, out var stopLossMeta))
-                _limitDictionary.Add(transactionItem.SecurityId, new StopLossMeta(price.Value, asof));
-            else
-            {
-                if (price > stopLossMeta.High)
-                {
-                    //dann gibt es ein neues High von dem aus ich die Stop Loss Grenze berechne
-                    _limitDictionary[transactionItem.SecurityId] = new StopLossMeta(price.Value, asof);
-                }
-            }
-        }
-    }
-
-    internal class StopLossMeta
-    {
-        public readonly decimal High;
-        public readonly DateTime PortfolioAsof;
-
-        public StopLossMeta(decimal price, DateTime asof)
-        {
-            High = price;
-            PortfolioAsof = asof;
-        }
-    }
 
     public class DefaultPortfolioSettings : IPortfolioSettings
     {
@@ -156,8 +65,14 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         /// <summary>
         /// ReplaceBufferPce +1 * Score dammit wird der aktuelle Score beim vergleichen mit einem anderen Kandidaten erhöht, schichte nur in Positionen um die "deutlich vielversprechender" sind
-        /// Muss 20% besser sein
         /// </summary>
-        public decimal ReplaceBufferPct { get; set; } = new decimal(0.2);
+        public decimal ReplaceBufferPct { get; set; } = new decimal(0.5);
+
+        /// <summary>
+        /// Dieser Puffer wird vom maximum der position Size abgezogen, ist der kandidat darunter wird er auf das maximum aufgestockt 
+        /// sonst ist er bereits am maximum
+        /// aktuell 5%
+        /// </summary>
+        public decimal MaximumPositionSizeBuffer { get; set; } = new decimal(0.05);
     }
 }

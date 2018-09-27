@@ -78,7 +78,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// die Methode zum Evaluieren des gesamten Portfolios
         /// </summary>
-        protected abstract IEnumerable<TradingCandidate> RankCurrentPortfolio();
+        protected abstract IEnumerable<ITradingCandidateBase> RankCurrentPortfolio();
 
         /// <summary>
         /// To be implemented in the derived class for registering the scoring Provider

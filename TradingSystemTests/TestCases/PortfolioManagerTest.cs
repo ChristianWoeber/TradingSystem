@@ -32,15 +32,18 @@ namespace TradingSystemTests.TestCases
 
         }
 
-        private static void ConfigureLogger(string name = null)
+        private static void ConfigureLogger(string namePortfolioValue = null, string nameCash = null)
         {
             var config = new NLog.Config.LoggingConfiguration();
 
-            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = name ?? "DEBUG_TEST.txt", ArchiveOldFileOnStartup = true};
+            var logfile = new NLog.Targets.FileTarget(Path.GetFileNameWithoutExtension(namePortfolioValue)) { FileName = namePortfolioValue ?? "DEBUG_TEST.txt", ArchiveOldFileOnStartup = true, MaxArchiveFiles = 2, ArchiveAboveSize = 5000000 };
+            var logfileCash = new NLog.Targets.FileTarget(Path.GetFileNameWithoutExtension(nameCash)) { FileName = nameCash ?? "DEBUG_TEST2.txt", ArchiveOldFileOnStartup = true, MaxArchiveFiles = 2, ArchiveAboveSize = 5000000 };
+
             var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
             config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
-            config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile);
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile, Path.GetFileNameWithoutExtension(namePortfolioValue));
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfileCash, Path.GetFileNameWithoutExtension(nameCash));
 
             LogManager.Configuration = config;
         }
@@ -85,7 +88,7 @@ namespace TradingSystemTests.TestCases
             var candidates = backtestHandler.GetCandidates(date);
 
             //dem Portfolio Manager die potentiellen Kandidaten übergeben
-            pm.PassInCandidates(candidates.Where(x => x.ScoringResult.IsValid)?.ToList() ?? new List<TradingCandidate>(), date);
+            pm.PassInCandidates(candidates.Where(x => x.ScoringResult.IsValid).ToList(), date);
 
             //Transaktionen speichern und im File anzeigen
             pm.TemporaryPortfolio.SaveTransactions(new TestSaveProvider(filename));
@@ -130,7 +133,7 @@ namespace TradingSystemTests.TestCases
             var candidates = candidatesProvider.GetCandidates(date);
 
             //dem Portfolio Manager die potentiellen Kandidaten übergeben
-            pm.PassInCandidates(candidates?.ToList() ?? new List<TradingCandidate>(), date);
+            pm.PassInCandidates(candidates.ToList(), date);
 
             //Transaktionen speichern und im File anzeigen
             var saveProvider = new TestSaveProvider("TempPortfolio.csv", showInFile);
@@ -151,10 +154,14 @@ namespace TradingSystemTests.TestCases
 
         }
 
-        [TestCase("01.01.2005", 14, "LongTermBacktestTransactions.csv", true, true, "Backtest_PortfolioValue_LongTerm.csv")]
-        public void SimpleBacktestTest(string startDate, int testYears, string temporaryFilename, bool showTransactions, bool clearOldFile, string logName)
+        [TestCase("01.01.2000", 5, "Transactions.csv", true, true, "PortfolioValue.csv", "Cash.csv")]
+        public void SimpleBacktestTest(string startDate, int testYears, string temporaryFilename, bool showTransactions, bool clearOldFile, string navlogName, string cashLoggerName)
         {
             //TODO : File aich auf NLOG umstellen
+            //TODO: überlegen wie ich das Risiko rausbekomme
+            //TODO: aufstocken nur nach x tagen zulassen und auch das verdrängen erst nach x tagen zulassen
+            //TODO: Kandidaten die verdrägen müssen deutlich besser sein (maybe 100% besser?)
+            //TODO: mit gui beginnen und die transaktionen als cache verwenden
 
             var filename = Path.Combine(Path.GetTempPath(), temporaryFilename);
             if (clearOldFile && File.Exists(filename))
@@ -165,7 +172,7 @@ namespace TradingSystemTests.TestCases
             }
 
             //NLog konfigurieren
-            ConfigureLogger(logName);
+            ConfigureLogger(navlogName, cashLoggerName);
 
             //datum parsen
             var date = DateTime.Parse(startDate);
@@ -185,16 +192,17 @@ namespace TradingSystemTests.TestCases
             //scoring Provider registrieren
             pm.RegisterScoringProvider(scoringProvider);
 
-            var logger = LogManager.GetLogger(logName);
-            logger.Info("ENTWICKLUNG PORTFOLIO:");
+            var navLogger = LogManager.GetLogger(Path.GetFileNameWithoutExtension(navlogName));
+            navLogger.Info("ENTWICKLUNG PORTFOLIO:");
             pm.PortfolioAsofChangedEvent += (sender, args) =>
             {
-                logger.Info($"{args.ToShortDateString()} | {pm.PortfolioValue}");
+                navLogger.Info($"{args.ToShortDateString()} | {pm.PortfolioValue}");
             };
 
+            var cashLogger = LogManager.GetLogger(Path.GetFileNameWithoutExtension(cashLoggerName));
             pm.CashHandler.CashChangedEvent += (sender, args) =>
             {
-                logger.Info($"{args :N}");
+                cashLogger.Info($"{args.ToShortDateString()} | {pm.CashHandler.Cash:C}");
             };
 
             //einen BacktestHandler erstellen
