@@ -21,7 +21,7 @@ namespace TradingSystemTests.Models
         #region Constructor
 
 
-        public TestTransactionsHandler(IEnumerable<TransactionItem> transactions)
+        public TestTransactionsHandler(IEnumerable<Transaction> transactions)
         {
             _currentPortfolio = GetCurrentPortfolio(transactions);
         }
@@ -31,7 +31,7 @@ namespace TradingSystemTests.Models
             _cacheProvider = cacheProvider;
         }
 
-        public TestTransactionsHandler(IEnumerable<TransactionItem> transactions, ITransactionsCacheProvider cacheProvider)
+        public TestTransactionsHandler(IEnumerable<Transaction> transactions, ITransactionsCacheProvider cacheProvider)
         {
             _cacheProvider = cacheProvider;
             // wenn keine items usupllied werden dann gerife ich auf den Cache zu
@@ -48,17 +48,17 @@ namespace TradingSystemTests.Models
 
         #region Index
 
-        public IEnumerable<TransactionItem> this[TransactionType key]
+        public IEnumerable<Transaction> this[TransactionType key]
         {
             get
             {
-                var transactionsTypeDic = new Dictionary<int, List<TransactionItem>>();
+                var transactionsTypeDic = new Dictionary<int, List<Transaction>>();
                 foreach (var items in _cacheProvider.TransactionsCache.Value.Values)
                 {
                     foreach (var item in items)
                     {
                         if (!transactionsTypeDic.ContainsKey(item.TransactionType))
-                            transactionsTypeDic.Add(item.TransactionType, new List<TransactionItem>());
+                            transactionsTypeDic.Add(item.TransactionType, new List<Transaction>());
 
                         transactionsTypeDic[item.TransactionType].Add(item);
                     }
@@ -68,17 +68,17 @@ namespace TradingSystemTests.Models
             }
         }
 
-        public IEnumerable<TransactionItem> this[DateTime key]
+        public IEnumerable<Transaction> this[DateTime key]
         {
             get
             {
-                var dateTimeDic = new Dictionary<DateTime, List<TransactionItem>>();
+                var dateTimeDic = new Dictionary<DateTime, List<Transaction>>();
                 foreach (var items in _cacheProvider.TransactionsCache.Value.Values)
                 {
                     foreach (var item in items)
                     {
                         if (!dateTimeDic.ContainsKey(item.TransactionDateTime))
-                            dateTimeDic.Add(item.TransactionDateTime, new List<TransactionItem>());
+                            dateTimeDic.Add(item.TransactionDateTime, new List<Transaction>());
 
                         dateTimeDic[item.TransactionDateTime].Add(item);
                     }
@@ -154,7 +154,7 @@ namespace TradingSystemTests.Models
             return averagePrice;
         }
 
-        public TransactionItem GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
+        public Transaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
         {
             if (transactionType == null)
                 return CurrentPortfolio?[secId];
@@ -176,7 +176,7 @@ namespace TradingSystemTests.Models
         /// <param name="activeOnly">ddas Falg das angibt ob nur offenen transaktonen zurückgegeben werden sollen</param>
         /// <param name="filter">der optionale Filter</param>
         /// <returns></returns>
-        public IEnumerable<TransactionItem> Get(int secId, bool activeOnly = false, Predicate<TransactionItem> filter = null)
+        public IEnumerable<Transaction> Get(int secId, bool activeOnly = false, Predicate<Transaction> filter = null)
         {
             if (!_cacheProvider.TransactionsCache.Value.TryGetValue(secId, out var transactionItems))
                 return null;
@@ -219,10 +219,10 @@ namespace TradingSystemTests.Models
         #region Get Current Portfolio
 
 
-        private IPortfolio GetCurrentPortfolio(IEnumerable<List<TransactionItem>> cacheItems)
+        private IPortfolio GetCurrentPortfolio(IEnumerable<List<Transaction>> cacheItems)
         {
             //flatten the cacheItems
-            var items = new List<TransactionItem>();
+            var items = new List<Transaction>();
             foreach (var item in cacheItems)
                 items.AddRange(item);
 
@@ -247,13 +247,13 @@ namespace TradingSystemTests.Models
             return GetCurrentPortfolio(_cacheProvider.TransactionsCache.Value.Values);
         }
 
-        private IPortfolio GetCurrentPortfolio(IEnumerable<TransactionItem> transactionItems)
+        private IPortfolio GetCurrentPortfolio(IEnumerable<Transaction> transactionItems)
         {
             if (transactionItems == null)
                 return null;
 
             //temporäres dictionary erstellen
-            var dic = new Dictionary<int, TransactionItem>();
+            var dic = new Dictionary<int, Transaction>();
 
             //gruppuieren nach SecID => wenn der Count genau 1 ist kann ich sie einfach adden sonst muss ich summieren
             foreach (var secIdGrp in transactionItems.GroupBy(x => x.SecurityId))
@@ -267,7 +267,7 @@ namespace TradingSystemTests.Models
                         continue;
 
                     //sumItem erstellen
-                    var sumItem = new TransactionItem();
+                    var sumItem = new Transaction();
 
                     // nur nicht gecancellte Transaktionen berücksichtigen
                     foreach (var item in secIdGrp.Where(x => x.Cancelled != 1))

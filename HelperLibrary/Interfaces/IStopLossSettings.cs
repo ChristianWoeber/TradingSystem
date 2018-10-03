@@ -32,13 +32,13 @@ namespace HelperLibrary.Interfaces
         /// <param name="transactionItem"></param>
         /// <param name="price"></param>
         /// <param name="portfolioAsof"></param>
-        void UpdateDailyLimits(TransactionItem transactionItem, decimal? price, DateTime portfolioAsof);
+        void UpdateDailyLimits(Transaction transactionItem, decimal? price, DateTime portfolioAsof);
 
         /// <summary>
         /// Die bekommt die transaktion und entscheidet auf Basis des Transaktionstypen ob sie hinzugefügt oder geadded wird
         /// </summary>
         /// <param name="transactionItem"></param>
-        void AddOrRemoveDailyLimit(TransactionItem transactionItem);
+        void AddOrRemoveDailyLimit(Transaction transactionItem);
 
         /// <summary>
         /// die mindesthaltedauer nachdem ein Stop ausgelöst wurde (soll gleich am nächsten Tag wieeder ein Stop ausgelöst werden? )

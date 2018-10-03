@@ -1,11 +1,13 @@
 ﻿using HelperLibrary.Database.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using HelperLibrary.Extensions;
 using HelperLibrary.Interfaces;
 using HelperLibrary.Enums;
+using HelperLibrary.Parsing;
 using JetBrains.Annotations;
 
 namespace HelperLibrary.Trading.PortfolioManager
@@ -27,6 +29,8 @@ namespace HelperLibrary.Trading.PortfolioManager
             //Register Events
             PortfolioAsofChangedEvent += OnPortfolioAsOfChanged;
             PositionChangedEvent += OnPositionChanged;
+
+            //LockupHandler = new LockupPeriodeHandler(this, TransactionsHandler);
         }
 
         protected event EventHandler<PortfolioManagerEventArgs> PositionChangedEvent;
@@ -46,7 +50,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Das aktuelle Portfolio (alle Transaktionen die nicht geschlossen sind)
         /// </summary>
-        public IEnumerable<TransactionItem> CurrentPortfolio => TransactionsHandler.CurrentPortfolio;
+        public IEnumerable<Transaction> CurrentPortfolio => TransactionsHandler.CurrentPortfolio;
 
         /// <summary>
         /// EventCallback wird gefeuert wenn sich das asof Datum erhöht
@@ -95,9 +99,9 @@ namespace HelperLibrary.Trading.PortfolioManager
             //Den Bewertungszeitpunkt setzen      
             PortfolioAsof = asof;
 
-            var candidates = candidatesBase.Select(x => new TradingCandidate(x, TransactionsHandler, PortfolioAsof)).ToList();
+            var candidates = candidatesBase.Select(x => new TradingCandidate(x, TransactionsHandler, this)).ToList();
             //das bestehenden Portfolio evaluieren und mit dem neuen Score in die Candidatenliste einfügen 
-            candidates.AddRange(RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, PortfolioAsof, true)));
+            candidates.AddRange(RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, this, true)));
 
             //Nur wenn es bereits ein CurrentPortfolio gibt und an TradingTagen
             if (TransactionsHandler.CurrentPortfolio.IsInitialized && PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay)
@@ -143,6 +147,10 @@ namespace HelperLibrary.Trading.PortfolioManager
                     //es wird nur an Handelstagen aufgestockt
                     if (PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay && candidate.HasBetterScoring)
                     {
+                        //wird nur aufgestockt wenn er lang genug gehalten wurde
+                        if (IsBelowMinimumHoldingPeriode(candidate))
+                            return;
+
                         AdjustTradingCandidateBuy(candidate.CurrentWeight, candidate);
                     }
                     //dann ist der aktuelle Score gefallen
@@ -195,10 +203,6 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         private void AdjustTradingCandidateBuy(decimal currentWeight, TradingCandidate candidate)
         {
-            //wird nur aufgestockt wenn er lang genug gehalten wurde
-            if (IsBelowMinimumHoldingPeriode(candidate))
-                return;
-
             //wird nicht mehr aufgestockt bereits am maximum
             //der nächst bessere Candidate wird berücksichtigt
             if (currentWeight > PortfolioSettings.MaximumPositionSize - PortfolioSettings.MaximumPositionSizeBuffer)
@@ -403,7 +407,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                     {
                         var current = investedToAdjust[i];
                         //sicherheitshalber nochmal checken ob nicht im temporären portfolio
-                        if(TemporaryPortfolio.IsTemporary(current.SecurityId))
+                        if (TemporaryPortfolio.IsTemporary(current.SecurityId))
                             continue;
                         current.TransactionType = TransactionType.Changed;
                         if (AdjustTemporaryPortfolioToCashPuffer(CashHandler.Cash, current))
@@ -412,7 +416,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
                     if (CashHandler.Cash < 0)
                     {
-                        
+
                     }
                 }
             }
@@ -423,17 +427,33 @@ namespace HelperLibrary.Trading.PortfolioManager
         }
 
 
-        private bool IsBelowMinimumHoldingPeriode(TradingCandidate currentWorstInvestedCandidate)
+        private bool IsBelowMinimumHoldingPeriode(TradingCandidate candidate)
         {
-            
-            //immer das opening holen
-            var openingItem = TransactionsHandler.GetSingle(currentWorstInvestedCandidate.Record.SecurityId, TransactionType.Open);
+            var lastTransaction = candidate.LastTransaction;
+            if (candidate.IsBelowStopp)
+            {
+                lastTransaction = TransactionsHandler.GetSingle(candidate.Record.SecurityId, TransactionType.Open, true);
+            }
+            else
+            {
+                switch ((TransactionType)lastTransaction.TransactionType)
+                {
+                    case TransactionType.Close:
+                    case TransactionType.Open:
+                    case TransactionType.Unknown:
+                        lastTransaction = TransactionsHandler.GetSingle(candidate.Record.SecurityId, TransactionType.Open);
+                        break;
+                    case TransactionType.Changed:
+                        lastTransaction = TransactionsHandler.GetSingle(candidate.Record.SecurityId, TransactionType.Changed);
+                        break;
+                }
+            }
 
-            if (openingItem == null)
+            if (lastTransaction == null)
                 return false;
 
             //wenn die aktuelle Haltedauer kürzer ist als das minimum der Strategie, dann probier ich gegen den nächsten zu tauschen
-            return (PortfolioAsof - openingItem.TransactionDateTime).Days < PortfolioSettings.MinimumHoldingPeriodeInDays;
+            return (PortfolioAsof - lastTransaction.TransactionDateTime).Days < PortfolioSettings.MinimumHoldingPeriodeInDays;
         }
 
         protected override IEnumerable<ITradingCandidateBase> RankCurrentPortfolio()
@@ -496,7 +516,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         private void AdjustTemoraryPosition(TradingCandidate candidate)
         {
-            TransactionItem current = null;
+            Transaction current = null;
             if (candidate.IsInvested)
                 current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
 
@@ -525,7 +545,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public void AddToTemporaryPortfolio(TradingCandidate candidate)
         {
-            TransactionItem current = null;
+            Transaction current = null;
             if (candidate.IsInvested)
                 current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
 
@@ -550,7 +570,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
             var effectiveWeight = CalculateEffectiveWeight(effectiveAmountEur);
 
-            TransactionItem transaction;
+            Transaction transaction;
             switch (candidate.TransactionType)
             {
                 case TransactionType.Open:
@@ -604,9 +624,9 @@ namespace HelperLibrary.Trading.PortfolioManager
             return Math.Round(PortfolioValue * candidate.TargetWeight, 4);
         }
 
-        private TransactionItem CreateTransaction(TradingCandidate candidate, decimal targetAmount, int targetShares, decimal effectiveAmountEur, decimal effectiveWeight)
+        private Transaction CreateTransaction(TradingCandidate candidate, decimal targetAmount, int targetShares, decimal effectiveAmountEur, decimal effectiveWeight)
         {
-            return new TransactionItem
+            return new Transaction
             {
                 Shares = targetShares,
                 TargetAmountEur = targetAmount,
@@ -660,6 +680,9 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             //die Allokation to Risk berechnen
             AllocationToRisk = Math.Round(sumInvested, 4) / PortfolioValue;
+            
+            //log Value
+            //SimpleTextParser.AppendToFile(new List<PortfolioValuation> {new PortfolioValuation(this) },PortfolioSettings.LoggingPath);
         }
 
         /// <summary>
@@ -675,9 +698,9 @@ namespace HelperLibrary.Trading.PortfolioManager
 
     public class PortfolioManagerEventArgs
     {
-        public TransactionItem Transaction { get; }
+        public Transaction Transaction { get; }
 
-        public PortfolioManagerEventArgs(TransactionItem transaction)
+        public PortfolioManagerEventArgs(Transaction transaction)
         {
             Transaction = transaction;
         }

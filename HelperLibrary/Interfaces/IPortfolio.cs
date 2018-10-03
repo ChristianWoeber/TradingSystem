@@ -7,14 +7,14 @@ namespace HelperLibrary.Interfaces
     /// <summary>
     /// Das aktuelle Poertfolio, das auch per Indexer dusucht werden kann
     /// </summary>
-    public interface IPortfolio : IEnumerable<TransactionItem>
+    public interface IPortfolio : IEnumerable<Transaction>
     {
         /// <summary>
         /// gibt das TransactionItem auf Basis der Security Id zurück
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        TransactionItem this[int key] { get; }
+        Transaction this[int key] { get; }
 
 
         /// <summary>

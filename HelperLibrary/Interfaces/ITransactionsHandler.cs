@@ -63,7 +63,7 @@ namespace HelperLibrary.Interfaces
         /// <param name="transactionType">der Transaktionstype</param>
         /// <param name="getLatest">flag ob das aktuellste item zurückgegebne werden soll</param>
         /// <returns></returns>
-        TransactionItem GetSingle(int secId, TransactionType? transactionType, bool getLatest = true);
+        Transaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true);
 
         /// <summary>
         /// gibt die TransactionItems zurück
@@ -73,7 +73,7 @@ namespace HelperLibrary.Interfaces
         /// die noch nicht geschlossen wurden, zurückgegeben wernden sollen</param>
         /// <param name="filter">der optionale Filter der mit gegeben werden kann</param>
         /// <returns></returns>
-        IEnumerable<TransactionItem> Get(int secId, bool activeOnly = false, Predicate<TransactionItem> filter = null);
+        IEnumerable<Transaction> Get(int secId, bool activeOnly = false, Predicate<Transaction> filter = null);
 
         /// <summary>
         /// Mehtode um den Transaktionsspeicher upzudaten
@@ -86,6 +86,6 @@ namespace HelperLibrary.Interfaces
         /// <param name="scoringProvider"></param>
         void RegisterScoringProvider(IScoringProvider scoringProvider);
 
-
+        IPortfolio GetCurrentHoldings(DateTime asof);
     }
 }

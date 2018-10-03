@@ -26,12 +26,10 @@ namespace HelperLibrary.Interfaces
         /// </summary>
         decimal CashPufferSize { get; }
 
-
         /// <summary>
         /// der Handelstag, an dem das Portfolio immer neu allokiert wird
         /// </summary>
         DayOfWeek TradingDay { get; set; }
-
 
         /// <summary>
         /// das Trading Interval wie of gehandelt wird
@@ -63,5 +61,7 @@ namespace HelperLibrary.Interfaces
         /// sonst ist er bereits am maximum
         /// </summary>
         decimal MaximumPositionSizeBuffer { get; set; }
+
+        string LoggingPath { get; set; }
     }
 }

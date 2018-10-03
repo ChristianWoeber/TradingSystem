@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateTestDataConsole", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingSystemTests", "TradingSystemTests\TradingSystemTests.csproj", "{DC06B12E-FCBB-4E6E-AABD-44F5EB32D5B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trading.UI.Wpf", "Trading.UI.Wpf\Trading.UI.Wpf.csproj", "{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{DC06B12E-FCBB-4E6E-AABD-44F5EB32D5B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC06B12E-FCBB-4E6E-AABD-44F5EB32D5B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC06B12E-FCBB-4E6E-AABD-44F5EB32D5B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

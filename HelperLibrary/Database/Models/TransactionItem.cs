@@ -5,7 +5,7 @@ using HelperLibrary.Enums;
 
 namespace HelperLibrary.Database.Models
 {
-    public class TransactionItem
+    public class Transaction
     {
 
         /// <summary>

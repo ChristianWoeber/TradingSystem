@@ -64,7 +64,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             UpdateLastStops(hasStop, candidate);
 
             //wenn true dann setzte ich gleich das Flag beim Candidate
-            return hasStop /*? candidate.HasStopp = true : candidate.HasStopp = false*/;
+            return hasStop ? candidate.IsBelowStopp = true : candidate.IsBelowStopp = false;
         }
 
         private void UpdateLastStops(bool hasStop, TradingCandidate candidate)
@@ -86,11 +86,13 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             var days = (candidate.Record.Asof - lastStopDateTime).Days;
 
+            if (days == 0)
+                return false;
             //gebe nur true zurück wenn es schon länger als x Tage her ist, dass es die Positon ausgestoppt hat
-            return days <= MinimumStopHoldingPeriodeInDays || days == 0;
+            return days >= MinimumStopHoldingPeriodeInDays;
         }
 
-        public void AddOrRemoveDailyLimit(TransactionItem transactionItem)
+        public void AddOrRemoveDailyLimit(Transaction transactionItem)
         {
             switch (transactionItem.TransactionType)
             {
@@ -108,7 +110,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
 
 
-        public void UpdateDailyLimits(TransactionItem transactionItem, decimal? price, DateTime asof)
+        public void UpdateDailyLimits(Transaction transactionItem, decimal? price, DateTime asof)
         {
             if (price == null)
                 throw new ArgumentException("Achtung der Preis darf nicht null sein!");

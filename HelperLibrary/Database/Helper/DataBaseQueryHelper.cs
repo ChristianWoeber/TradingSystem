@@ -151,7 +151,7 @@ namespace HelperLibrary.Database
             }
         }
 
-        public static void UpdateOrStoreTransaction(TransactionItem transaction, bool testMode = false)
+        public static void UpdateOrStoreTransaction(Transaction transaction, bool testMode = false)
         {
             if (testMode)
             {
@@ -162,11 +162,11 @@ namespace HelperLibrary.Database
             }
         }
 
-        public static IEnumerable<TransactionItem> GetCurrentPortfolio()
+        public static IEnumerable<Transaction> GetCurrentPortfolio()
         {
             using (SQLCmd.Connection = DataBaseFactory.Create(new MySqlConnection()))
             {
-                return SQLCmd.Call().Procedure("getCurrentPortfolio").QueryObjects<TransactionItem>();
+                return SQLCmd.Call().Procedure("getCurrentPortfolio").QueryObjects<Transaction>();
             }
         }
 

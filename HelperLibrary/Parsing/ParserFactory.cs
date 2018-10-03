@@ -129,7 +129,7 @@ namespace HelperLibrary.Parsing
                                     if (value == "null" || string.IsNullOrEmpty(value))
                                     {
                                         item.SetterFunc(obj, default(T));
-                                       //insertToList = false;
+                                        //insertToList = false;
                                         //break;
                                     }
 
@@ -150,7 +150,7 @@ namespace HelperLibrary.Parsing
                             }
 
                             //if (insertToList)
-                                lsReturn.Add(obj);
+                            lsReturn.Add(obj);
                             break;
                         }
                     }
@@ -205,7 +205,7 @@ namespace HelperLibrary.Parsing
             {
                 foreach (Match match in Regex.Matches(input, @"\d\d?\/\d\d?\/\d\d\d\d"))
                 {
-                    if (DateTime.TryParse(match.Value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var date))
+                    if (DateTime.TryParse(match.Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var date))
                     {
                         return date;
                     }
@@ -233,34 +233,29 @@ namespace HelperLibrary.Parsing
 
         public static void AppendToFile<T>(IEnumerable<T> items, string path)
         {
-            var properties = typeof(T).GetProperties().Where(x => x.GetCustomAttribute<InputMapping>() != null).ToList();
-
-            //ich hol mir die Header über die Linq aggregate Methode
-            //vorher auf den Name ein select
-            var header = properties
-                .Select(x => x.Name)
-                .Aggregate((a, b) => a + DELIMITER + b);
+            var properties = typeof(T).GetProperties().Where(x => x.GetCustomAttribute<InputMapping>() != null)
+                .ToList();
 
             var lines = File.ReadAllLines(path);
 
             var content = items.ToList();
             if (lines.Length <= 0)
+                WriteToFile(content, path, properties);           
+            else
             {
-                WriteToFile(content, path, properties);
-                return;
-            }
-
-            using (var writer = File.AppendText(path))
-            {
-                foreach (var item in content)
+                using (var writer = File.AppendText(path))
                 {
-                    var row = properties
-                        .Select(p => p.GetValue(item))
-                        .Select(x => IsNumber(x) ? Convert.ToString(x, CultureInfo.InvariantCulture) : Convert.ToString(x, CultureInfo.CurrentCulture) ?? "null")
-                        .Aggregate((a, b) => a + DELIMITER + b);
+                    foreach (var item in content)
+                    {
+                        var row = properties
+                            .Select(p => p.GetValue(item))
+                            .Select(x => IsNumber(x) ? Convert.ToString(x, CultureInfo.InvariantCulture) : Convert.ToString(x, CultureInfo.CurrentCulture) ?? "null")
+                            .Aggregate((a, b) => a + DELIMITER + b);
 
-                    writer.WriteLine(row);
+                        writer.WriteLine(row);
+                    }
                 }
+
             }
         }
 

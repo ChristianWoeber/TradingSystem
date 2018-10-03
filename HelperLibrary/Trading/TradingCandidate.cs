@@ -1,8 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using HelperLibrary.Database.Interfaces;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Enums;
 using HelperLibrary.Interfaces;
+using JetBrains.Annotations;
 
 namespace HelperLibrary.Trading
 {
@@ -13,30 +16,43 @@ namespace HelperLibrary.Trading
         IScoringResult ScoringResult { get; }
     }
 
+    public interface ILockupHandler
+    {
+        
+    }
+
     public class TradingCandidate
     {
         private readonly ITradingCandidateBase _tradingCandidateBase;
 
         internal int SecurityId => _tradingCandidateBase.Record.SecurityId;
 
-        public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, DateTime asof, bool isInvested = false)
+        public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, PortfolioManager.PortfolioManager pm, bool isInvested = false)
         {
             _tradingCandidateBase = tradingCandidateBase;
-
+           
             //Initialisierungen
             IsInvested = isInvested;
+            PortfolioAsof = pm.PortfolioAsof;
+
             Record = _tradingCandidateBase.Record;
             ScoringResult = _tradingCandidateBase.ScoringResult;
-            AveragePrice = transactionsHandler.GetAveragePrice(SecurityId, asof) ?? Record.AdjustedPrice;
+            AveragePrice = transactionsHandler.GetAveragePrice(SecurityId, PortfolioAsof) ?? Record.AdjustedPrice;
             LastTransaction = transactionsHandler.GetSingle(SecurityId, null);
             CurrentWeight = transactionsHandler.GetWeight(SecurityId) ?? 0;
+
             //Das Target Weight wird auch mit dem current initialisiert
-            TargetWeight = CurrentWeight;
+            TargetWeight = CurrentWeight;         
         }
+
+        public ILockupHandler LockupHandler { get; set; }
+
+        public DateTime PortfolioAsof { get; set; }
+
         /// <summary>
         /// die letzte Transaktion
         /// </summary>
-        public TransactionItem LastTransaction { get; set; }
+        public Transaction LastTransaction { get; set; }
 
         /// <summary>
         /// der aktuelle Score
@@ -106,11 +122,55 @@ namespace HelperLibrary.Trading
         /// </summary>
         public TransactionType TransactionType { get; set; }
 
+        /// <summary>
+        /// Gibt an ob die Position unter dem Limit ist (die exekution des stopss kann aber aufgrund von lockups noch nach hinten verschoben werden)
+        /// </summary>
+        public bool IsBelowStopp { get; set; }
+
+
         public override string ToString()
         {
             return $"{Name} | Score: {Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} | CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring}";
         }
     }
 
+    internal class LockupPeriodeHandler : ILockupHandler
+    {
+        private readonly TradingCandidate _tradingCandidate;
+        private readonly IPortfolioSettings _pmPortfolioSettings;  
 
+        public LockupPeriodeHandler(TradingCandidate tradingCandidate, IPortfolioSettings pmPortfolioSettings)
+        {
+            _tradingCandidate = tradingCandidate;
+            _pmPortfolioSettings = pmPortfolioSettings;
+           
+        }
+
+        public TransactionType Type
+        {
+            get => _tradingCandidate.TransactionType;
+            set
+            {
+                if (value == _tradingCandidate.TransactionType)
+                    return;
+                _tradingCandidate.TransactionType = value;
+                OnTransactionTypeChanged();
+            }
+        }
+
+        private void OnTransactionTypeChanged()
+        {
+            switch (Type)
+            {
+                case TransactionType.Open:
+
+                    break;
+               
+                case TransactionType.Changed:
+                    break;
+      
+            }
+        }
+
+    }
 }

@@ -28,7 +28,7 @@ namespace TradingSystemTests.TestCases
         [TestCase("GetCurrentTransactionsTest")]
         public void GetCurrentTransactionsTest(string filename)
         {
-            var transactions = TestHelper.CreateTestCollection<TransactionItem>(filename);
+            var transactions = TestHelper.CreateTestCollection<Transaction>(filename);
             var pm = new PortfolioManager(null, null, new TestTransactionsHandler(transactions));
 
             Assert.IsTrue(pm.CurrentPortfolio.Count() == 11);
@@ -37,7 +37,7 @@ namespace TradingSystemTests.TestCases
         [TestCase("GetCurrentTransactionsTest")]
         public void GetScoringfromCurrentTransactionsTest(string filename)
         {
-            var transactions = TestHelper.CreateTestCollection<TransactionItem>(filename);
+            var transactions = TestHelper.CreateTestCollection<Transaction>(filename);
             var pm = new PortfolioManager(null, null, new TestTransactionsHandler(transactions));
             var scoreProvider = new ScoringProvider(_priceHistoryCollection);
             pm.RegisterScoringProvider(scoreProvider);
@@ -60,9 +60,9 @@ namespace TradingSystemTests.TestCases
             Assert.IsTrue(weight.Value == new decimal(0.1));
         }
 
-        private Dictionary<int, List<TransactionItem>> LoadHistory(string filename)
+        private Dictionary<int, List<Transaction>> LoadHistory(string filename)
         {
-            return TestHelper.CreateTestCollection<TransactionItem>(filename).ToDictionaryList(x => x.SecurityId);
+            return TestHelper.CreateTestCollection<Transaction>(filename).ToDictionaryList(x => x.SecurityId);
         }
 
 
@@ -80,7 +80,7 @@ namespace TradingSystemTests.TestCases
         [TestCase("GetTransactionTest", 10, null)]
         public void GetTransactionItemTest(string filename, int secId, TransactionType? type, bool? getlatest = true)
         {
-            var transactions = TestHelper.CreateTestCollection<TransactionItem>(filename);
+            var transactions = TestHelper.CreateTestCollection<Transaction>(filename);
             var pm = new PortfolioManager(null, null, new TestTransactionsHandler(transactions, new TransactionsCacheProviderTest(() => LoadHistory(filename))));
             var item = pm.TransactionsHandler.GetSingle(secId, type, getlatest ?? true);
 
@@ -129,7 +129,7 @@ namespace TradingSystemTests.TestCases
             //TestCandidate erstellen
             var testCandidate = new Candidate(tesQuote, testScoringResult);
             //transaktionen erstellen
-            var transactions = TestHelper.CreateTestCollection<TransactionItem>(filename);
+            var transactions = TestHelper.CreateTestCollection<Transaction>(filename);
             //pm erstellen
             var pm = new PortfolioManager(null, null, new TestTransactionsHandler(transactions));
             //scoringprovider registrieren
@@ -144,7 +144,7 @@ namespace TradingSystemTests.TestCases
         [TestCase("GetCurrentTransactionsTest", 1)]
         public void IsActiveInvestmentTest(string filename, int secId)
         {
-            var transactions = TestHelper.CreateTestCollection<TransactionItem>(filename);
+            var transactions = TestHelper.CreateTestCollection<Transaction>(filename);
             var pm = new PortfolioManager(null, null, new TestTransactionsHandler(transactions));
             var isActive = pm.TransactionsHandler.IsActiveInvestment(secId);
 
@@ -154,7 +154,7 @@ namespace TradingSystemTests.TestCases
         [TestCase("GetCurrentTransactionsTest", 10)]
         public void GetCurrentWeightTest(string filename, int secid)
         {
-            var transactions = TestHelper.CreateTestCollection<TransactionItem>(filename);
+            var transactions = TestHelper.CreateTestCollection<Transaction>(filename);
             var pm = new PortfolioManager(null, null, new TestTransactionsHandler(transactions));
             var weight = pm.TransactionsHandler.GetWeight(secid);
 
@@ -170,7 +170,7 @@ namespace TradingSystemTests.TestCases
         [TestCase("GetCurrentTransactionsTest", "04.10.2017", 10)]
         public void GetCurrentPriceTest(string filename, string asof, int secId)
         {
-            var transactions = TestHelper.CreateTestCollection<TransactionItem>(filename);
+            var transactions = TestHelper.CreateTestCollection<Transaction>(filename);
             var pm = new PortfolioManager(null, null, new TestTransactionsHandler(transactions, new TransactionsCacheProviderTest(() => LoadHistory(filename))));
 
             var price = pm.TransactionsHandler.GetPrice(secId, DateTime.Parse(asof));
@@ -187,7 +187,7 @@ namespace TradingSystemTests.TestCases
         [TestCase("GetCurrentTransactionsTest", "04.10.2017", 10)]
         public void GetAveragePriceTest(string filename, string asof, int secId)
         {
-            var transactions = TestHelper.CreateTestCollection<TransactionItem>(filename);
+            var transactions = TestHelper.CreateTestCollection<Transaction>(filename);
             var pm = new PortfolioManager(null, null, new TestTransactionsHandler(transactions, new TransactionsCacheProviderTest(() => LoadHistory(filename))));
             pm.RegisterScoringProvider(new ScoringProvider(_priceHistoryCollection));
 

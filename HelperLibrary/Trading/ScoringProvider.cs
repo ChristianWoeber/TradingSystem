@@ -25,22 +25,22 @@ namespace HelperLibrary.Trading
         }
 
 
-        public ScoringResult GetScore(int secId, DateTime date)
+        public IScoringResult GetScore(int secId, DateTime date)
         {
             if (!PriceHistoryStorage.TryGetValue(secId, out var priceHistory))
-                return new ScoringResult();
+                return new ConservativeScoringResult();
 
             //Das Datum des NAVs der in der PriceHistoryCollection gefunden wurde
             var priceHistoryRecordAsOf = priceHistory.Get(date, PriceHistoryOption.NextItem)?.Asof;
             if (priceHistoryRecordAsOf == null)
-                return new ScoringResult();
+                return new ConservativeScoringResult();
 
             //die 250 Tages Performance
             var performance250 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-250), date, null, PriceHistoryOption.NextItem);
 
             //Wenn keine Berechungn der 250 Tages Performance möglich ist, returne ich false
             if (performance250 == -1)
-                return new ScoringResult();
+                return new ConservativeScoringResult();
 
             ////Wenn es in den 250 Tagen ein Low gab, dass niederiger als die Vola ist, return ich ebenfalls false
             //if (priceHistory.Calc.ScanRangeNoLow(date.AddDays(-250), date))
@@ -51,17 +51,17 @@ namespace HelperLibrary.Trading
             var performance30 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-30), date, null, PriceHistoryOption.NextItem);
             var performance90 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-90), date, null, PriceHistoryOption.NextItem);
             var volatility = priceHistory.Calc.GetVolatilityMonthly(date.AddDays(-250), date, null, PriceHistoryOption.NextItem);
-            var maxDrawDown = priceHistory.Calc.GetMaximumDrawdown(date.AddDays(-250), date, CaclulationOption.Adjusted);
+            //var maxDrawDown = priceHistory.Calc.GetMaximumDrawdown(date.AddDays(-250), date, CaclulationOption.Adjusted);
 
             // Das Ergebnis returnen
-            return new ScoringResult
+            return new ConservativeScoringResult
             {
                 Asof = priceHistoryRecordAsOf.Value,
                 Performance10 = performance10,
                 Performance30 = performance30,
                 Performance90 = performance90,
                 Performance250 = performance250,
-                MaxDrawdown = maxDrawDown,
+                //MaxDrawdown = maxDrawDown,
                 Volatility = volatility,
             };
         }

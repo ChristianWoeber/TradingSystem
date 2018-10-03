@@ -12,7 +12,7 @@ namespace HelperLibrary.Interfaces
         /// <summary>
         /// der Speicher mit den Transaktionen, nach SECID und der Liste von Transaktionen zu dem Wertpapier
         /// </summary>
-        Lazy<Dictionary<int, List<TransactionItem>>> TransactionsCache { get; }
+        Lazy<Dictionary<int, List<Transaction>>> TransactionsCache { get; }
 
         /// <summary>
         /// Methode um den Sopeicher upzudaten

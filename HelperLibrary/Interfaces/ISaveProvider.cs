@@ -5,6 +5,6 @@ namespace HelperLibrary.Interfaces
 {
     public interface ISaveProvider
     {
-        void Save(IEnumerable<TransactionItem> items);
+        void Save(IEnumerable<Transaction> items);
     }
 }

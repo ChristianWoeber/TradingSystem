@@ -12,7 +12,7 @@ namespace HelperLibrary.Trading.PortfolioManager
     /// <summary>
     /// Hilfsklasse für das Schreiben und lesen der kompletten Transaktionen
     /// </summary>
-    public class TransactionsWrapper : IEnumerable<TransactionItem>, ITransactionsHandler
+    public class TransactionsWrapper : IEnumerable<Transaction>, ITransactionsHandler
     {
         #region private
 
@@ -47,17 +47,17 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #region Index
 
-        public IEnumerable<TransactionItem> this[DateTime key]
+        public IEnumerable<Transaction> this[DateTime key]
         {
             get
             {
-                var dateTimeDic = new Dictionary<DateTime, List<TransactionItem>>();
+                var dateTimeDic = new Dictionary<DateTime, List<Transaction>>();
                 foreach (var items in _transactionsCacheProvider.TransactionsCache.Value.Values)
                 {
                     foreach (var item in items)
                     {
                         if (!dateTimeDic.ContainsKey(item.TransactionDateTime))
-                            dateTimeDic.Add(item.TransactionDateTime, new List<TransactionItem>());
+                            dateTimeDic.Add(item.TransactionDateTime, new List<Transaction>());
 
                         dateTimeDic[item.TransactionDateTime].Add(item);
                     }
@@ -68,7 +68,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         }
 
 
-        public IEnumerable<TransactionItem> this[int key] => _transactionsCacheProvider.TransactionsCache.Value.ContainsKey(key)
+        public IEnumerable<Transaction> this[int key] => _transactionsCacheProvider.TransactionsCache.Value.ContainsKey(key)
             ? _transactionsCacheProvider.TransactionsCache.Value[key]
             : null;
 
@@ -111,12 +111,12 @@ namespace HelperLibrary.Trading.PortfolioManager
             throw new NotImplementedException();
         }
 
-        public TransactionItem GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
+        public Transaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<TransactionItem> Get(int secId, bool activeOnly = false, Predicate<TransactionItem> filter = null)
+        public IEnumerable<Transaction> Get(int secId, bool activeOnly = false, Predicate<Transaction> filter = null)
         {
             throw new NotImplementedException();
         }
@@ -129,9 +129,9 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Ich gebe immer die kompletten Transaktionen, sortiert nach Datum zurück
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<TransactionItem> GetEnumerator()
+        public IEnumerator<Transaction> GetEnumerator()
         {
-            var ls = new List<TransactionItem>();
+            var ls = new List<Transaction>();
             foreach (var listValue in _transactionsCacheProvider.TransactionsCache.Value.Values)
                 ls.AddRange(listValue);
 
@@ -153,6 +153,11 @@ namespace HelperLibrary.Trading.PortfolioManager
             throw new NotImplementedException();
         }
 
+        public IPortfolio GetCurrentHoldings(DateTime asof)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region NestedClasses
@@ -161,15 +166,15 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             public DatabaseTransactionsProvider()
             {
-                TransactionsCache = new Lazy<Dictionary<int, List<TransactionItem>>>(LoadData);
+                TransactionsCache = new Lazy<Dictionary<int, List<Transaction>>>(LoadData);
             }
 
-            private Dictionary<int, List<TransactionItem>> LoadData()
+            private Dictionary<int, List<Transaction>> LoadData()
             {
                 throw new NotImplementedException();
             }
 
-            public Lazy<Dictionary<int, List<TransactionItem>>> TransactionsCache { get; }
+            public Lazy<Dictionary<int, List<Transaction>>> TransactionsCache { get; }
             public void UpdateCache()
             {
                 throw new NotImplementedException();
@@ -178,18 +183,18 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         internal class Portfolio : IPortfolio
         {
-            private readonly List<TransactionItem> _currentPortfolio;
+            private readonly List<Transaction> _currentPortfolio;
             private readonly DateTime? _lastAsOf;
 
             public Portfolio()
             {
-                _currentPortfolio = new List<TransactionItem>(DataBaseQueryHelper.GetCurrentPortfolio());
+                _currentPortfolio = new List<Transaction>(DataBaseQueryHelper.GetCurrentPortfolio());
                 _lastAsOf = _currentPortfolio.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault()?
                     .TransactionDateTime;
 
             }
 
-            public TransactionItem this[int key]
+            public Transaction this[int key]
             {
                 get
                 {
@@ -212,7 +217,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             public bool IsInitialized => _lastAsOf != null;
 
-            public IEnumerator<TransactionItem> GetEnumerator()
+            public IEnumerator<Transaction> GetEnumerator()
             {
                 return _currentPortfolio.GetEnumerator();
             }

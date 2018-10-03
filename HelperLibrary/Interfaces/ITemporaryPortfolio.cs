@@ -10,21 +10,21 @@ namespace HelperLibrary.Interfaces
     /// <summary>
     /// Die Klasse die das Interface implementiert soll im Enumerator gleich die summierten Items zurückgeben 
     /// </summary>
-    public interface ITemporaryPortfolio : IEnumerable<TransactionItem>
+    public interface ITemporaryPortfolio : IEnumerable<Transaction>
     {
         /// <summary>
         /// Methode zum Adden
         /// </summary>
         /// <param name="item">die konkrete Transaktion</param>
         /// <param name="isTemporary"></param>
-        void Add(TransactionItem item, bool isTemporary = true);
+        void Add(Transaction item, bool isTemporary = true);
 
         /// <summary>
         /// Methode zum Adden
         /// </summary>
         /// <param name="items">die konkreten Transaktionen</param>
         /// <param name="isTemporary"></param>
-        void AddRange(IEnumerable<TransactionItem> items, bool isTemporary = true);
+        void AddRange(IEnumerable<Transaction> items, bool isTemporary = true);
 
         /// <summary>
         /// gibt zuurück ob die transaktion temporär ist
@@ -59,6 +59,6 @@ namespace HelperLibrary.Interfaces
         /// </summary>
         /// <param name="candidateSecurityId"></param>
         /// <returns></returns>
-        TransactionItem Get(int candidateSecurityId);
+        Transaction Get(int candidateSecurityId);
     }
 }

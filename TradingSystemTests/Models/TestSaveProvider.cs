@@ -24,7 +24,7 @@ namespace TradingSystemTests.Models
 
         public string TempPath { get; set; }
 
-        public void Save(IEnumerable<TransactionItem> items)
+        public void Save(IEnumerable<Transaction> items)
         {
             //der fileName
             TempPath = Path.Combine(Path.GetTempPath(), _filename);

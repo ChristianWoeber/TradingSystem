@@ -10,20 +10,20 @@ namespace TradingSystemTests.Models
     public class TestPortfolio : IPortfolio
     {
         private readonly DateTime? _lastAsOf;
-        private readonly List<TransactionItem> _items = new List<TransactionItem>();
+        private readonly List<Transaction> _items = new List<Transaction>();
 
         public TestPortfolio()
         {
 
         }
 
-        public TestPortfolio(IEnumerable<TransactionItem> items, DateTime? lastAsOf)
+        public TestPortfolio(IEnumerable<Transaction> items, DateTime? lastAsOf)
         {
             _lastAsOf = lastAsOf;
             _items.AddRange(items);
         }
 
-        public IEnumerator<TransactionItem> GetEnumerator()
+        public IEnumerator<Transaction> GetEnumerator()
         {
             return _items.GetEnumerator();
         }
@@ -33,7 +33,7 @@ namespace TradingSystemTests.Models
             return GetEnumerator();
         }
 
-        public TransactionItem this[int key]
+        public Transaction this[int key]
         {
             get
             {

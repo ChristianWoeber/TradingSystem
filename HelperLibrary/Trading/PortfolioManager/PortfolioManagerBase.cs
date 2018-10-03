@@ -5,8 +5,10 @@ using System.Collections.Generic;
 namespace HelperLibrary.Trading.PortfolioManager
 {
 
-    public interface IPortfolioManager
+    public interface IPortfolioValuation
     {
+        DateTime PortfolioAsof { get; set; }
+
         /// <summary>
         /// Der Portfoliowert - wird initial mit 100 angemommen, sonfern kein Betrag gegeben ist
         /// </summary>
@@ -22,7 +24,7 @@ namespace HelperLibrary.Trading.PortfolioManager
     /// <summary>
     /// Abstrakte BasisKlasse des PortfolioManagers die, die Kandidaten als auch die TransactionItems führt
     /// </summary>
-    public abstract class PortfolioManagerBase : IPortfolioManager
+    public abstract class PortfolioManagerBase : IPortfolioValuation
     {
         protected PortfolioManagerBase(IStopLossSettings stopLossSettings, IPortfolioSettings portfolioSettings, ITransactionsHandler handler)
         {
@@ -60,7 +62,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Das Stichtag der Betrachtung
         /// Wenn sich dieser ändert wird das event PortfolioAsofChanged gefeuert
         /// </summary>
-        internal DateTime PortfolioAsof
+        public DateTime PortfolioAsof
         {
             get => _portfolioAsof;
             set

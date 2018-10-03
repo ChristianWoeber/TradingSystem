@@ -15,7 +15,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         #region Private Members
 
 
-        private readonly List<TransactionItem> _items = new List<TransactionItem>();
+        private readonly List<Transaction> _items = new List<Transaction>();
         private readonly ISaveProvider _saveProvider;
         private readonly IAdjustmentProvider _adjustmentProvider;
 
@@ -94,7 +94,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #region Add
 
-        public void Add(TransactionItem item, bool isTemporary = true)
+        public void Add(Transaction item, bool isTemporary = true)
         {
             // das temporary flag setzen
             item.IsTemporary = isTemporary;
@@ -124,7 +124,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             _items.Add(item);
         }
 
-        public void AddRange(IEnumerable<TransactionItem> items, bool isTemporary = true)
+        public void AddRange(IEnumerable<Transaction> items, bool isTemporary = true)
         {
             foreach (var item in items)
                 Add(item, isTemporary);
@@ -143,7 +143,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             _items.Clear();
         }
 
-        public TransactionItem Get(int candidateSecurityId)
+        public Transaction Get(int candidateSecurityId)
         {
             var item = _items.FirstOrDefault(x => x.SecurityId == candidateSecurityId && x.IsTemporary);
             if (item == null)
@@ -233,7 +233,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #region Enumerator
 
-        public IEnumerator<TransactionItem> GetEnumerator()
+        public IEnumerator<Transaction> GetEnumerator()
         {
             return _items.GetEnumerator();
         }

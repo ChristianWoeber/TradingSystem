@@ -59,6 +59,7 @@
     <Compile Include="Collections\PriceHistoryCollection.cs" />
     <Compile Include="Database\CallCmd.cs" />
     <Compile Include="Database\Interfaces\IDataRecord.cs" />
+    <Compile Include="Database\Models\PortfolioValue.cs" />
     <Compile Include="Database\Models\TransactionItem.cs" />
     <Compile Include="Enums\CaclulationOption.cs" />
     <Compile Include="Calculations\Performance.cs" />

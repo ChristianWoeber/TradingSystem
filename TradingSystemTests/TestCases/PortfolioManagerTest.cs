@@ -48,9 +48,9 @@ namespace TradingSystemTests.TestCases
             LogManager.Configuration = config;
         }
 
-        private Dictionary<int, List<TransactionItem>> LoadHistory(string filename)
+        private Dictionary<int, List<Transaction>> LoadHistory(string filename)
         {
-            return TestHelper.CreateTestCollection<TransactionItem>(filename).ToDictionaryList(x => x.SecurityId);
+            return TestHelper.CreateTestCollection<Transaction>(filename).ToDictionaryList(x => x.SecurityId);
         }
 
 
@@ -72,7 +72,7 @@ namespace TradingSystemTests.TestCases
 
             //Test Pm erstellen
             var pm = new PortfolioManager(null, null,
-                new TestTransactionsHandler(new List<TransactionItem>(),
+                new TestTransactionsHandler(new List<Transaction>(),
                 new TransactionsCacheProviderTest(() => LoadHistory(filename))));
 
             //scoring provider erstellen
@@ -154,7 +154,7 @@ namespace TradingSystemTests.TestCases
 
         }
 
-        [TestCase("01.01.2000", 5, "Transactions.csv", true, true, "PortfolioValue.csv", "Cash.csv")]
+        [TestCase("01.01.2000", 18, "ConsTransactions.csv", true, true, "ConsPortfolioValue.csv", "ConsCash.csv")]
         public void SimpleBacktestTest(string startDate, int testYears, string temporaryFilename, bool showTransactions, bool clearOldFile, string navlogName, string cashLoggerName)
         {
             //TODO : File aich auf NLOG umstellen
@@ -218,7 +218,7 @@ namespace TradingSystemTests.TestCases
             using (var rd = new StreamReader(File.Open(filename, FileMode.Open)))
             {
                 var output = rd.ReadToEnd();
-                var transactions = SimpleTextParser.GetListOfType<TransactionItem>(output);
+                var transactions = SimpleTextParser.GetListOfType<Transaction>(output);
                 Assert.IsTrue(!string.IsNullOrEmpty(output));
                 Assert.IsTrue(transactions.Count > 10);
                 Trace.TraceInformation($"Anzahl der Transaktionen :{transactions.Count}");

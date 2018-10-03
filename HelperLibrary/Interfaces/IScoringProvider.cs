@@ -12,7 +12,7 @@ namespace HelperLibrary.Interfaces
         /// </summary>
         /// <param name="secId">the id of the security</param>
         /// <param name="date">the start date for the Calculations</param>
-        ScoringResult GetScore(int secId, DateTime date);
+        IScoringResult GetScore(int secId, DateTime date);
 
 
 
