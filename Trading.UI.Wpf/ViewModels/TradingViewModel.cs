@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Common.Lib.UI.WPF.Core.Input;
@@ -11,6 +12,7 @@ using HelperLibrary.Parsing;
 using HelperLibrary.Trading.PortfolioManager;
 using JetBrains.Annotations;
 using Trading.UI.Wpf.Models;
+using Trading.UI.Wpf.Utils;
 
 namespace Trading.UI.Wpf.ViewModels
 {
@@ -29,7 +31,7 @@ namespace Trading.UI.Wpf.ViewModels
     {
         private PortfolioManager _portfolioManager;
         private readonly IScoringProvider _scoringProvider;
-        private IEnumerable<Transaction> _holdings;
+        private IEnumerable<TransactionViewModel> _holdings;
 
         public TradingViewModel(List<Transaction> transactions, IScoringProvider scoringProvider)
         {
@@ -38,12 +40,17 @@ namespace Trading.UI.Wpf.ViewModels
 
             //Command
             RunBacktestCommand = new RelayCommand(RunBacktest);
+            MoveCursorToNextTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDay?.Invoke(this, _portfolioManager.PortfolioSettings.TradingDay));
         }
 
 
         public event EventHandler<BacktestResultEventArgs> BacktestCompleted;
 
+        public event EventHandler<DayOfWeek> MoveCursorToNextTradingDay;
+
         public ICommand RunBacktestCommand { get; }
+
+        public ICommand MoveCursorToNextTradingDayCommand { get; }
 
         private void Init(List<Transaction> transactions)
         {
@@ -59,14 +66,28 @@ namespace Trading.UI.Wpf.ViewModels
 
         }
 
+        public static Dictionary<int, string> NameCatalog => Factory.GetIdToNameDictionary();
 
-
-        public void UpdateHoldings(DateTime asof)
-        {            
-            Holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(asof);
+        public void UpdateHoldings(DateTime asof, bool isTradingDay = false)
+        {
+            var tradingDayTransaction = _portfolioManager.TransactionsHandler.GetTransactions(asof);
+            if (tradingDayTransaction == null)
+                Holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(asof).Select(t => new TransactionViewModel(t, GetScore(t, asof)));
+            else
+            {
+                //ich returne am tading tag den portfoliostand vor der umschichtung + die umschichtungen separat, damit
+                //die anzeige in der Gui klarer ist und nachvollzogen werden kann, was zu dem Stichtag geschehen ist
+                Holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(asof.AddDays(-1)).Select(t => new TransactionViewModel(t, GetScore(t, asof)))
+                    .Concat(tradingDayTransaction.Select(t => new TransactionViewModel(t, GetScore(t, asof)) { IsNew = true }));
+            }
         }
 
-        public IEnumerable<Transaction> Holdings
+        private IScoringResult GetScore(Transaction transaction, DateTime asof)
+        {
+            return _scoringProvider.GetScore(transaction.SecurityId, asof);
+        }
+
+        public IEnumerable<TransactionViewModel> Holdings
         {
             get => _holdings;
             set
@@ -85,6 +106,7 @@ namespace Trading.UI.Wpf.ViewModels
             BacktestCompleted?.Invoke(this, new BacktestResultEventArgs(values));
         }
 
+        #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -93,5 +115,8 @@ namespace Trading.UI.Wpf.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+
+        #endregion
     }
 }

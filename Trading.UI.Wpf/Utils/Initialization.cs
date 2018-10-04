@@ -22,10 +22,14 @@ namespace Trading.UI.Wpf.Utils
     {
         public static IEnumerable<T> CreateCollectionFromFile<T>(string path)
         {
-            return File.Exists(path) 
-                ? SimpleTextParser.GetListOfTypeFromFilePath<T>(path) 
+            return File.Exists(path)
+                ? SimpleTextParser.GetListOfTypeFromFilePath<T>(path)
                 : null;
         }
+
+      
+
+        private static readonly Dictionary<int, string> _idToNameCatalog = new Dictionary<int, string>();
 
         public static Dictionary<int, IPriceHistoryCollection> CreatePriceHistoryFromFile(string path, DateTime? start, DateTime? end)
         {
@@ -37,7 +41,7 @@ namespace Trading.UI.Wpf.Utils
             var dic = new Dictionary<int, IPriceHistoryCollection>();
 
             if (!File.Exists(path))
-                throw new ArgumentException("Am angegeben Pfad exisitert keine Datei !", path);
+                throw new ArgumentException(@"Am angegeben Pfad exisitert keine Datei !", path);
 
             using (var excel = new ExcelPackage(new FileStream(path, FileMode.Open)))
             {
@@ -74,13 +78,17 @@ namespace Trading.UI.Wpf.Utils
 
                         quotes.Add(quote);
                     }
+                    _idToNameCatalog.Add(sheet.Index, secName);
                     dic.Add(sheet.Index, new PriceHistoryCollection(quotes));
                 }
             }
             return dic;
         }
 
-        
+        public static Dictionary<int, string> GetIdToNameDictionary()
+        {
+            return _idToNameCatalog;
+        }
     }
 }
 

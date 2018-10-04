@@ -9,8 +9,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
-
         <arts:SmartFlyout >
             <arts:SmartFlyout.Items>
                 <arts:SmartFlyoutItem HeaderText="Einstellungen"></arts:SmartFlyoutItem>
@@ -28,7 +26,21 @@
                     </Grid.RowDefinitions>
  
                     <StackPanel Orientation="Horizontal" >
-                        <arts:SmartIconButton Icon="UwpRefresh" HorizontalAlignment="Left" Description="Run" Command="{Binding RunBacktestCommand}" Width="85" Margin="5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                        <arts:SmartIconButton Icon="UwpRefresh"                                             
+                                              Description="Run" 
+                                              Command="{Binding RunBacktestCommand}" 
+                                              Width="85" 
+                                              Margin="5" 
+                                              VerticalContentAlignment="Center" 
+                                              HorizontalContentAlignment="Center"/>
+
+                        <arts:SmartIconButton Icon="UwpNext"                                           
+                                              Description="Next Trading Day" 
+                                              Command="{Binding MoveCursorToNextTradingDayCommand}" 
+                                              Width="auto" 
+                                              Margin="5" 
+                                              VerticalContentAlignment="Center" 
+                                              HorizontalContentAlignment="Center"/>
                     </StackPanel>
                     
                     <controls:MainChartControl Grid.Column="0" Grid.Row="1" />

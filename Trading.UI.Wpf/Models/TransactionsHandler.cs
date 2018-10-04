@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Enums;
+using HelperLibrary.Extensions;
 using HelperLibrary.Interfaces;
 
 namespace Trading.UI.Wpf.Models
@@ -225,9 +226,7 @@ namespace Trading.UI.Wpf.Models
         {
             //flatten the cacheItems
             var items = cacheItems.SelectMany(x => x).ToList();
-            //foreach (var item in cacheItems)
-            //    items.AddRange(item);
-
+            
             //merke mir hier das letzte asof
             var currentAsof = items.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault()?.TransactionDateTime;
             if (_lastAsOf != null && currentAsof <= _lastAsOf)
@@ -240,13 +239,28 @@ namespace Trading.UI.Wpf.Models
         }
 
         private List<Transaction> _transactions;
+        private Dictionary<DateTime, List<Transaction>> _dateTimeDictionary;
 
-        public IPortfolio GetCurrentHoldings(DateTime asof)
+        public IEnumerable<Transaction> GetCurrentHoldings(DateTime asof)
         {
-            var items = _transactions ?? (_transactions =
-                            _cacheProvider.TransactionsCache.Value.Values.SelectMany(t => t).ToList());
+            var items = _transactions ?? (_transactions = _cacheProvider.TransactionsCache.Value.Values.SelectMany(t => t).ToList());
             return GetCurrentPortfolio(items.Where(x => x.TransactionDateTime <= asof));
         }
+
+        public IEnumerable<Transaction> GetTransactions(DateTime asof)
+        {
+            //get datetime dic
+            var dic = _dateTimeDictionary ?? (_dateTimeDictionary = _transactions.ToDictionaryList(x => x.TransactionDateTime));
+
+            if (dic == null)
+                return null;
+            //ich returne am tading tag den portfoliostand vor der umschichtung + die umschichtungen separat, damit
+            //die anzeige in der Gui klarer ist und nachvollzogen werden kann, was zu dem Stichtag geschehen ist
+            return !dic.TryGetValue(asof, out var tradingDayTransactions) 
+                ? null 
+                : tradingDayTransactions;
+        }
+
 
         public IPortfolio GetCurrentPortfolio()
         {

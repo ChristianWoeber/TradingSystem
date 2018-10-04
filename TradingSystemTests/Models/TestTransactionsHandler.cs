@@ -305,6 +305,11 @@ namespace TradingSystemTests.Models
             _scoringProvider = scoringProvider;
         }
 
+        public IPortfolio GetCurrentHoldings(DateTime asof)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

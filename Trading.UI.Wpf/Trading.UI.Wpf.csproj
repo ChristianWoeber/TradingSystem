@@ -127,6 +127,7 @@
     <Compile Include="Models\TransactionsHandler.cs" />
     <Compile Include="ViewModels\TradingViewModel.cs" />
     <Compile Include="Utils\Initialization.cs" />
+    <Compile Include="ViewModels\TransactionViewModel.cs" />
     <Page Include="Controls\CurrentHoldingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

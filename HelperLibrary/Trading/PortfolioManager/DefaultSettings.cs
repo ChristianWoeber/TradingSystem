@@ -46,7 +46,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// The default Trading Day in the Week
         /// </summary>
-        public DayOfWeek TradingDay { get; set; } = DayOfWeek.Thursday;
+        public DayOfWeek TradingDay { get; set; } = DayOfWeek.Wednesday;
 
         /// <summary>
         /// der totale Investitionsgrad

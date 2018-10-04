@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using Common.Lib.UI.WPF.Core.Styling;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Extensions;
 using HelperLibrary.Trading;
-using HelperLibrary.Trading.PortfolioManager;
-using Trading.UI.Wpf.Models;
 using Trading.UI.Wpf.Utils;
 using Trading.UI.Wpf.ViewModels;
 
@@ -45,7 +37,7 @@ namespace Trading.UI.Wpf
 
             //scoring provider erstellen
             var scoringProvider = new ScoringProvider(Factory.CreatePriceHistoryFromFile(Globals.PriceHistoryPath,
-                transactions.FirstOrDefault()?.TransactionDateTime,
+                transactions.FirstOrDefault()?.TransactionDateTime.AddDays(-255),
                 transactions.Last()?.TransactionDateTime));
 
             //main window erstellen

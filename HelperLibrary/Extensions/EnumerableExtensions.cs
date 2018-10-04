@@ -12,7 +12,7 @@ namespace HelperLibrary.Extensions
         {
             var ret = new Dictionary<TKey, List<T>>();
             if (source == null)
-                throw new ArgumentNullException(nameof(source));
+                return null;
 
             if (keySelector == null)
                 throw new ArgumentNullException(nameof(keySelector));

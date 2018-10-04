@@ -86,6 +86,18 @@ namespace HelperLibrary.Interfaces
         /// <param name="scoringProvider"></param>
         void RegisterScoringProvider(IScoringProvider scoringProvider);
 
-        IPortfolio GetCurrentHoldings(DateTime asof);
+        /// <summary>
+        /// Gibt mir die aktuellen Holdings, das Current Portfolio zum Stichtag zurück
+        /// </summary>
+        /// <param name="asof">der Stichtag</param>
+        /// <returns></returns>
+        IEnumerable<Transaction> GetCurrentHoldings(DateTime asof);
+
+        /// <summary>
+        /// Gibt mir die Transactionen von dem Stichtag zurück
+        /// </summary>
+        /// <param name="asof">der Stichtag</param>
+        /// <returns></returns>
+        IEnumerable<Transaction> GetTransactions(DateTime asof);
     }
 }

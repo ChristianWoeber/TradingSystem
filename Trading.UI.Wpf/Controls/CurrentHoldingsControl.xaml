@@ -13,11 +13,44 @@
     <Grid>
         <arts:SmartDataGrid AutoGenerateColumns="False" ItemsSource="{Binding Holdings, Mode=OneWay}" HeaderFontSize="4">
             <arts:SmartDataGrid.Columns >
-                <arts:SmartDataGridColumn Binding="{Binding SecurityId}" Header="SecurityId"/>
-                <arts:SmartDataGridColumn Binding="{Binding TransactionDateTime, StringFormat=d}" Header="TransaktionsDatum"/>
-                <arts:SmartDataGridColumn Binding="{Binding TargetWeight, StringFormat=P}" Header="Ziel-Gewicht"/>
-                <arts:SmartDataGridColumn Binding="{Binding EffectiveAmountEur, StringFormat=C}" Header="Ziel-Amount-Effektiv"/>
+                <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
+                                          ColumnEditingItemsSource="{Binding Source={x:Static viewModels:TradingViewModel.NameCatalog}}"
+                                          Header="Name"  />
+                <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
+                                          Header="SecurityId" 
+                                          Visibility="Collapsed"/>
+                <arts:SmartDataGridColumn Binding="{Binding TransactionDateTime, StringFormat=d, Mode=OneWay}" 
+                                          Header="TransaktionsDatum"/>
+                <arts:SmartDataGridColumn Binding="{Binding TargetWeight, StringFormat=P, Mode=OneWay}" 
+                                          Header="Ziel-Gewicht"/>
+                <arts:SmartDataGridColumn Binding="{Binding EffectiveAmountEur, StringFormat=C, Mode=OneWay}" 
+                                          Header="Ziel-Amount-Effektiv"/>
+                <arts:SmartDataGridColumn Binding="{Binding Type, Mode=OneWay}" 
+                                          Header="Typ"/>
+                <arts:SmartDataGridColumn Binding="{Binding Score,Mode=OneWay, StringFormat=N}" 
+                                          Header="Score"
+                                          SortDirection="Descending"/>
             </arts:SmartDataGrid.Columns>
+            <arts:SmartDataGrid.RowStyle>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource SmartDataGridRowStyle}">
+                    <Style.Triggers>
+                        <MultiDataTrigger >
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsNew}" Value="True"/>
+                                <Condition Binding="{Binding IsBuy, Mode=OneWay}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="#5090ee90"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger >
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsNew}" Value="True"/>
+                                <Condition Binding="{Binding IsBuy, Mode=OneWay}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="#50ff6961"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </arts:SmartDataGrid.RowStyle>
         </arts:SmartDataGrid>
     </Grid>
 </UserControl>

@@ -153,10 +153,16 @@ namespace HelperLibrary.Trading.PortfolioManager
             throw new NotImplementedException();
         }
 
-        public IPortfolio GetCurrentHoldings(DateTime asof)
+        public IEnumerable<Transaction> GetCurrentHoldings(DateTime asof)
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<Transaction> GetTransactions(DateTime asof)
+        {
+            throw new NotImplementedException();
+        }
+      
 
         #endregion
 
