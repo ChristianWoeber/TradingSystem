@@ -143,6 +143,10 @@ namespace HelperLibrary.Parsing
                                         item.SetterFunc(obj, Convert.ChangeType(value, item.PropertyInfo.PropertyType,
                                             CultureInfo.InvariantCulture));
                                     }
+                                    else if (item.PropertyInfo.PropertyType.BaseType == typeof(Enum))
+                                    {
+                                        item.SetterFunc(obj, Enum.ToObject(item.PropertyInfo.PropertyType, Convert.ToInt32(value)));
+                                    }
                                     else
                                         item.SetterFunc(obj, Convert.ChangeType(value, item.PropertyInfo.PropertyType,
                                                 CultureInfo.InvariantCulture));
@@ -240,7 +244,7 @@ namespace HelperLibrary.Parsing
 
             var content = items.ToList();
             if (lines.Length <= 0)
-                WriteToFile(content, path, properties);           
+                WriteToFile(content, path, properties);
             else
             {
                 using (var writer = File.AppendText(path))

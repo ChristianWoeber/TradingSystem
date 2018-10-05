@@ -12,6 +12,7 @@ using HelperLibrary.Trading.PortfolioManager;
 using NLog;
 using NLog.Layouts;
 using NUnit.Framework;
+using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Helper;
 using TradingSystemTests.Models;
 
@@ -48,9 +49,9 @@ namespace TradingSystemTests.TestCases
             LogManager.Configuration = config;
         }
 
-        private Dictionary<int, List<Transaction>> LoadHistory(string filename)
+        private Dictionary<int, List<ITransaction>> LoadHistory(string filename)
         {
-            return TestHelper.CreateTestCollection<Transaction>(filename).ToDictionaryList(x => x.SecurityId);
+            return TestHelper.CreateTestCollection<Transaction>(filename).Cast<ITransaction>().ToDictionaryList(x => x.SecurityId);
         }
 
 

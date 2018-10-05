@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Enums;
-using HelperLibrary.Interfaces;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
@@ -43,7 +43,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// </summary>
         /// <param name="candidate">der Trading Candidate</param>
         /// <returns></returns>
-        public bool HasStopLoss(TradingCandidate candidate)
+        public bool HasStopLoss(ITradingCandidate candidate)
         {
             if (candidate == null)
                 throw new ArgumentException("Der Preis darf nicht null sein");
@@ -67,21 +67,21 @@ namespace HelperLibrary.Trading.PortfolioManager
             return hasStop ? candidate.IsBelowStopp = true : candidate.IsBelowStopp = false;
         }
 
-        private void UpdateLastStops(bool hasStop, TradingCandidate candidate)
+        private void UpdateLastStops(bool hasStop, ITradingCandidate candidate)
         {
             if (!hasStop)
                 return;
             //wenn es schon einen Wert gibt aktualisieren
             //sonst hinzufügen
-            if (_lastStopsDictionary.TryGetValue(candidate.SecurityId, out var lastStopDateTime)) _lastStopsDictionary[candidate.SecurityId] = candidate.Record.Asof;
+            if (_lastStopsDictionary.TryGetValue(candidate.Record.SecurityId, out var lastStopDateTime)) _lastStopsDictionary[candidate.Record.SecurityId] = candidate.Record.Asof;
             else
-                _lastStopsDictionary.Add(candidate.SecurityId, candidate.Record.Asof);
+                _lastStopsDictionary.Add(candidate.Record.SecurityId, candidate.Record.Asof);
 
         }
 
-        public bool IsBelowMinimumStopHoldingPeriod(TradingCandidate candidate)
+        public bool IsBelowMinimumStopHoldingPeriod(ITradingCandidate candidate)
         {
-            if (!_lastStopsDictionary.TryGetValue(candidate.SecurityId, out var lastStopDateTime))
+            if (!_lastStopsDictionary.TryGetValue(candidate.Record.SecurityId, out var lastStopDateTime))
                 return false;
 
             var days = (candidate.Record.Asof - lastStopDateTime).Days;
@@ -92,17 +92,17 @@ namespace HelperLibrary.Trading.PortfolioManager
             return days >= MinimumStopHoldingPeriodeInDays;
         }
 
-        public void AddOrRemoveDailyLimit(Transaction transactionItem)
+        public void AddOrRemoveDailyLimit(ITransaction transactionItem)
         {
             switch (transactionItem.TransactionType)
             {
-                case (int)TransactionType.Open:
+                case TransactionType.Open:
                     {
                         if (!_limitDictionary.ContainsKey(transactionItem.SecurityId))
                             _limitDictionary.Add(transactionItem.SecurityId, new StopLossMeta(transactionItem.EffectiveAmountEur / transactionItem.Shares, transactionItem.TransactionDateTime));
                         break;
                     }
-                case (int)TransactionType.Close:
+                case TransactionType.Close:
                     _limitDictionary.Remove(transactionItem.SecurityId);
                     break;
             }
@@ -110,7 +110,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
 
 
-        public void UpdateDailyLimits(Transaction transactionItem, decimal? price, DateTime asof)
+        public void UpdateDailyLimits(ITransaction transactionItem, decimal? price, DateTime asof)
         {
             if (price == null)
                 throw new ArgumentException("Achtung der Preis darf nicht null sein!");

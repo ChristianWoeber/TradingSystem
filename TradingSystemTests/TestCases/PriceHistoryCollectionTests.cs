@@ -5,6 +5,7 @@ using System.Linq;
 using HelperLibrary.Collections;
 using HelperLibrary.Extensions;
 using NUnit.Framework;
+using Trading.DataStructures.Enums;
 using TradingSystemTests.Models;
 
 namespace TradingSystemTests.TestCases

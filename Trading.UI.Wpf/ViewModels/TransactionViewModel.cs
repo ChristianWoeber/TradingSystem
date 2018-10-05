@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Enums;
-using HelperLibrary.Interfaces;
 using JetBrains.Annotations;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 
 namespace Trading.UI.Wpf.ViewModels
 {
@@ -12,15 +12,14 @@ namespace Trading.UI.Wpf.ViewModels
     {
         #region Private Members
 
-        private readonly Transaction _transaction;
+        private readonly ITransaction _transaction;
         private bool _isNew;
-        private IScoringResult _score;
 
         #endregion
 
         #region Constructor
 
-        public TransactionViewModel(Transaction transaction, IScoringResult scoringResult)
+        public TransactionViewModel(ITransaction transaction, IScoringResult scoringResult)
         {
             _transaction = transaction;
             ScoringResult = scoringResult;
@@ -59,10 +58,7 @@ namespace Trading.UI.Wpf.ViewModels
         }
 
         public bool IsBuy => _transaction.Shares > 0;
-
-     
-       
-
+    
         public decimal? Score => ScoringResult?.Score;
 
         #endregion

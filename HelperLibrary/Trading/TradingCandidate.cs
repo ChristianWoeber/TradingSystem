@@ -1,39 +1,24 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using HelperLibrary.Database.Interfaces;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Enums;
 using HelperLibrary.Interfaces;
-using JetBrains.Annotations;
+using HelperLibrary.Trading.PortfolioManager;
+using Trading.DataStructures.Interfaces;
+using Trading.DataStructures.Enums;
 
 namespace HelperLibrary.Trading
 {
-    public interface ITradingCandidateBase
-    {
-        ITradingRecord Record { get; }
-
-        IScoringResult ScoringResult { get; }
-    }
-
-    public interface ILockupHandler
-    {
-        
-    }
-
-    public class TradingCandidate
+    public class TradingCandidate : ITradingCandidate
     {
         private readonly ITradingCandidateBase _tradingCandidateBase;
 
-        internal int SecurityId => _tradingCandidateBase.Record.SecurityId;
-
-        public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, PortfolioManager.PortfolioManager pm, bool isInvested = false)
+        public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, IPortfolioValuation valuation, bool isInvested = false)
         {
             _tradingCandidateBase = tradingCandidateBase;
            
             //Initialisierungen
             IsInvested = isInvested;
-            PortfolioAsof = pm.PortfolioAsof;
+            PortfolioAsof = valuation.PortfolioAsof;
 
             Record = _tradingCandidateBase.Record;
             ScoringResult = _tradingCandidateBase.ScoringResult;
@@ -45,14 +30,20 @@ namespace HelperLibrary.Trading
             TargetWeight = CurrentWeight;         
         }
 
-        public ILockupHandler LockupHandler { get; set; }
+        /// <summary>
+        /// Die Security Id des Candidaten
+        /// </summary>
+        public int SecurityId => _tradingCandidateBase.Record.SecurityId;
 
+        /// <summary>
+        /// Das Portfolio-Datum
+        /// </summary>
         public DateTime PortfolioAsof { get; set; }
 
         /// <summary>
         /// die letzte Transaktion
         /// </summary>
-        public Transaction LastTransaction { get; set; }
+        public ITransaction LastTransaction { get; set; }
 
         /// <summary>
         /// der aktuelle Score
@@ -133,44 +124,5 @@ namespace HelperLibrary.Trading
             return $"{Name} | Score: {Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} | CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring}";
         }
     }
-
-    internal class LockupPeriodeHandler : ILockupHandler
-    {
-        private readonly TradingCandidate _tradingCandidate;
-        private readonly IPortfolioSettings _pmPortfolioSettings;  
-
-        public LockupPeriodeHandler(TradingCandidate tradingCandidate, IPortfolioSettings pmPortfolioSettings)
-        {
-            _tradingCandidate = tradingCandidate;
-            _pmPortfolioSettings = pmPortfolioSettings;
-           
-        }
-
-        public TransactionType Type
-        {
-            get => _tradingCandidate.TransactionType;
-            set
-            {
-                if (value == _tradingCandidate.TransactionType)
-                    return;
-                _tradingCandidate.TransactionType = value;
-                OnTransactionTypeChanged();
-            }
-        }
-
-        private void OnTransactionTypeChanged()
-        {
-            switch (Type)
-            {
-                case TransactionType.Open:
-
-                    break;
-               
-                case TransactionType.Changed:
-                    break;
-      
-            }
-        }
-
-    }
+   
 }

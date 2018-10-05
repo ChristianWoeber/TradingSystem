@@ -1,5 +1,5 @@
-﻿using HelperLibrary.Enums;
-using System;
+﻿using System;
+using Trading.DataStructures.Enums;
 
 namespace HelperLibrary.Interfaces
 {

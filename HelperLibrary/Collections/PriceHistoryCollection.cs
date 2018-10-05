@@ -1,15 +1,14 @@
 ﻿using HelperLibrary.Database.Models;
-
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using HelperLibrary.Extensions;
 using System.Collections;
 using HelperLibrary.Database;
 using HelperLibrary.Calculations;
-using HelperLibrary.Database.Interfaces;
 using System;
-using HelperLibrary.Interfaces;
+using Trading.DataStructures.Interfaces;
+using Trading.DataStructures.Enums;
+using HelperLibrary.Extensions;
 
 namespace HelperLibrary.Collections
 {
@@ -38,11 +37,7 @@ namespace HelperLibrary.Collections
         public YahooDataRecord DbRecord { get; private set; }
     }
 
-    public enum PriceHistoryOption
-    {
-        PreviousItem,
-        NextItem
-    }
+
 
     /// <summary>
     /// Price History Collection - Enthält Berechnungen zur PriceHistory und gibt die Items zurück
@@ -63,11 +58,10 @@ namespace HelperLibrary.Collections
 
         private ITradingRecord _first => _items != null && _items.Count > 0 ? _items?[0] : null;
         private ITradingRecord _last => _items != null && _items.Count > 0 ? _items?[Count - 1] : null;
+
         private CalculationContext _calculationContext;
 
         #endregion
-
-
 
         #region Public Members
         /// <summary>
@@ -85,8 +79,7 @@ namespace HelperLibrary.Collections
         /// <summary>
         /// Zugriff auf den Calculation Context
         /// </summary>
-        public CalculationContext Calc => _calculationContext;
-
+        public ICalculationContext Calc => (ICalculationContext)_calculationContext;
 
 
 
@@ -148,10 +141,7 @@ namespace HelperLibrary.Collections
             _calculationContext = new CalculationContext(this);
             //add the items to the Observable Collection this can be bound to the UI
             AddRange(dbRecords);
-
-
         }
-
 
 
         public void Delete(ITradingRecord selectedRecord)
@@ -282,7 +272,6 @@ namespace HelperLibrary.Collections
 
         #endregion
 
-
         #region Enumerator
 
         public IEnumerator<ITradingRecord> GetEnumerator()
@@ -305,8 +294,8 @@ namespace HelperLibrary.Collections
 
         public IEnumerable<ITradingRecord> EnumMonthlyUltimoItems()
         {
-            foreach (var item in _items.Where(x => x.Asof.IsBusinessDayUltimo()))            
-               yield return item;
+            foreach (var item in _items.Where(x => x.Asof.IsBusinessDayUltimo()))
+                yield return item;
         }
 
 

@@ -6,9 +6,11 @@ using System.Linq;
 using System.Net;
 using HelperLibrary.Extensions;
 using HelperLibrary.Interfaces;
-using HelperLibrary.Enums;
 using HelperLibrary.Parsing;
 using JetBrains.Annotations;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
+
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
@@ -19,7 +21,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Default Constructor for Initializing Settings from Interfaces - Initializes default values if no arguments are passed in
         /// </summary>
         public PortfolioManager(IStopLossSettings stopLossSettings = null, IPortfolioSettings portfolioSettings = null, ITransactionsHandler transactionsHandler = null)
-            : base(stopLossSettings ?? new DefaultStopLossSettings(), portfolioSettings ?? new DefaultPortfolioSettings(), transactionsHandler ?? new TransactionsWrapper())
+            : base(stopLossSettings ?? new DefaultStopLossSettings(), portfolioSettings ?? new DefaultPortfolioSettings(), transactionsHandler ?? new TransactionsHandler())
         {
             //Initialisierungen
             CashHandler = new CashManager(this);
@@ -50,7 +52,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Das aktuelle Portfolio (alle Transaktionen die nicht geschlossen sind)
         /// </summary>
-        public IEnumerable<Transaction> CurrentPortfolio => TransactionsHandler.CurrentPortfolio;
+        public IEnumerable<ITransaction> CurrentPortfolio => TransactionsHandler.CurrentPortfolio;
 
         /// <summary>
         /// EventCallback wird gefeuert wenn sich das asof Datum erhöht
@@ -470,11 +472,11 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
-        public bool AdjustTemporaryPortfolioToCashPuffer(decimal missingCash, TradingCandidate candidate, bool adjustPosition = false)
+        public bool AdjustTemporaryPortfolioToCashPuffer(decimal missingCash, ITradingCandidate candidate, bool adjustPosition = false)
         {
             //die aktuelle transaktion // wenn null dann muss ich sie mir aus dem temporären portfolio holen 
             //da ich nicht investiert bin
-            var current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId] ?? TemporaryPortfolio.Get(candidate.SecurityId);
+            var current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId] ?? TemporaryPortfolio.Get(candidate.Record.SecurityId);
 
             //die aktuelle Bewertung der Position
             var currentValue = current.Shares *
@@ -514,9 +516,9 @@ namespace HelperLibrary.Trading.PortfolioManager
             return true;
         }
 
-        private void AdjustTemoraryPosition(TradingCandidate candidate)
+        private void AdjustTemoraryPosition(ITradingCandidate candidate)
         {
-            Transaction current = null;
+            ITransaction current = null;
             if (candidate.IsInvested)
                 current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
 
@@ -534,7 +536,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             var effectiveAmountEur = CalculateEffectiveAmountEur(candidate, targetShares);
             var effectiveWeight = CalculateEffectiveWeight(effectiveAmountEur);
 
-            var tempItem = TemporaryPortfolio.Get(candidate.SecurityId);
+            var tempItem = TemporaryPortfolio.Get(candidate.Record.SecurityId);
             tempItem.TargetWeight = candidate.TargetWeight;
             tempItem.TargetAmountEur = targetAmount;
             tempItem.Shares = targetShares;
@@ -543,9 +545,9 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         }
 
-        public void AddToTemporaryPortfolio(TradingCandidate candidate)
+        public void AddToTemporaryPortfolio(ITradingCandidate candidate)
         {
-            Transaction current = null;
+            ITransaction current = null;
             if (candidate.IsInvested)
                 current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
 
@@ -606,25 +608,25 @@ namespace HelperLibrary.Trading.PortfolioManager
             return Math.Round(effectiveAmountEur / PortfolioValue, 4);
         }
 
-        private static decimal CalculateEffectiveAmountEur(TradingCandidate candidate, int targetShares)
+        private static decimal CalculateEffectiveAmountEur(ITradingCandidate candidate, int targetShares)
         {
             //das effektive gewicht
             return Math.Round(targetShares * candidate.Record.AdjustedPrice, 4);
         }
 
-        private static int CalculateTargetShares(TradingCandidate candidate, decimal targetAmount)
+        private static int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount)
         {
             //die ziel shares bestimmen, werden immer abgerundet
             return (int)Math.Round(targetAmount / candidate.Record.AdjustedPrice, 2, MidpointRounding.AwayFromZero);
         }
 
-        private decimal CalculateTargetAmount(TradingCandidate candidate)
+        private decimal CalculateTargetAmount(ITradingCandidate candidate)
         {
             //der ziel Betrag in EuR
             return Math.Round(PortfolioValue * candidate.TargetWeight, 4);
         }
 
-        private Transaction CreateTransaction(TradingCandidate candidate, decimal targetAmount, int targetShares, decimal effectiveAmountEur, decimal effectiveWeight)
+        private Transaction CreateTransaction(ITradingCandidate candidate, decimal targetAmount, int targetShares, decimal effectiveAmountEur, decimal effectiveWeight)
         {
             return new Transaction
             {
@@ -633,10 +635,10 @@ namespace HelperLibrary.Trading.PortfolioManager
                 TargetWeight = candidate.TargetWeight,
                 SecurityId = candidate.Record.SecurityId,
                 TransactionDateTime = PortfolioAsof,
-                TransactionType = (int)candidate.TransactionType,
+                TransactionType = candidate.TransactionType,
                 EffectiveWeight = effectiveWeight,
                 EffectiveAmountEur = effectiveAmountEur,
-                Name = candidate.Name
+                //Name = candidate.Name
             };
         }
 

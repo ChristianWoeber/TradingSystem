@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using HelperLibrary.Collections;
 using HelperLibrary.Extensions;
-using HelperLibrary.Interfaces;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 
 namespace TradingSystemTests.Models
 {

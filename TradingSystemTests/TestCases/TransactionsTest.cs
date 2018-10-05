@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Enums;
 using HelperLibrary.Extensions;
 using HelperLibrary.Interfaces;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
 using NUnit.Framework;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Helper;
 using TradingSystemTests.Models;
 
@@ -60,9 +61,9 @@ namespace TradingSystemTests.TestCases
             Assert.IsTrue(weight.Value == new decimal(0.1));
         }
 
-        private Dictionary<int, List<Transaction>> LoadHistory(string filename)
+        private Dictionary<int, List<ITransaction>> LoadHistory(string filename)
         {
-            return TestHelper.CreateTestCollection<Transaction>(filename).ToDictionaryList(x => x.SecurityId);
+            return TestHelper.CreateTestCollection<Transaction>(filename)?.Cast<ITransaction>().ToDictionaryList(x => x.SecurityId);
         }
 
 

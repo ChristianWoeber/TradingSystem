@@ -1,13 +1,13 @@
 ﻿using HelperLibrary.Util.Atrributes;
 using System;
 using System.Data.Linq.Mapping;
-using HelperLibrary.Enums;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Database.Models
 {
-    public class Transaction
+    public class Transaction: ITransaction
     {
-
         /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt
         /// </summary>
@@ -40,11 +40,11 @@ namespace HelperLibrary.Database.Models
         public decimal TargetAmountEur { get; set; }
 
         /// <summary>
-        /// Der Typ der Transaktion (Opening,Closing,Changed) <see cref="HelperLibrary.Enums.TransactionType"/>
+        /// Der Typ der Transaktion (Opening,Closing,Changed) <see cref="Trading.DataStructure.Enums.TransactionType"/>
         /// </summary>
         [InputMapping(KeyWords = new[] { "Type", nameof(TransactionType) })]
         [Column(Storage = "TRANSACTION_TYPE")]
-        public int TransactionType { get; set; }
+        public TransactionType TransactionType { get; set; }
 
 
         /// <summary>

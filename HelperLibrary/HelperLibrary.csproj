@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HelperLibrary</RootNamespace>
     <AssemblyName>HelperLibrary</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,14 +56,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Calculations\CalculationContext.cs" />
+    <Compile Include="Calculations\DrawdownItem.cs" />
     <Compile Include="Calculations\MaxDrawdown.cs" />
     <Compile Include="Collections\PriceHistoryCollection.cs" />
     <Compile Include="Database\CallCmd.cs" />
-    <Compile Include="Database\Interfaces\IDataRecord.cs" />
     <Compile Include="Database\Models\PortfolioValue.cs" />
     <Compile Include="Database\Models\TransactionItem.cs" />
-    <Compile Include="Enums\CaclulationOption.cs" />
-    <Compile Include="Calculations\Performance.cs" />
+    <Compile Include="Calculations\CalculationHandler.cs" />
     <Compile Include="Calculations\Quote.cs" />
     <Compile Include="Calculations\ReturnCalculation.cs" />
     <Compile Include="Collections\BinarySearchCollections.cs" />
@@ -94,8 +95,6 @@
     <Compile Include="Database\MySQLCommandBuilder.cs" />
     <Compile Include="Database\ObjectMapper.cs" />
     <Compile Include="Database\SQLCmd.cs" />
-    <Compile Include="Enums\TradingInterval.cs" />
-    <Compile Include="Enums\TransactionType.cs" />
     <Compile Include="Extensions\CollectionExtensionscs.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
@@ -106,24 +105,13 @@
     <Compile Include="Interfaces\IDownloadModel.cs" />
     <Compile Include="Interfaces\IParser.cs" />
     <Compile Include="Interfaces\IPlugin.cs" />
-    <Compile Include="Interfaces\IPortfolioSettings.cs" />
-    <Compile Include="Interfaces\IPriceHistoryCollection.cs" />
-    <Compile Include="Interfaces\IPriceHistoryStorageProvider.cs" />
     <Compile Include="Interfaces\IQuote.cs" />
-    <Compile Include="Interfaces\IStopLossSettings.cs" />
-    <Compile Include="Interfaces\ITemporaryPortfolio.cs" />
-    <Compile Include="Interfaces\ISaveProvider.cs" />
     <Compile Include="Trading\Candidate.cs" />
     <Compile Include="Trading\PortfolioManager\CashManager.cs" />
-    <Compile Include="Interfaces\ICashManager.cs" />
-    <Compile Include="Interfaces\ITransactionsHandler.cs" />
-    <Compile Include="Interfaces\IPortfolio.cs" />
-    <Compile Include="Interfaces\ITransactionsCacheProvider.cs" />
-    <Compile Include="Interfaces\IAdjustmentProvider.cs" />
+    <Compile Include="Trading\PortfolioManager\CurrentPortfolio.cs" />
     <Compile Include="Trading\PortfolioManager\DefaultStopLossSettings.cs" />
+    <Compile Include="Trading\PortfolioManager\TransactionsHandler.cs" />
     <Compile Include="Trading\ScoringResult.cs" />
-    <Compile Include="Interfaces\IScoringProvider.cs" />
-    <Compile Include="Interfaces\IScoringResult.cs" />
     <Compile Include="Parsing\ParserFactory.cs" />
     <Compile Include="Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -136,7 +124,6 @@
     <Compile Include="Trading\PortfolioManager\PortfolioManager.cs" />
     <Compile Include="Trading\PortfolioManager\PortfolioManagerBase.cs" />
     <Compile Include="Trading\PortfolioManager\TemporaryPortfolio.cs" />
-    <Compile Include="Trading\PortfolioManager\TransactionsWrapper.cs" />
     <Compile Include="Trading\ScoringProvider.cs" />
     <Compile Include="Trading\TradingCandidate.cs" />
     <Compile Include="Util\Atrributes\InputMapping.cs" />
@@ -164,6 +151,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Trading.DataStructures\Trading.DataStructures.csproj">
+      <Project>{53bb7efc-1b0d-4dfa-be74-5ff13bf088ef}</Project>
+      <Name>Trading.DataStructures</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

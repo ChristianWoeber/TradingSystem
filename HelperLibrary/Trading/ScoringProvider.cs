@@ -1,9 +1,8 @@
-﻿using HelperLibrary.Interfaces;
-using System;
+﻿using System;
 using HelperLibrary.Collections;
 using System.Collections.Generic;
-using HelperLibrary.Database.Interfaces;
-using HelperLibrary.Enums;
+using Trading.DataStructures.Interfaces;
+using Trading.DataStructures.Enums;
 
 namespace HelperLibrary.Trading
 {

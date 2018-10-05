@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HelperLibrary.Interfaces;
 using HelperLibrary.Trading;
 using NUnit.Framework;
+using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Helper;
 
 namespace TradingSystemTests.TestCases

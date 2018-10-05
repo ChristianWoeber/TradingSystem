@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using Common.Lib.Extensions;
 using Common.Lib.UI.WPF.Core.Styling;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Trading;
+using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Utils;
 using Trading.UI.Wpf.ViewModels;
 
@@ -33,7 +35,7 @@ namespace Trading.UI.Wpf
 
 
             //transaktinen Parse
-            var transactions = Factory.CreateCollectionFromFile<Transaction>(transactionsPaths[0]).ToList();
+            var transactions = Factory.CreateCollectionFromFile<Transaction>(transactionsPaths[0]).CastToList<ITransaction>();
 
             //scoring provider erstellen
             var scoringProvider = new ScoringProvider(Factory.CreatePriceHistoryFromFile(Globals.PriceHistoryPath,

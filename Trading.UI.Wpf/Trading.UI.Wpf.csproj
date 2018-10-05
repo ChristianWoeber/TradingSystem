@@ -121,10 +121,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Globals.cs" />
-    <Compile Include="Models\CurrentPortfolio.cs" />
     <Compile Include="Models\TradingRecord.cs" />
-    <Compile Include="Models\TransactionsCacheProvider.cs" />
-    <Compile Include="Models\TransactionsHandler.cs" />
+    <Compile Include="Models\BacktestTransactionsCacheProvider.cs" />
     <Compile Include="ViewModels\TradingViewModel.cs" />
     <Compile Include="Utils\Initialization.cs" />
     <Compile Include="ViewModels\TransactionViewModel.cs" />
@@ -197,6 +195,10 @@
     <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj">
       <Project>{3696bc6c-2421-4eaf-b7d8-a26a74ac7656}</Project>
       <Name>HelperLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Trading.DataStructures\Trading.DataStructures.csproj">
+      <Project>{53BB7EFC-1B0D-4DFA-BE74-5FF13BF088EF}</Project>
+      <Name>Trading.DataStructures</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

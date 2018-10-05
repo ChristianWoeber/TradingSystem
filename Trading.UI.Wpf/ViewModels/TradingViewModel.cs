@@ -11,6 +11,7 @@ using HelperLibrary.Interfaces;
 using HelperLibrary.Parsing;
 using HelperLibrary.Trading.PortfolioManager;
 using JetBrains.Annotations;
+using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Models;
 using Trading.UI.Wpf.Utils;
 
@@ -33,7 +34,7 @@ namespace Trading.UI.Wpf.ViewModels
         private readonly IScoringProvider _scoringProvider;
         private IEnumerable<TransactionViewModel> _holdings;
 
-        public TradingViewModel(List<Transaction> transactions, IScoringProvider scoringProvider)
+        public TradingViewModel(List<ITransaction> transactions, IScoringProvider scoringProvider)
         {
             _scoringProvider = scoringProvider;
             Init(transactions);
@@ -52,11 +53,11 @@ namespace Trading.UI.Wpf.ViewModels
 
         public ICommand MoveCursorToNextTradingDayCommand { get; }
 
-        private void Init(List<Transaction> transactions)
+        private void Init(List<ITransaction> transactions)
         {
             _portfolioManager = new PortfolioManager(null
                 , new ConservativePortfolioSettings { LoggingPath = Globals.PortfolioValuePath }
-                , new TransactionsHandler(null, new TransactionsCacheProviderTest(transactions)));
+                , new TransactionsHandler(null, new BacktestTransactionsCacheProvider(transactions)));
 
             //scoring Provider registrieren
             _portfolioManager.RegisterScoringProvider(_scoringProvider);
@@ -82,7 +83,7 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
-        private IScoringResult GetScore(Transaction transaction, DateTime asof)
+        private IScoringResult GetScore(ITransaction transaction, DateTime asof)
         {
             return _scoringProvider.GetScore(transaction.SecurityId, asof);
         }

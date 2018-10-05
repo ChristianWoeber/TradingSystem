@@ -4,26 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Interfaces;
+using Trading.DataStructures.Interfaces;
 
 namespace Trading.UI.Wpf.Models
 {
     public class CurrentPortfolio : IPortfolio
     {
         private readonly DateTime? _lastAsOf;
-        private readonly List<Transaction> _items = new List<Transaction>();
+        private readonly List<ITransaction> _items = new List<ITransaction>();
 
         public CurrentPortfolio()
         {
 
         }
 
-        public CurrentPortfolio(IEnumerable<Transaction> items, DateTime? lastAsOf)
+        public CurrentPortfolio(IEnumerable<ITransaction> items, DateTime? lastAsOf)
         {
             _lastAsOf = lastAsOf;
             _items.AddRange(items);
         }
 
-        public IEnumerator<Transaction> GetEnumerator()
+        public IEnumerator<ITransaction> GetEnumerator()
         {
             return _items.GetEnumerator();
         }
@@ -33,7 +34,7 @@ namespace Trading.UI.Wpf.Models
             return GetEnumerator();
         }
 
-        public Transaction this[int key]
+        public ITransaction this[int key]
         {
             get
             {

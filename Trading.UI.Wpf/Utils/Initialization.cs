@@ -13,6 +13,7 @@ using HelperLibrary.Interfaces;
 using HelperLibrary.Parsing;
 using OfficeOpenXml;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Models;
 
 namespace Trading.UI.Wpf.Utils

@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Interfaces;
 using HelperLibrary.Parsing;
+using Trading.DataStructures.Interfaces;
 
 namespace TradingSystemTests.Models
 {
@@ -24,7 +24,7 @@ namespace TradingSystemTests.Models
 
         public string TempPath { get; set; }
 
-        public void Save(IEnumerable<Transaction> items)
+        public void Save(IEnumerable<ITransaction> items)
         {
             //der fileName
             TempPath = Path.Combine(Path.GetTempPath(), _filename);

@@ -1,5 +1,5 @@
 ﻿using System;
-using HelperLibrary.Database.Interfaces;
+using Trading.DataStructures.Interfaces;
 
 namespace TradingSystemTests.Models
 {
@@ -9,7 +9,6 @@ namespace TradingSystemTests.Models
         public DateTime Asof { get; set; }
         public decimal AdjustedPrice { get; set; }
         public int SecurityId { get; set; }
-
         public string Name { get; set; }
     }
 }

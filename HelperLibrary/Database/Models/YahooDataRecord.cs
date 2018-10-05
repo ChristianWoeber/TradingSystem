@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.Linq.Mapping;
 using HelperLibrary.Util.Atrributes;
-using HelperLibrary.Database.Interfaces;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Database.Models
 {

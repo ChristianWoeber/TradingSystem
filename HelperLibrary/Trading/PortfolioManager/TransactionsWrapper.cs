@@ -4,8 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using HelperLibrary.Enums;
 using HelperLibrary.Interfaces;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
@@ -111,12 +112,12 @@ namespace HelperLibrary.Trading.PortfolioManager
             throw new NotImplementedException();
         }
 
-        public Transaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
+        public ITransaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Transaction> Get(int secId, bool activeOnly = false, Predicate<Transaction> filter = null)
+        public IEnumerable<ITransaction> Get(int secId, bool activeOnly = false, Predicate<Transaction> filter = null)
         {
             throw new NotImplementedException();
         }
@@ -129,9 +130,9 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Ich gebe immer die kompletten Transaktionen, sortiert nach Datum zurück
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<Transaction> GetEnumerator()
+        public IEnumerator<ITransaction> GetEnumerator()
         {
-            var ls = new List<Transaction>();
+            var ls = new List<ITransaction>();
             foreach (var listValue in _transactionsCacheProvider.TransactionsCache.Value.Values)
                 ls.AddRange(listValue);
 
@@ -181,6 +182,9 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
 
             public Lazy<Dictionary<int, List<Transaction>>> TransactionsCache { get; }
+
+            Lazy<Dictionary<int, List<ITransaction>>> ITransactionsCacheProvider.TransactionsCache => throw new NotImplementedException();
+
             public void UpdateCache()
             {
                 throw new NotImplementedException();
@@ -189,12 +193,12 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         internal class Portfolio : IPortfolio
         {
-            private readonly List<Transaction> _currentPortfolio;
+            private readonly List<ITransaction> _currentPortfolio;
             private readonly DateTime? _lastAsOf;
 
             public Portfolio()
             {
-                _currentPortfolio = new List<Transaction>(DataBaseQueryHelper.GetCurrentPortfolio());
+                _currentPortfolio = new List<ITransaction>(DataBaseQueryHelper.GetCurrentPortfolio());
                 _lastAsOf = _currentPortfolio.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault()?
                     .TransactionDateTime;
 

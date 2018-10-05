@@ -13,7 +13,7 @@ namespace HelperLibrary.Util.Web
     public static class DownloadHelper
     {
 
-        public static async void Validate(IEnumerable<IDownloadModel> collection, ValidationType type)
+        public static void Validate(IEnumerable<IDownloadModel> collection, ValidationType type)
         {
 
             throw new System.NotImplementedException("Achtung die Funktion wurde seitens google geändert, muss neu implemntiert werden");

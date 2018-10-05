@@ -7,6 +7,7 @@ using HelperLibrary.Database.Interfaces;
 using HelperLibrary.Interfaces;
 using HelperLibrary.Parsing;
 using OfficeOpenXml;
+using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Models;
 
 namespace TradingSystemTests.Helper

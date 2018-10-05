@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using HelperLibrary.Collections;
-using HelperLibrary.Enums;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Interfaces;
 using System.Linq;
 using HelperLibrary.Database.Interfaces;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Calculations
 {
@@ -119,12 +117,5 @@ namespace HelperLibrary.Calculations
             var orderd = drawdowns.OrderBy(x => x.Drawdown);
             return orderd.FirstOrDefault();
         }
-    }
-
-    public class DrawdownItem
-    {
-        public ITradingRecord Start { get; set; }
-        public ITradingRecord End { get; set; }
-        public decimal Drawdown { get; set; }
     }
 }

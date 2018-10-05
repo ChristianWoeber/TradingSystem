@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Enums;
-using HelperLibrary.Interfaces;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 
 namespace TradingSystemTests.Models
 {
@@ -48,19 +48,19 @@ namespace TradingSystemTests.Models
 
         #region Index
 
-        public IEnumerable<Transaction> this[TransactionType key]
+        public IEnumerable<ITransaction> this[TransactionType key]
         {
             get
             {
-                var transactionsTypeDic = new Dictionary<int, List<Transaction>>();
+                var transactionsTypeDic = new Dictionary<int, List<ITransaction>>();
                 foreach (var items in _cacheProvider.TransactionsCache.Value.Values)
                 {
                     foreach (var item in items)
                     {
-                        if (!transactionsTypeDic.ContainsKey(item.TransactionType))
-                            transactionsTypeDic.Add(item.TransactionType, new List<Transaction>());
+                        if (!transactionsTypeDic.ContainsKey((int)item.TransactionType))
+                            transactionsTypeDic.Add((int)item.TransactionType, new List<ITransaction>());
 
-                        transactionsTypeDic[item.TransactionType].Add(item);
+                        transactionsTypeDic[(int)item.TransactionType].Add(item);
                     }
                 }
 
@@ -68,17 +68,17 @@ namespace TradingSystemTests.Models
             }
         }
 
-        public IEnumerable<Transaction> this[DateTime key]
+        public IEnumerable<ITransaction> this[DateTime key]
         {
             get
             {
-                var dateTimeDic = new Dictionary<DateTime, List<Transaction>>();
+                var dateTimeDic = new Dictionary<DateTime, List<ITransaction>>();
                 foreach (var items in _cacheProvider.TransactionsCache.Value.Values)
                 {
                     foreach (var item in items)
                     {
                         if (!dateTimeDic.ContainsKey(item.TransactionDateTime))
-                            dateTimeDic.Add(item.TransactionDateTime, new List<Transaction>());
+                            dateTimeDic.Add(item.TransactionDateTime, new List<ITransaction>());
 
                         dateTimeDic[item.TransactionDateTime].Add(item);
                     }
@@ -154,7 +154,7 @@ namespace TradingSystemTests.Models
             return averagePrice;
         }
 
-        public Transaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
+        public ITransaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
         {
             if (transactionType == null)
                 return CurrentPortfolio?[secId];
@@ -176,7 +176,7 @@ namespace TradingSystemTests.Models
         /// <param name="activeOnly">ddas Falg das angibt ob nur offenen transaktonen zurückgegeben werden sollen</param>
         /// <param name="filter">der optionale Filter</param>
         /// <returns></returns>
-        public IEnumerable<Transaction> Get(int secId, bool activeOnly = false, Predicate<Transaction> filter = null)
+        public IEnumerable<ITransaction> Get(int secId, bool activeOnly = false, Predicate<ITransaction> filter = null)
         {
             if (!_cacheProvider.TransactionsCache.Value.TryGetValue(secId, out var transactionItems))
                 return null;
@@ -192,11 +192,11 @@ namespace TradingSystemTests.Models
                 //Solange ich nicht bei der eröffnungsposition bin gehe ich weiter zurück
                 while (idx < transactionsSorted.Count)
                 {   //der TransactionType wird als int gestored im Model
-                    if ((TransactionType)transactionsSorted[idx].TransactionType ==
+                    if (transactionsSorted[idx].TransactionType ==
                         TransactionType.Open)
                         break;
 
-                    if ((TransactionType)transactionsSorted[idx].TransactionType ==
+                    if (transactionsSorted[idx].TransactionType ==
                         TransactionType.Close)
                         closeIdx = idx;
 
@@ -219,10 +219,10 @@ namespace TradingSystemTests.Models
         #region Get Current Portfolio
 
 
-        private IPortfolio GetCurrentPortfolio(IEnumerable<List<Transaction>> cacheItems)
+        private IPortfolio GetCurrentPortfolio(IEnumerable<List<ITransaction>> cacheItems)
         {
             //flatten the cacheItems
-            var items = new List<Transaction>();
+            var items = new List<ITransaction>();
             foreach (var item in cacheItems)
                 items.AddRange(item);
 
@@ -247,13 +247,13 @@ namespace TradingSystemTests.Models
             return GetCurrentPortfolio(_cacheProvider.TransactionsCache.Value.Values);
         }
 
-        private IPortfolio GetCurrentPortfolio(IEnumerable<Transaction> transactionItems)
+        private IPortfolio GetCurrentPortfolio(IEnumerable<ITransaction> transactionItems)
         {
             if (transactionItems == null)
                 return null;
 
             //temporäres dictionary erstellen
-            var dic = new Dictionary<int, Transaction>();
+            var dic = new Dictionary<int, ITransaction>();
 
             //gruppuieren nach SecID => wenn der Count genau 1 ist kann ich sie einfach adden sonst muss ich summieren
             foreach (var secIdGrp in transactionItems.GroupBy(x => x.SecurityId))
@@ -263,7 +263,7 @@ namespace TradingSystemTests.Models
                 else
                 {
                     //wenn aktuellste Eintrag ein Close ist, kann ich die Transaktion ignorieren
-                    if (secIdGrp.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault()?.TransactionType == (int)TransactionType.Close)
+                    if (secIdGrp.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault()?.TransactionType == TransactionType.Close)
                         continue;
 
                     //sumItem erstellen
@@ -305,10 +305,16 @@ namespace TradingSystemTests.Models
             _scoringProvider = scoringProvider;
         }
 
-        public IPortfolio GetCurrentHoldings(DateTime asof)
+        public IEnumerable<ITransaction> GetCurrentHoldings(DateTime asof)
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<ITransaction> GetTransactions(DateTime asof)
+        {
+            throw new NotImplementedException();
+        }
+
 
         #endregion
     }

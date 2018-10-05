@@ -1,15 +1,17 @@
 ﻿using HelperLibrary.Database.Models;
-using HelperLibrary.Enums;
 using HelperLibrary.Interfaces;
 using System;
 using System.Collections.Generic;
 using HelperLibrary.Calculations;
+using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
+
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
     public class DefaultSaveProvider : ISaveProvider
     {
-        public void Save(IEnumerable<Transaction> items)
+        public void Save(IEnumerable<ITransaction> items)
         {
             throw new NotImplementedException();
         }
@@ -41,7 +43,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// The Trading Interval of The Portfolio
         /// </summary>
-        public TradingInterval Interval { get; set; } = TradingInterval.weekly;
+        public TradingInterval Interval { get; set; } = TradingInterval.Weekly;
 
         /// <summary>
         /// The default Trading Day in the Week
@@ -104,7 +106,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// The Trading Interval of The Portfolio
         /// </summary>
-        public TradingInterval Interval { get; set; } = TradingInterval.weekly;
+        public TradingInterval Interval { get; set; } = TradingInterval.Weekly;
 
         /// <summary>
         /// The default Trading Day in the Week

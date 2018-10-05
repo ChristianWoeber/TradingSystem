@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-using HelperLibrary.Enums;
-using HelperLibrary.Interfaces;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {

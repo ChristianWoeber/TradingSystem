@@ -1,5 +1,5 @@
 ﻿using System;
-using HelperLibrary.Database.Interfaces;
+using Trading.DataStructures.Interfaces;
 
 namespace Trading.UI.Wpf.Models
 {

@@ -126,6 +126,10 @@
       <Project>{3696bc6c-2421-4eaf-b7d8-a26a74ac7656}</Project>
       <Name>HelperLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Trading.DataStructures\Trading.DataStructures.csproj">
+      <Project>{53BB7EFC-1B0D-4DFA-BE74-5FF13BF088EF}</Project>
+      <Name>Trading.DataStructures</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

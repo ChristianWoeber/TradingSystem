@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Enums;
 using HelperLibrary.Trading.PortfolioManager;
+using Trading.DataStructures.Enums;
 
 namespace HelperLibrary.Interfaces
 {

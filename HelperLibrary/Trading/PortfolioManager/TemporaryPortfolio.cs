@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Enums;
 using HelperLibrary.Interfaces;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
@@ -15,7 +13,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         #region Private Members
 
 
-        private readonly List<Transaction> _items = new List<Transaction>();
+        private readonly List<ITransaction> _items = new List<ITransaction>();
         private readonly ISaveProvider _saveProvider;
         private readonly IAdjustmentProvider _adjustmentProvider;
 
@@ -94,7 +92,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #region Add
 
-        public void Add(Transaction item, bool isTemporary = true)
+        public void Add(ITransaction item, bool isTemporary = true)
         {
             // das temporary flag setzen
             item.IsTemporary = isTemporary;
@@ -124,7 +122,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             _items.Add(item);
         }
 
-        public void AddRange(IEnumerable<Transaction> items, bool isTemporary = true)
+        public void AddRange(IEnumerable<ITransaction> items, bool isTemporary = true)
         {
             foreach (var item in items)
                 Add(item, isTemporary);
@@ -143,7 +141,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             _items.Clear();
         }
 
-        public Transaction Get(int candidateSecurityId)
+        public ITransaction Get(int candidateSecurityId)
         {
             var item = _items.FirstOrDefault(x => x.SecurityId == candidateSecurityId && x.IsTemporary);
             if (item == null)
@@ -233,7 +231,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #region Enumerator
 
-        public IEnumerator<Transaction> GetEnumerator()
+        public IEnumerator<ITransaction> GetEnumerator()
         {
             return _items.GetEnumerator();
         }

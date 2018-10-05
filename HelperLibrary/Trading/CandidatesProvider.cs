@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HelperLibrary.Collections;
+using Trading.DataStructures.Interfaces;
+using Trading.DataStructures.Enums;
 
 namespace HelperLibrary.Trading
 {

@@ -1,5 +1,6 @@
 ﻿using HelperLibrary.Database.Interfaces;
 using HelperLibrary.Interfaces;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading
 {

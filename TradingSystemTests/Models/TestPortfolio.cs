@@ -2,28 +2,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Interfaces;
+using Trading.DataStructures.Interfaces;
 
 namespace TradingSystemTests.Models
 {
     public class TestPortfolio : IPortfolio
     {
         private readonly DateTime? _lastAsOf;
-        private readonly List<Transaction> _items = new List<Transaction>();
+        private readonly List<ITransaction> _items = new List<ITransaction>();
 
         public TestPortfolio()
         {
 
         }
 
-        public TestPortfolio(IEnumerable<Transaction> items, DateTime? lastAsOf)
+        public TestPortfolio(IEnumerable<ITransaction> items, DateTime? lastAsOf)
         {
             _lastAsOf = lastAsOf;
             _items.AddRange(items);
         }
 
-        public IEnumerator<Transaction> GetEnumerator()
+        public IEnumerator<ITransaction> GetEnumerator()
         {
             return _items.GetEnumerator();
         }
@@ -33,7 +32,7 @@ namespace TradingSystemTests.Models
             return GetEnumerator();
         }
 
-        public Transaction this[int key]
+        public ITransaction this[int key]
         {
             get
             {

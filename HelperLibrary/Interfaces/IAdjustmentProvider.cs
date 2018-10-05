@@ -1,5 +1,4 @@
-﻿using HelperLibrary.Enums;
-using HelperLibrary.Trading;
+﻿using HelperLibrary.Trading;
 
 namespace HelperLibrary.Interfaces
 {

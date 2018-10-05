@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingSystemTests", "Tradi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trading.UI.Wpf", "Trading.UI.Wpf\Trading.UI.Wpf.csproj", "{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trading.Backtest.Data", "Trading.Backtest.Data\Trading.Backtest.Data.csproj", "{01E27471-DB85-47BC-B9C0-6C71765833D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trading.DataStructures", "Trading.DataStructures\Trading.DataStructures.csproj", "{53BB7EFC-1B0D-4DFA-BE74-5FF13BF088EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01E27471-DB85-47BC-B9C0-6C71765833D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01E27471-DB85-47BC-B9C0-6C71765833D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01E27471-DB85-47BC-B9C0-6C71765833D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01E27471-DB85-47BC-B9C0-6C71765833D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53BB7EFC-1B0D-4DFA-BE74-5FF13BF088EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53BB7EFC-1B0D-4DFA-BE74-5FF13BF088EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53BB7EFC-1B0D-4DFA-BE74-5FF13BF088EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53BB7EFC-1B0D-4DFA-BE74-5FF13BF088EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

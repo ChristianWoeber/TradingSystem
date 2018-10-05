@@ -7,6 +7,7 @@ using HelperLibrary.Database.Enums;
 using HelperLibrary.Extensions;
 using System.Windows.Forms;
 using HelperLibrary.Database.Interfaces;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Database
 {
@@ -162,7 +163,7 @@ namespace HelperLibrary.Database
             }
         }
 
-        public static IEnumerable<Transaction> GetCurrentPortfolio()
+        public static IEnumerable<ITransaction> GetCurrentPortfolio()
         {
             using (SQLCmd.Connection = DataBaseFactory.Create(new MySqlConnection()))
             {

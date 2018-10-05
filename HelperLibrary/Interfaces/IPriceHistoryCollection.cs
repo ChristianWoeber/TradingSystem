@@ -13,7 +13,7 @@ namespace HelperLibrary.Interfaces
         /// <summary>
         /// the Calculation Context, which holds all calculation logic
         /// </summary>
-        CalculationContext Calc { get; }
+        ICalculationContext Calc { get; }
 
 
         /// <summary>
