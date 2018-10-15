@@ -32,8 +32,8 @@ namespace Trading.UI.Wpf.Controls
                 return;
 
             _model = model;
-            _model.BacktestCompleted += OnBacktestCompleted;
-            _model.MoveCursorToNextTradingDay += OnMoveCursorToNextTradingDay;
+            _model.BacktestCompletedEvent += OnBacktestCompleted;
+            _model.MoveCursorToNextTradingDayEvent += OnMoveCursorToNextTradingDay;
         }
 
         private void OnMoveCursorToNextTradingDay(object sender, DayOfWeek tradingDay)
@@ -54,18 +54,25 @@ namespace Trading.UI.Wpf.Controls
             }
             //und den Cursor entsprechend setzen
             ChartControl.Cursors[1].CursorDate = temp;
-            _model.UpdateHoldings(temp,true);
+            _model.UpdateHoldings(temp, true);
         }
 
         private void OnBacktestCompleted(object sender, BacktestResultEventArgs args)
         {
+            ChartControl.Data.Clear();
             //Fints aus dem PortfolioValue erstellen
             var navFints = FINTS.Create(args.PortfolioValuations.Select(x => new Quote<double>(new SDate(x.PortfolioAsof), (double)x.PortfolioValue)));
-            var allocationFints = FINTS.Create(args.PortfolioValuations.Select(x => new Quote<double>(new SDate(x.PortfolioAsof), (double)x.AllocationToRisk)));
+            var allocationFints = FINTS.Create(args.PortfolioValuations.Select(x => new Quote<double>(new SDate(x.PortfolioAsof), (double)x.AllocationToRisk)), "Investitionsgrad");
+            allocationFints.DataType = FINTSDataType.Exposure;
+
 
             //zu ChartControl hinzufügen
-            ChartControl.Data.Add(new WLineChartFINTS(navFints) { FillColor = Colors.DodgerBlue, Caption = "Backtest", StrokeThickness = 0.75});
-            ChartControl.Data.Add(new WLineChartFINTS(allocationFints) { FINTSDataType = FINTSDataType.Exposure, StairSteps = true, StrokeThickness = 0.50, Caption = "Investitionsgrad" });
+            ChartControl.Data.Add(new WLineChartFINTS(navFints) { FillColor = Colors.DodgerBlue, Caption = "Backtest", StrokeThickness = 0.75 });
+            ChartControl.Data.Add(new WLineChartFINTS(allocationFints) {
+                FINTSDataType = FINTSDataType.Exposure,
+                FillColor = Colors.AliceBlue,
+                Color = Colors.DodgerBlue,
+                FillAlpha = 0.25});
         }
 
         private void OnChartControlClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)

@@ -12,19 +12,19 @@ namespace Trading.DataStructures.Interfaces
         /// <summary>
         /// die initiale Positionsgröße einer Position, die größe mit der die initiale Position eröffnet wird
         /// </summary>
-        decimal MaximumInitialPositionSize { get; }
+        decimal MaximumInitialPositionSize { get; set; }
 
 
         /// <summary>
         /// die maximale Postionsgröße pro Position
         /// </summary>
-        decimal MaximumPositionSize { get; }
+        decimal MaximumPositionSize { get; set; }
 
 
         /// <summary>
         /// die Puffergröße die verbleiben soll (nach maximalen investitionsgrad
         /// </summary>
-        decimal CashPufferSize { get; }
+        decimal CashPufferSize { get; set; }
 
         /// <summary>
         /// der Handelstag, an dem das Portfolio immer neu allokiert wird
@@ -44,7 +44,7 @@ namespace Trading.DataStructures.Interfaces
         /// <summary>
         /// der Initiale Portfolio Wert zum Starten
         /// </summary>
-        decimal InitialCashValue { get; }
+        decimal InitialCashValue { get; set; }
 
         /// <summary>
         /// die mindest Halte dauer einer Position

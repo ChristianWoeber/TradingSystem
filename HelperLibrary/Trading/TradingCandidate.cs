@@ -1,8 +1,4 @@
 ﻿using System;
-using HelperLibrary.Database.Interfaces;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Interfaces;
-using HelperLibrary.Trading.PortfolioManager;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Enums;
 
@@ -15,7 +11,7 @@ namespace HelperLibrary.Trading
         public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, IPortfolioValuation valuation, bool isInvested = false)
         {
             _tradingCandidateBase = tradingCandidateBase;
-           
+
             //Initialisierungen
             IsInvested = isInvested;
             PortfolioAsof = valuation.PortfolioAsof;
@@ -27,8 +23,14 @@ namespace HelperLibrary.Trading
             CurrentWeight = transactionsHandler.GetWeight(SecurityId) ?? 0;
 
             //Das Target Weight wird auch mit dem current initialisiert
-            TargetWeight = CurrentWeight;         
+            TargetWeight = CurrentWeight;
+            if (IsInvested)
+                CurrentPosition = transactionsHandler.CurrentPortfolio[SecurityId];
         }
+        /// <summary>
+        /// Die aktulle Position im Portfolio
+        /// </summary>
+        public ITransaction CurrentPosition { get; set; }
 
         /// <summary>
         /// Die Security Id des Candidaten
@@ -124,5 +126,5 @@ namespace HelperLibrary.Trading
             return $"{Name} | Score: {Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} | CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring}";
         }
     }
-   
+
 }

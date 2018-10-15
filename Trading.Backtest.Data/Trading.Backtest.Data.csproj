@@ -72,7 +72,6 @@
       <DependentUpon>BacktestDbDataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="Class1.cs" />
-    <Compile Include="Models\ITransaction.cs" />
     <Compile Include="Models\PortfolioValueEf.cs" />
     <Compile Include="Models\TransactionEf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

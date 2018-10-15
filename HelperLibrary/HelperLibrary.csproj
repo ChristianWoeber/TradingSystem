@@ -62,7 +62,7 @@
     <Compile Include="Collections\PriceHistoryCollection.cs" />
     <Compile Include="Database\CallCmd.cs" />
     <Compile Include="Database\Models\PortfolioValue.cs" />
-    <Compile Include="Database\Models\TransactionItem.cs" />
+    <Compile Include="Database\Models\Transaction.cs" />
     <Compile Include="Calculations\CalculationHandler.cs" />
     <Compile Include="Calculations\Quote.cs" />
     <Compile Include="Calculations\ReturnCalculation.cs" />

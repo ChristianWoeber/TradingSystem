@@ -70,19 +70,18 @@ namespace HelperLibrary.Parsing
 
             //initialize an empty Dictionary with Key PropertyName and Value Mapping
             var dicInputMapping = new Dictionary<string, TextReaderInputRecordMapping>(StringComparer.OrdinalIgnoreCase);
+
             //Get Keywords vis Reflection for Mapping//
-
-
             foreach (var item in typeof(T).GetProperties())
             {
                 var attr = item.GetCustomAttributes(typeof(InputMapping), false);
-                if (attr.Length > 0)
+                if (attr.Length <= 0)
+                    continue;
+
+                var mappingAttr = (InputMapping[])attr;
+                foreach (var key in mappingAttr[0].KeyWords)
                 {
-                    var mappingAttr = (InputMapping[])attr;
-                    foreach (var key in mappingAttr[0].KeyWords)
-                    {
-                        keywords.Add(new InputMapper<T>(key, item));
-                    }
+                    keywords.Add(new InputMapper<T>(key, item));
                 }
             }
 
@@ -104,14 +103,13 @@ namespace HelperLibrary.Parsing
                             {
                                 if (!keyword.PropertyName.ContainsIC(field))
                                     continue;
-                                if (dicInputMapping.ContainsKey(keyword.PropertyName))
+                                if (dicInputMapping.TryGetValue(keyword.PropertyName, out _))
                                     continue;
                                 //Ich merke mir den konkreten propertyName für das Mapping
                                 var mapping = new TextReaderInputRecordMapping(keyword.PropertyName, i);
                                 dicInputMapping.Add(keyword.PropertyName, mapping);
                                 break;
                             }
-
                         }
                         else
                         {
@@ -122,38 +120,33 @@ namespace HelperLibrary.Parsing
                             //var insertToList = true;
                             foreach (var item in keywords)
                             {
-                                if (dicInputMapping.ContainsKey(item.PropertyName))
+                                if (!dicInputMapping.TryGetValue(item.PropertyName, out var mapping))
+                                    continue;
+
+                                var value = fields[mapping.ArrayIndex];
+
+                                if (value == "null" || string.IsNullOrEmpty(value))
+                                    item.SetterFunc(obj, default(T));
+
+                                else if (item.PropertyInfo.PropertyType == typeof(DateTime))
                                 {
-                                    var value = fields[dicInputMapping[item.PropertyName].ArrayIndex];
-
-                                    if (value == "null" || string.IsNullOrEmpty(value))
-                                    {
-                                        item.SetterFunc(obj, default(T));
-                                        //insertToList = false;
-                                        //break;
-                                    }
-
-                                    if (item.PropertyInfo.PropertyType == typeof(DateTime))
-                                    {
-                                        item.SetterFunc(obj, Convert.ChangeType(value, item.PropertyInfo.PropertyType,
-                                            CultureInfo.CurrentCulture));
-                                    }
-                                    else if (item.PropertyInfo.PropertyType == typeof(decimal))
-                                    {
-                                        item.SetterFunc(obj, Convert.ChangeType(value, item.PropertyInfo.PropertyType,
-                                            CultureInfo.InvariantCulture));
-                                    }
-                                    else if (item.PropertyInfo.PropertyType.BaseType == typeof(Enum))
-                                    {
-                                        item.SetterFunc(obj, Enum.ToObject(item.PropertyInfo.PropertyType, Convert.ToInt32(value)));
-                                    }
-                                    else
-                                        item.SetterFunc(obj, Convert.ChangeType(value, item.PropertyInfo.PropertyType,
-                                                CultureInfo.InvariantCulture));
+                                    item.SetterFunc(obj, Convert.ChangeType(value, item.PropertyInfo.PropertyType,
+                                        CultureInfo.CurrentCulture));
                                 }
+                                else if (item.PropertyInfo.PropertyType == typeof(decimal))
+                                {
+                                    item.SetterFunc(obj, Convert.ChangeType(value, item.PropertyInfo.PropertyType,
+                                        CultureInfo.InvariantCulture));
+                                }
+                                else if (item.PropertyInfo.PropertyType.BaseType == typeof(Enum))
+                                {
+                                    item.SetterFunc(obj, (int)Enum.ToObject(item.PropertyInfo.PropertyType, Convert.ToInt32(value)));
+                                }
+                                else
+                                    item.SetterFunc(obj, Convert.ChangeType(value, item.PropertyInfo.PropertyType,
+                                        CultureInfo.InvariantCulture));
                             }
 
-                            //if (insertToList)
                             lsReturn.Add(obj);
                             break;
                         }
@@ -253,7 +246,7 @@ namespace HelperLibrary.Parsing
                     {
                         var row = properties
                             .Select(p => p.GetValue(item))
-                            .Select(x => IsNumber(x) ? Convert.ToString(x, CultureInfo.InvariantCulture) : Convert.ToString(x, CultureInfo.CurrentCulture) ?? "null")
+                            .Select(ConvertValue)
                             .Aggregate((a, b) => a + DELIMITER + b);
 
                         writer.WriteLine(row);
@@ -279,12 +272,26 @@ namespace HelperLibrary.Parsing
                 {
                     var row = properties
                         .Select(p => p.GetValue(item))
-                        .Select(x => IsNumber(x) ? Convert.ToString(x, CultureInfo.InvariantCulture) : Convert.ToString(x, CultureInfo.CurrentCulture) ?? "null")
+                        .Select(ConvertValue)
                         .Aggregate((a, b) => a + DELIMITER + b);
 
                     writer.WriteLine(row);
                 }
             }
+        }
+
+        private static string ConvertValue(object value)
+        {
+            if (IsNumber(value))
+                return Convert.ToString(value, CultureInfo.InvariantCulture);
+            if (IsEnum(value))
+                return Convert.ToString((int)Enum.ToObject(value.GetType(), value));
+            return Convert.ToString(value, CultureInfo.CurrentCulture) ?? "null";
+        }
+
+        private static bool IsEnum(object value)
+        {
+            return value.GetType().BaseType == typeof(Enum);
         }
 
         private static bool IsNumber(object value)
@@ -306,7 +313,7 @@ namespace HelperLibrary.Parsing
 
 public class TextReaderInputRecordMapping : Tuple<string, int>
 {
-    public TextReaderInputRecordMapping(string propertyName, int arrayIndex) : base(item1: propertyName, item2: arrayIndex)
+    public TextReaderInputRecordMapping(string propertyName, int arrayIndex) : base(propertyName, arrayIndex)
     {
 
     }
@@ -318,12 +325,12 @@ public class TextReaderInputRecordMapping : Tuple<string, int>
 
 public class InputMapper<T> : Tuple<string, PropertyInfo>
 {
-    public InputMapper(string propertyName, PropertyInfo propertyInfo) : base(item1: propertyName, item2: propertyInfo)
+    public InputMapper(string propertyName, PropertyInfo propertyInfo) : base(propertyName, propertyInfo)
     {
-
+        SetterFunc = PropertyInfo.CreateSetter<T>();
     }
     public string PropertyName => Item1;
     public PropertyInfo PropertyInfo => Item2;
-    public Action<T, object> SetterFunc => PropertyInfo.CreateSetter<T>();
+    public Action<T, object> SetterFunc { get; }
 }
 

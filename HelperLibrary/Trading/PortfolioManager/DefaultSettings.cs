@@ -28,17 +28,17 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Die maximale Initiale Positionsgröße - 10% wenn noch kein Bestand in der Position, dann wird initial eine 10% Positoneröffnet - sprich nach der ersten Allokatoin sollten 10 stocks im Bestand sein
         /// </summary>
-        public decimal MaximumInitialPositionSize => new decimal(0.1);
+        public decimal MaximumInitialPositionSize { get; set; } = new decimal(0.1);
 
         /// <summary>
         /// Die maximale gesamte Positionsgröße - 33% - diese kann nach dem ersen aufstocken erreicht werden - 10% dann 20% dann 33%
         /// </summary>
-        public decimal MaximumPositionSize => new decimal(0.33);
+        public decimal MaximumPositionSize { get; set; } = new decimal(0.33);
 
         /// <summary>
         /// Cash Puffer Größe 50 Bps
         /// </summary>
-        public decimal CashPufferSize => new decimal(0.005);
+        public decimal CashPufferSize { get; set; } = new decimal(0.005);
 
         /// <summary>
         /// The Trading Interval of The Portfolio
@@ -58,7 +58,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Der Initiale Portfolio Wert
         /// </summary>
-        public decimal InitialCashValue { get; }
+        public decimal InitialCashValue { get; set; }
 
         /// <summary>
         /// Die Haltedauer bevor die Position abgeschichtet oder ausgetauscht werden darf
@@ -91,17 +91,19 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Die maximale Initiale Positionsgröße - 10% wenn noch kein Bestand in der Position, dann wird initial eine 10% Positoneröffnet - sprich nach der ersten Allokatoin sollten 10 stocks im Bestand sein
         /// </summary>
-        public decimal MaximumInitialPositionSize => new decimal(0.1);
+        public decimal MaximumInitialPositionSize { get; set; }=
+        new decimal(0.1);
 
         /// <summary>
         /// Die maximale gesamte Positionsgröße - 33% - diese kann nach dem ersen aufstocken erreicht werden - 10% dann 20% dann 33%
         /// </summary>
-        public decimal MaximumPositionSize => new decimal(0.33);
+        public decimal MaximumPositionSize { get; set; }=
+        new decimal(0.33);
 
         /// <summary>
         /// Cash Puffer Größe 50 Bps
         /// </summary>
-        public decimal CashPufferSize => new decimal(0.005);
+        public decimal CashPufferSize { get; set; } = new decimal(0.005);
 
         /// <summary>
         /// The Trading Interval of The Portfolio
@@ -121,7 +123,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Der Initiale Portfolio Wert
         /// </summary>
-        public decimal InitialCashValue { get; }
+        public decimal InitialCashValue { get; set; }
 
         /// <summary>
         /// Die Haltedauer bevor die Position abgeschichtet oder ausgetauscht werden darf

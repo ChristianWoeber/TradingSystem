@@ -30,42 +30,94 @@ namespace Trading.UI.Wpf.ViewModels
 
     public class TradingViewModel : INotifyPropertyChanged
     {
+        #region Private Members
+
         private PortfolioManager _portfolioManager;
         private readonly IScoringProvider _scoringProvider;
         private IEnumerable<TransactionViewModel> _holdings;
+        private DateTime _startDateTime;
+        private DateTime _endDateTime;
+
+        #endregion
+
+        #region Constructor
 
         public TradingViewModel(List<ITransaction> transactions, IScoringProvider scoringProvider)
         {
             _scoringProvider = scoringProvider;
+            Settings = new SettingsViewModel(new ConservativePortfolioSettings() { LoggingPath = Globals.PortfolioValuePath });
+
+            StartDateTime = DateTime.Today.AddYears(-5);
+            EndDateTime = DateTime.Today;
+
             Init(transactions);
 
+            //TODO implementieren
+
             //Command
-            RunBacktestCommand = new RelayCommand(RunBacktest);
-            MoveCursorToNextTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDay?.Invoke(this, _portfolioManager.PortfolioSettings.TradingDay));
+            RunBacktestCommand = new RelayCommand(OnRunBacktest);
+            LoadBacktestCommand = new RelayCommand(OnLoadBacktest);
+            MoveCursorToNextTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDayEvent?.Invoke(this, _portfolioManager.PortfolioSettings.TradingDay));
         }
+        
+
+        #endregion  
+
+        #region Events
 
 
-        public event EventHandler<BacktestResultEventArgs> BacktestCompleted;
+        public event EventHandler<BacktestResultEventArgs> BacktestCompletedEvent;
 
-        public event EventHandler<DayOfWeek> MoveCursorToNextTradingDay;
+        public event EventHandler<DayOfWeek> MoveCursorToNextTradingDayEvent;
+
+        #endregion
+
+        #region Commands
 
         public ICommand RunBacktestCommand { get; }
 
+        public ICommand LoadBacktestCommand { get; }
+
         public ICommand MoveCursorToNextTradingDayCommand { get; }
+
+
+        #endregion   
+
+        #region Initializations
 
         private void Init(List<ITransaction> transactions)
         {
             _portfolioManager = new PortfolioManager(null
-                , new ConservativePortfolioSettings { LoggingPath = Globals.PortfolioValuePath }
+                , Settings
                 , new TransactionsHandler(null, new BacktestTransactionsCacheProvider(transactions)));
 
             //scoring Provider registrieren
             _portfolioManager.RegisterScoringProvider(_scoringProvider);
 
             //BacktestCompleted Event feuern
-            BacktestCompleted?.Invoke(this, new BacktestResultEventArgs(SimpleTextParser.GetListOfType<PortfolioValuation>(Path.Combine(_portfolioManager.PortfolioSettings.LoggingPath, "PortfolioValue"))));
-
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(SimpleTextParser.GetListOfType<PortfolioValuation>(Path.Combine(_portfolioManager.PortfolioSettings.LoggingPath, "PortfolioValue"))));
         }
+
+
+        #endregion
+
+        #region CommandActions
+
+        private void OnRunBacktest()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnLoadBacktest()
+        {
+            var filePath = _portfolioManager.PortfolioSettings.LoggingPath;
+            var values = SimpleTextParser.GetListOfType<PortfolioValuation>(File.ReadAllText(filePath));
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(values));
+        }
+
+        #endregion
+
+        #region Helpers
 
         public static Dictionary<int, string> NameCatalog => Factory.GetIdToNameDictionary();
 
@@ -87,7 +139,13 @@ namespace Trading.UI.Wpf.ViewModels
         {
             return _scoringProvider.GetScore(transaction.SecurityId, asof);
         }
+        
 
+        #endregion
+
+        #region Public Members
+
+              
         public IEnumerable<TransactionViewModel> Holdings
         {
             get => _holdings;
@@ -100,12 +158,33 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
-        private void RunBacktest()
+        public DateTime StartDateTime
         {
-            var filePath = _portfolioManager.PortfolioSettings.LoggingPath;
-            var values = SimpleTextParser.GetListOfType<PortfolioValuation>(File.ReadAllText(filePath));
-            BacktestCompleted?.Invoke(this, new BacktestResultEventArgs(values));
+            get { return _startDateTime; }
+            set
+            {
+                if (value.Equals(_startDateTime))
+                    return;
+                _startDateTime = value;
+                OnPropertyChanged();
+            }
         }
+
+        public DateTime EndDateTime
+        {
+            get { return _endDateTime; }
+            set
+            {
+                if (value.Equals(_endDateTime))
+                    return;
+                _endDateTime = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public SettingsViewModel Settings { get; }
+
+        #endregion
 
         #region INotifyPropertyChanged
 

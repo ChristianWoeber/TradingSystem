@@ -243,6 +243,22 @@ namespace TradingSystemTests {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die TransactionDateTime;SecurityId;Shares;TargetAmountEur;TransactionType;Cancelled;TargetWeight;EffectiveWeight;EffectiveAmountEur
+        ///05.01.2000 00:00:00;39;344;10000.0;1;0;0.1;0.1000;10000.08
+        ///05.01.2000 00:00:00;40;304;10000.0;1;0;0.1;0.1000;9996.5232
+        ///05.01.2000 00:00:00;16;253;10000.0;1;0;0.1;0.0999;9994.2586
+        ///05.01.2000 00:00:00;11;153;10000.0;1;0;0.1;0.0998;9983.25
+        ///05.01.2000 00:00:00;14;497;10000.0;1;0;0.1;0.1000;9996.658
+        ///05.01.2000 00:00:00;23;128;10000.0;1;0;0.1;0.0994;9943.0400
+        ///05.01.2000 00:00:00;1 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string RebalancePortfolioTestFile {
+            get {
+                return ResourceManager.GetString("RebalancePortfolioTestFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die TransactionDateTime;SecurityId;Shares;AmountEur;TransactionType;Cancelled;TargetWeight;EffectiveWeight
         ///11.10.2016 00:00:00;8;125;10000.0;1;0;0.1;0.0995
         ///11.10.2016 00:00:00;16;487;10000.0;1;0;0.1;0.0999

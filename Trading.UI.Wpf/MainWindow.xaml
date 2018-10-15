@@ -7,11 +7,15 @@
         xmlns:controls="clr-namespace:Trading.UI.Wpf.Controls"
         xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Backtest" Height="450" Width="800">
     <Grid>
-        <arts:SmartFlyout >
+        <arts:SmartFlyout PanelBackground="LightBlue" >
             <arts:SmartFlyout.Items>
-                <arts:SmartFlyoutItem HeaderText="Einstellungen"></arts:SmartFlyoutItem>
+                <arts:SmartFlyoutItem HeaderText="Einstellungen"  TextAppearance="Header1" Background="Transparent" HeaderTextForeground="White">
+                    <arts:SmartFlyoutItem.FlyoutContent>
+                    <controls:SettingsControl/>
+                    </arts:SmartFlyoutItem.FlyoutContent>
+                </arts:SmartFlyoutItem>
 
             </arts:SmartFlyout.Items>
             <arts:SmartFlyout.Content>
@@ -27,8 +31,8 @@
  
                     <StackPanel Orientation="Horizontal" >
                         <arts:SmartIconButton Icon="UwpRefresh"                                             
-                                              Description="Run" 
-                                              Command="{Binding RunBacktestCommand}" 
+                                              Description="Load Backtest" 
+                                              Command="{Binding LoadBacktestCommand}" 
                                               Width="85" 
                                               Margin="5" 
                                               VerticalContentAlignment="Center" 

@@ -16,8 +16,8 @@ namespace TradingSystemTests.Models
             {
                 if (!TransactionsCache.Value.ContainsKey(dicEntry.Key))
                     TransactionsCache.Value.Add(dicEntry.Key, new List<ITransaction>());
-                //sonst Werte einfügen
 
+                //sonst Werte einfügen
                 foreach (var item in dicEntry.Value)
                 {
                     //Wenn es die transaktion schon gibt weiter

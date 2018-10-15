@@ -30,7 +30,7 @@ namespace TradingSystemTests.Models
             TempPath = Path.Combine(Path.GetTempPath(), _filename);
 
             //ich schreibe ins File, allerdings nur die neuen items
-            SimpleTextParser.AppendToFile(items.Where(x=>x.IsTemporary), TempPath);
+            SimpleTextParser.AppendToFile(items.Cast<Transaction>().Where(x=>x.IsTemporary), TempPath);
 
             //anzeigen
             if (_showInFile)

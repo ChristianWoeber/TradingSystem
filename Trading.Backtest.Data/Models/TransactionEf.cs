@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
+using Trading.DataStructures.Utils;
 
 namespace Trading.Backtest.Data.Models
 {
     public class TransactionEf : ITransaction
     {
+        private string _uniqueKey;
+
         /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt
         /// </summary>
@@ -73,7 +73,7 @@ namespace Trading.Backtest.Data.Models
         public string Name { get; set; }
 
         [NotMapped]
-        public string UniqueKey => $"{TransactionDateTime.Date}_{SecurityId}_{Shares}_{(int)TransactionType}";
+        public string UniqueKey => _uniqueKey ?? (_uniqueKey = UniqueKeyProvider.CreateUniqueKey(this));
 
 
         #endregion

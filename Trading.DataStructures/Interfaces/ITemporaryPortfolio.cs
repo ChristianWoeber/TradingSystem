@@ -56,5 +56,7 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="candidateSecurityId"></param>
         /// <returns></returns>
         ITransaction Get(int candidateSecurityId);
+
+        bool ContainsCandidate(ITradingCandidate temporaryCandidate);
     }
 }

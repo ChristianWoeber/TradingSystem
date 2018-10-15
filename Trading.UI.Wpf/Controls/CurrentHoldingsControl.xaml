@@ -18,13 +18,13 @@
                                           Header="Name"  />
                 <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
                                           Header="SecurityId" 
-                                          Visibility="Collapsed"/>
+                                          Visibility="Visible"/>
                 <arts:SmartDataGridColumn Binding="{Binding TransactionDateTime, StringFormat=d, Mode=OneWay}" 
                                           Header="TransaktionsDatum"/>
                 <arts:SmartDataGridColumn Binding="{Binding TargetWeight, StringFormat=P, Mode=OneWay}" 
                                           Header="Ziel-Gewicht"/>
                 <arts:SmartDataGridColumn Binding="{Binding EffectiveAmountEur, StringFormat=C, Mode=OneWay}" 
-                                          Header="Ziel-Amount-Effektiv"/>
+                                          Header="Ziel-Amount-Eff"/>
                 <arts:SmartDataGridColumn Binding="{Binding Type, Mode=OneWay}" 
                                           Header="Typ"/>
                 <arts:SmartDataGridColumn Binding="{Binding Score,Mode=OneWay, StringFormat=N}" 

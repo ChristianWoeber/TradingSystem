@@ -1,4 +1,7 @@
-﻿namespace Trading.DataStructures.Interfaces
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
+
+namespace Trading.DataStructures.Interfaces
 {
     public interface IAdjustmentProvider
     {
@@ -21,5 +24,7 @@
         /// <param name="candidate">der Trading candidate</param>
         /// <param name="adjustTargetWeightOnly"></param>
         bool AdjustTemporaryPortfolioToCashPuffer(decimal missingCash, ITradingCandidate candidate, bool adjustTargetWeightOnly);
+
+
     }
 }

@@ -1,12 +1,8 @@
 ﻿using HelperLibrary.Database.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using HelperLibrary.Extensions;
-using HelperLibrary.Interfaces;
-using HelperLibrary.Parsing;
 using JetBrains.Annotations;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -14,7 +10,41 @@ using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
-    // class that holds the portfolio logic
+
+    public interface ITransactionCalculation
+    {
+        int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount);
+
+        decimal CalculateTargetAmount(ITradingCandidate candidate);
+
+        decimal CalculateEffectiveAmountEur(ITradingCandidate candidate, int targetShares);
+
+        decimal CalculateEffectiveWeight(decimal effectiveAmountEur);
+    }
+
+    public class TransactionCalculationHandler : ITransactionCalculation
+    {
+        public int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal CalculateTargetAmount(ITradingCandidate candidate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal CalculateEffectiveAmountEur(ITradingCandidate candidate, int targetShares)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal CalculateEffectiveWeight(decimal effectiveAmountEur)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class PortfolioManager : PortfolioManagerBase, IAdjustmentProvider
     {
         /// <summary>
@@ -25,14 +55,13 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             //Initialisierungen
             CashHandler = new CashManager(this);
-            TemporaryPortfolio = new TemporaryPortfolio(PortfolioSettings, this);
+            //RebalanceProvider = new RebalanceProvider(this);
+            TemporaryPortfolio = new TemporaryPortfolio(this);
             CashHandler.Cash = PortfolioSettings.InitialCashValue;
 
             //Register Events
             PortfolioAsofChangedEvent += OnPortfolioAsOfChanged;
             PositionChangedEvent += OnPositionChanged;
-
-            //LockupHandler = new LockupPeriodeHandler(this, TransactionsHandler);
         }
 
         protected event EventHandler<PortfolioManagerEventArgs> PositionChangedEvent;
@@ -141,10 +170,10 @@ namespace HelperLibrary.Trading.PortfolioManager
                 if (candidate.IsInvested)
                 {
                     //immer die letzte Transaktion holen
-                    var lastTransaction = TransactionsHandler.GetSingle(candidate.Record.SecurityId, null);
+                    //var lastTransaction = TransactionsHandler.GetSingle(candidate.Record.SecurityId, null);
 
                     //und zu dem Zeitpunkt den Score
-                    candidate.LastScoringResult = ScoringProvider.GetScore(candidate.Record.SecurityId, lastTransaction.TransactionDateTime);
+                    candidate.LastScoringResult = ScoringProvider.GetScore(candidate.Record.SecurityId, candidate.LastTransaction.TransactionDateTime);
 
                     //es wird nur an Handelstagen aufgestockt
                     if (PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay && candidate.HasBetterScoring)
@@ -200,7 +229,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
 
             //TODO: das Rebalancing Refactoren
-            RebalancedTemporaryPortfolio(bestCandidatesNotInvestedIn, candidates);
+            RebalanceTemporaryPortfolio(bestCandidatesNotInvestedIn, candidates);
         }
 
         private void AdjustTradingCandidateBuy(decimal currentWeight, TradingCandidate candidate)
@@ -262,7 +291,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
-        private void RebalancedTemporaryPortfolio([NotNull] List<TradingCandidate> bestCandidates, [NotNull] List<TradingCandidate> allCandidates)
+        private void RebalanceTemporaryPortfolio([NotNull] List<TradingCandidate> bestCandidates, [NotNull] List<TradingCandidate> allCandidates)
         {
             //investierte Candidaten
             var investedCandidates = allCandidates.Where(x => x.IsInvested).ToList();
@@ -271,16 +300,38 @@ namespace HelperLibrary.Trading.PortfolioManager
             var investedIdx = 1;
 
             //gibt mir den ncähsten Kandiaten zum Austauschen zurück
-            TradingCandidate GetNextInvestedCandiateToReplace() =>
-                investedCandidates[investedCandidates.Count - investedIdx];
+            TradingCandidate GetNextInvestedCandiateToReplace()
+            {
+                if (investedIdx == investedCandidates.Count)
+                    return null;
+
+                var worstCurrentPosition = investedCandidates[investedCandidates.Count - investedIdx];
+                //Wenn der Kandiate noch nicht im temporären Portfolio ist kann ich ihn zurückgeben
+                if (!TemporaryPortfolio.ContainsCandidate(worstCurrentPosition))
+                    return worstCurrentPosition;
+
+                //sonst hat es die Position bereits ausgestoppt und ich probiere den nächsten
+                investedIdx++;
+                return GetNextInvestedCandiateToReplace();
+                //return worstCurrentPosition;
+            }
 
             //1. Schauen ob es bereits temporäre transaktionen bei den investierten gibt, dann werden diese bevorzugt
             if (investedCandidates.Any(x => x.IsTemporary))
             {
-                //mach das nur für temporäre mit Stop oder aufstockung, sonst kann es sein,
+                //Zuerst alle Stops exekutieren
+                var stops = investedCandidates.Where(x => x.HasStopp && x.IsBelowStopp);
+                foreach (var stop in stops)
+                    AddToTemporaryPortfolio(stop);
+
+                //mach das nur für temporäre mit aufstockung, sonst kann es sein,
                 // dass ich die Enumeration ändere durch den verkauf (da setzte ich den kandidaten ja auch temporär)
-                foreach (var temporaryCandidate in investedCandidates.Where(x => x.IsTemporary && x.HasBetterScoring || x.IsTemporary && x.HasStopp))
+                foreach (var temporaryCandidate in investedCandidates.Where(x => x.IsTemporary && x.HasBetterScoring))
                 {
+                    //Dann wurde die Position bereits verkauft und ich breake ebenfalls
+                    if (TemporaryPortfolio.ContainsCandidate(temporaryCandidate))
+                        break;
+
                     //den Kandidaten entsprechend anpassen
                     AddToTemporaryPortfolio(temporaryCandidate);
 
@@ -290,7 +341,15 @@ namespace HelperLibrary.Trading.PortfolioManager
                         if (remainingCash > 0)
                             continue;
 
+                        //den aktuell schlechtesten Kandidaten holen
                         var worstCurrentPosition = GetNextInvestedCandiateToReplace();
+                        if (worstCurrentPosition == null)
+                            break;
+
+                        //Für den Fall, dass alle Positonen gut laufen z.b: sobal ich bei der SecId bin kann ich breaken
+                        if (worstCurrentPosition.SecurityId == temporaryCandidate.SecurityId)
+                            break;
+
                         AdjustTradingCandidateSell(worstCurrentPosition.CurrentWeight, worstCurrentPosition);
                         //sonst den schlechtesten  verkaufen
                         AddToTemporaryPortfolio(worstCurrentPosition);
@@ -313,10 +372,19 @@ namespace HelperLibrary.Trading.PortfolioManager
             if (investedCandidates.Count == 0)
                 return;
 
-            //wenn der beste Kandidat keinen höheren Score als der aktuell schlechteste hat brauch ich mir die anderen erst gar nicht anzusehen
-            if (best.ScoringResult.Score < GetNextInvestedCandiateToReplace()?.ScoringResult.Score *
-                (1 + PortfolioSettings.ReplaceBufferPct))
+            var nextCandidate = GetNextInvestedCandiateToReplace();
+            if (nextCandidate == null)
+            {
+                CleanUpCash(allCandidates, investedCandidates);
                 return;
+            }
+
+            //wenn der beste Kandidat keinen höheren Score als der aktuell schlechteste hat brauch ich mir die anderen erst gar nicht anzusehen
+            if (best.ScoringResult.Score < nextCandidate.ScoringResult.Score * (1 + PortfolioSettings.ReplaceBufferPct))
+            {
+                CleanUpCash(allCandidates, investedCandidates);
+                return;
+            }
 
             //flag das angibt ob ich aus der foreach breaken kann
             var isbetterCandidateLeft = true;
@@ -327,10 +395,11 @@ namespace HelperLibrary.Trading.PortfolioManager
                 //abbreuchbedingung wenn kein besser kandidat mehr in der Liste enthaltebn ist
                 if (!isbetterCandidateLeft)
                     break;
-                //wenn er berties im Temporären Portfolio ist zum nächst besseren
+
+                //wenn er bereits im Temporären Portfolio ist zum nächst besseren
                 if (notInvestedCandidate.IsTemporary)
                 {
-                    //dann brauch ich einen Kandiaten merh zum abschichten
+                    //dann brauch ich einen neuen Kandiaten zum Abschichten
                     investedIdx++;
                     continue;
                 }
@@ -342,6 +411,8 @@ namespace HelperLibrary.Trading.PortfolioManager
                 while (investedIdx < investedCandidates.Count)
                 {
                     var currentWorstInvestedCandidate = GetNextInvestedCandiateToReplace();
+                    if (currentWorstInvestedCandidate == null)
+                        break;
                     investedIdx++;
 
                     if (currentWorstInvestedCandidate.HasBetterScoring || currentWorstInvestedCandidate.IsTemporary)
@@ -353,15 +424,14 @@ namespace HelperLibrary.Trading.PortfolioManager
                     //wenn der nicht investierte Kandidate schlechter ist als der investierte ignorieren
                     //an diesem Punkt kann ich davon ausgehen, dass auch die nächsten Kandidaten nicht mehr besser sind
                     // und abbrechen
-                    if (notInvestedCandidate.ScoringResult.Score <=
-                        currentWorstInvestedCandidate.ScoringResult.Score *
+                    if (notInvestedCandidate.ScoringResult.Score <= currentWorstInvestedCandidate.ScoringResult.Score *
                         (1 + PortfolioSettings.ReplaceBufferPct))
                     {
                         isbetterCandidateLeft = false;
                         break;
                     }
 
-                    //wenn die Position beretis aufgestockt wurde tausche ich sie nicht aus
+                    //wenn die Position bereits aufgestockt wurde tausche ich sie nicht aus
                     if (currentWorstInvestedCandidate.CurrentWeight > new decimal(0.12))
                         continue;
 
@@ -370,8 +440,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                         continue;
 
                     //investierten Verkaufen
-                    AdjustTradingCandidateSell(currentWorstInvestedCandidate.CurrentWeight,
-                        currentWorstInvestedCandidate);
+                    AdjustTradingCandidateSell(currentWorstInvestedCandidate.CurrentWeight, currentWorstInvestedCandidate);
                     AddToTemporaryPortfolio(currentWorstInvestedCandidate);
 
                     //neuen kaufen
@@ -383,12 +452,18 @@ namespace HelperLibrary.Trading.PortfolioManager
                 }
             }
 
+            //clean up des Cash-Wertes
+            CleanUpCash(allCandidates, investedCandidates);
+        }
+
+        private void CleanUpCash(List<TradingCandidate> allCandidates, List<TradingCandidate> investedCandidates)
+        {
             //Hier bin nich mit dem Rebalancing fertig
             if (CashHandler.Cash < 0)
             {
-                //TODO:
                 //die Temporären Kandidaten
-                var tempToAdjust = allCandidates.Where(x => x.IsTemporary && x.TransactionType != TransactionType.Close).ToList();
+                var tempToAdjust = allCandidates.Where(x => x.IsTemporary && x.TransactionType != TransactionType.Close)
+                    .ToList();
 
                 //Cash Clean Up der temporären auf Puffer Größe
                 if (tempToAdjust.Count > 0)
@@ -418,7 +493,6 @@ namespace HelperLibrary.Trading.PortfolioManager
 
                     if (CashHandler.Cash < 0)
                     {
-
                     }
                 }
             }
@@ -427,7 +501,6 @@ namespace HelperLibrary.Trading.PortfolioManager
                 //Dann ist noch Cash für einen Kandiaten über
             }
         }
-
 
         private bool IsBelowMinimumHoldingPeriode(TradingCandidate candidate)
         {
@@ -518,20 +591,22 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         private void AdjustTemoraryPosition(ITradingCandidate candidate)
         {
-            ITransaction current = null;
-            if (candidate.IsInvested)
-                current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
+            //TODO: Refactoring in gekapselte Klasse IPositonCalculation ?
+
+            //ITransaction current = null;
+            //if (candidate.IsInvested)
+            //    current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
 
             var targetAmount = CalculateTargetAmount(candidate);
             var targetShares = CalculateTargetShares(candidate, targetAmount);
 
 
             //wenn ich bereits investiert bin, ziehe ich die bestehenden shares ab
-            if (current != null)
-            {
-                targetShares = targetShares - current.Shares;
-                targetAmount = targetAmount - current.TargetAmountEur;
-            }
+            //if (current != null)
+            //{
+            //    targetShares = targetShares - current.Shares;
+            //    targetAmount = targetAmount - current.TargetAmountEur;
+            //}
 
             var effectiveAmountEur = CalculateEffectiveAmountEur(candidate, targetShares);
             var effectiveWeight = CalculateEffectiveWeight(effectiveAmountEur);
@@ -547,24 +622,26 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public void AddToTemporaryPortfolio(ITradingCandidate candidate)
         {
-            ITransaction current = null;
-            if (candidate.IsInvested)
-                current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
+            //ITransaction current = null;
+            //if (candidate.IsInvested)
+            //    current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
+
+            //TODO:sinkenden Fall implementieren 
 
             var targetAmount = CalculateTargetAmount(candidate);
             var targetShares = CalculateTargetShares(candidate, targetAmount);
 
-            //wenn ich bereits investiert bin, ziehe ich die bestehenden shares ab
-            if (current != null)
-            {
-                targetShares = targetShares - current.Shares;
-                targetAmount = targetAmount - current.TargetAmountEur;
-            }
+            ////wenn ich bereits investiert bin, ziehe ich die bestehenden shares ab
+            // if (current != null && candidate.TargetWeight > candidate.CurrentWeight)
+            //{
+            //    targetShares = targetShares - current.Shares;
+            //    targetAmount = targetAmount - current.TargetAmountEur;
+            //}
 
             var effectiveAmountEur = CalculateEffectiveAmountEur(candidate, targetShares);
 
             //wenn es sich um ein Closing einer Position handelt
-            if (candidate.TargetWeight <= 0)
+            if (candidate.TargetWeight <= 0 && candidate.IsInvested)
             {
                 targetShares = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId].Shares * -1;
                 targetAmount = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId].TargetAmountEur * -1;
@@ -616,14 +693,26 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         private static int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount)
         {
-            //die ziel shares bestimmen, werden immer abgerundet
-            return (int)Math.Round(targetAmount / candidate.Record.AdjustedPrice, 2, MidpointRounding.AwayFromZero);
+            //die gesamt ziel shares bestimmen, werden immer abgerundet
+            var completeTargetShares = (int)Math.Round(targetAmount / candidate.Record.AdjustedPrice, 2, MidpointRounding.AwayFromZero);
+            if (candidate.IsInvested)
+            {
+                //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
+                return completeTargetShares - candidate.CurrentPosition.Shares;
+            }
+            return completeTargetShares;
         }
 
         private decimal CalculateTargetAmount(ITradingCandidate candidate)
         {
-            //der ziel Betrag in EuR
-            return Math.Round(PortfolioValue * candidate.TargetWeight, 4);
+            //der gesamt ziel Betrag in EuR
+            var completeTargetAmount = Math.Round(PortfolioValue * candidate.TargetWeight, 4);
+            if (candidate.IsInvested)
+            {
+                //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
+                return completeTargetAmount - candidate.CurrentPosition.TargetAmountEur;
+            }
+            return completeTargetAmount;
         }
 
         private Transaction CreateTransaction(ITradingCandidate candidate, decimal targetAmount, int targetShares, decimal effectiveAmountEur, decimal effectiveWeight)
@@ -682,7 +771,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             //die Allokation to Risk berechnen
             AllocationToRisk = Math.Round(sumInvested, 4) / PortfolioValue;
-            
+
             //log Value
             //SimpleTextParser.AppendToFile(new List<PortfolioValuation> {new PortfolioValuation(this) },PortfolioSettings.LoggingPath);
         }

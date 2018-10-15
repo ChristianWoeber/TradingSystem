@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Extensions;
-using HelperLibrary.Interfaces;
 using HelperLibrary.Parsing;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
 using NLog;
-using NLog.Layouts;
 using NUnit.Framework;
 using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Helper;
@@ -40,9 +39,9 @@ namespace TradingSystemTests.TestCases
             var logfile = new NLog.Targets.FileTarget(Path.GetFileNameWithoutExtension(namePortfolioValue)) { FileName = namePortfolioValue ?? "DEBUG_TEST.txt", ArchiveOldFileOnStartup = true, MaxArchiveFiles = 2, ArchiveAboveSize = 5000000 };
             var logfileCash = new NLog.Targets.FileTarget(Path.GetFileNameWithoutExtension(nameCash)) { FileName = nameCash ?? "DEBUG_TEST2.txt", ArchiveOldFileOnStartup = true, MaxArchiveFiles = 2, ArchiveAboveSize = 5000000 };
 
-            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+            //var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
-            config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            //config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
             config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile, Path.GetFileNameWithoutExtension(namePortfolioValue));
             config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfileCash, Path.GetFileNameWithoutExtension(nameCash));
 
@@ -51,7 +50,8 @@ namespace TradingSystemTests.TestCases
 
         private Dictionary<int, List<ITransaction>> LoadHistory(string filename)
         {
-            return TestHelper.CreateTestCollection<Transaction>(filename).Cast<ITransaction>().ToDictionaryList(x => x.SecurityId);
+            var trans = TestHelper.CreateTestCollection<Transaction>(filename).OfType<ITransaction>();
+            return trans.ToDictionaryList(x => x.SecurityId);
         }
 
 
@@ -155,7 +155,7 @@ namespace TradingSystemTests.TestCases
 
         }
 
-        [TestCase("01.01.2000", 18, "ConsTransactions.csv", true, true, "ConsPortfolioValue.csv", "ConsCash.csv")]
+        [TestCase("01.01.2000", 5, "ConsTransactions.csv", true, true, "ConsPortfolioValue.csv", "ConsCash.csv")]
         public void SimpleBacktestTest(string startDate, int testYears, string temporaryFilename, bool showTransactions, bool clearOldFile, string navlogName, string cashLoggerName)
         {
             //TODO : File aich auf NLOG umstellen
@@ -173,7 +173,7 @@ namespace TradingSystemTests.TestCases
             }
 
             //NLog konfigurieren
-            ConfigureLogger(navlogName, cashLoggerName);
+            //ConfigureLogger(navlogName, cashLoggerName);
 
             //datum parsen
             var date = DateTime.Parse(startDate);
@@ -194,16 +194,16 @@ namespace TradingSystemTests.TestCases
             pm.RegisterScoringProvider(scoringProvider);
 
             var navLogger = LogManager.GetLogger(Path.GetFileNameWithoutExtension(navlogName));
-            navLogger.Info("ENTWICKLUNG PORTFOLIO:");
+            navLogger.Info($"PortfolioAsof|PortfolioValue|AllocationToRisk");
             pm.PortfolioAsofChangedEvent += (sender, args) =>
             {
-                navLogger.Info($"{args.ToShortDateString()} | {pm.PortfolioValue}");
+                navLogger.Info($"{args.ToShortDateString()} | {pm.PortfolioValue.ToString("N", CultureInfo.InvariantCulture)} | {pm.AllocationToRisk.ToString("N", CultureInfo.InvariantCulture)}");
             };
 
             var cashLogger = LogManager.GetLogger(Path.GetFileNameWithoutExtension(cashLoggerName));
             pm.CashHandler.CashChangedEvent += (sender, args) =>
             {
-                cashLogger.Info($"{args.ToShortDateString()} | {pm.CashHandler.Cash:C}");
+                cashLogger.Info($"{args.ToShortDateString()} | {pm.CashHandler.Cash.ToString("N", CultureInfo.InvariantCulture)}");
             };
 
             //einen BacktestHandler erstellen
@@ -228,6 +228,35 @@ namespace TradingSystemTests.TestCases
             var result = Math.Pow((double)factor, (double)1 / testYears);
 
             Trace.TraceInformation($"aktuelles Ergebnis kumuliert: {factor:P} {Environment.NewLine}aktuelles Ergebnis p.a.: {result - 1:P}");
+        }
+
+        [TestCase("RebalancePortfolioTestFile.txt", "19.01.2000")]
+        public void RebalanceTest(string filename, string asof)
+        {
+            //Test Pm erstelle
+            var pm = new PortfolioManager(null, null,
+                new TestTransactionsHandler(null,
+                    new TransactionsCacheProviderTest(() => LoadHistory(filename))));
+
+            //datum parsen
+            var date = DateTime.Parse(asof);
+
+            //price history initialisieren
+            if (_priceHistoryDictionary == null)
+                _priceHistoryDictionary = TestHelper.CreateTestDictionary("EuroStoxx50Member.xlsx", date.AddDays(-270), date.AddYears(5));
+
+
+            //scoring provider erstellen
+            var scoringProvider = new ScoringProvider(_priceHistoryDictionary);
+            pm.RegisterScoringProvider(scoringProvider);
+            var candidatesProvider = new CandidatesProvider(scoringProvider);
+            var candidates = candidatesProvider.GetCandidates(date).ToList();
+
+            pm.PassInCandidates(candidates, date);
+
+            Assert.IsTrue(pm.TemporaryPortfolio.HasChanges);
+            Assert.IsFalse(pm.TemporaryPortfolio.GroupBy(x => x.SecurityId).Any(y => y.Key > 1));
+
         }
 
 

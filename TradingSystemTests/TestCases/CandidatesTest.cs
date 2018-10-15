@@ -20,16 +20,16 @@ namespace TradingSystemTests.TestCases
                 _priceHistoryDictionary = TestHelper.CreateTestDictionary("EuroStoxx50Member.xlsx");
         }
 
-        [TestCase("01.01.2010")]
+        [TestCase("01.01.2008")]
         public void GetCandidatesTest(string asof)
         {
             var date = DateTime.Parse(asof);
 
             //einen BacktestHandler erstellen
-            var backtestHandler = new CandidatesProvider(new ScoringProvider(_priceHistoryDictionary));
+            var candidatesProvider = new CandidatesProvider(new ScoringProvider(_priceHistoryDictionary));
 
             //die Candidatenliste zrückgeben lassen
-            var candidates = backtestHandler.GetCandidates(date);
+            var candidates = candidatesProvider.GetCandidates(date);
 
             Assert.IsTrue(candidates.Any());
         }

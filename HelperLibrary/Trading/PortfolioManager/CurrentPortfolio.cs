@@ -37,8 +37,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             get
             {
                 var dic = _items.ToDictionary(x => x.SecurityId);
-                return dic.ContainsKey(key) ? dic[key] : null;
-
+                return dic.TryGetValue(key, out var transaction) ? transaction : null;
             }
         }
 

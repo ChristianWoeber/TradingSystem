@@ -275,6 +275,7 @@ namespace TradingSystemTests.Models
                         sumItem.SecurityId = secIdGrp.Key;
                         sumItem.Shares += item.Shares;
                         sumItem.TargetAmountEur += item.Shares < 0 ? -item.TargetAmountEur : item.TargetAmountEur;
+
                         //Target Weight braucht nicht aufsummiert werden
                         sumItem.TargetWeight = item.TargetWeight;
 

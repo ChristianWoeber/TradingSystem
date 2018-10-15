@@ -1,3 +1,5 @@
+using Trading.Backtest.Data.Models;
+
 namespace Trading.Backtest.Data
 {
     using System;
@@ -10,11 +12,21 @@ namespace Trading.Backtest.Data
         public BacktestContext()
             : base("name=BacktestContext")
         {
+            //ich erstelle die Datenbank immer neu, damit hab ich pro backtest eine Datenbank
+            //wenn der Backtest ok, dann exportiere ich die Settings + DB ?
+            //DropCreateDatabaseAlways
+
+            Database.SetInitializer(new CreateDatabaseIfNotExists<BacktestContext>());
         }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
         }
+
+        public DbSet<TransactionEf> Transactions { get; set; }
+
+        public DbSet<PortfolioValuationEf> PortfolioValueHistory { get; set; }
+
     }
 }

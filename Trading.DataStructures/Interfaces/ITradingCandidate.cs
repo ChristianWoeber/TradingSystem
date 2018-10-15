@@ -16,6 +16,11 @@ namespace Trading.DataStructures.Interfaces
         ITransaction LastTransaction { get; set; }
 
         /// <summary>
+        /// die aktuelle Position im Portfolio
+        /// </summary>
+        ITransaction CurrentPosition { get; set; }
+
+        /// <summary>
         /// der aktuelle Score
         /// </summary>
         IScoringResult ScoringResult { get; }

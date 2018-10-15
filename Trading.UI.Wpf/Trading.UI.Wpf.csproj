@@ -120,9 +120,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\PortfolioSettingsControl.xaml.cs">
+      <DependentUpon>PortfolioSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SettingsControl.xaml.cs">
+      <DependentUpon>SettingsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Globals.cs" />
     <Compile Include="Models\TradingRecord.cs" />
     <Compile Include="Models\BacktestTransactionsCacheProvider.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\TradingViewModel.cs" />
     <Compile Include="Utils\Initialization.cs" />
     <Compile Include="ViewModels\TransactionViewModel.cs" />
@@ -131,6 +138,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\MainChartControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PortfolioSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

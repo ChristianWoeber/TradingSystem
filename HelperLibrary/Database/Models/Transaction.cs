@@ -3,11 +3,14 @@ using System;
 using System.Data.Linq.Mapping;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
+using Trading.DataStructures.Utils;
 
 namespace HelperLibrary.Database.Models
 {
-    public class Transaction: ITransaction
+    public class Transaction : ITransaction
     {
+        private string _uniqueKey;
+
         /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt
         /// </summary>
@@ -40,7 +43,7 @@ namespace HelperLibrary.Database.Models
         public decimal TargetAmountEur { get; set; }
 
         /// <summary>
-        /// Der Typ der Transaktion (Opening,Closing,Changed) <see cref="Trading.DataStructure.Enums.TransactionType"/>
+        /// Der Typ der Transaktion (Opening,Closing,Changed) <see cref="Trading.DataStructures.Enums.TransactionType"/>
         /// </summary>
         [InputMapping(KeyWords = new[] { "Type", nameof(TransactionType) })]
         [Column(Storage = "TRANSACTION_TYPE")]
@@ -94,8 +97,7 @@ namespace HelperLibrary.Database.Models
             return $"TradeDate: {TransactionDateTime}_ID: {SecurityId}_Shares: {Shares}_Target Weight: {TargetWeight}_TransactionType: {(TransactionType)TransactionType} IsTemporary:{IsTemporary} {Name}";
         }
 
-
-        public string UniqueKey => $"{TransactionDateTime.Date}_{SecurityId}_{Shares}_{(int)TransactionType}";
+        public string UniqueKey => _uniqueKey ?? (_uniqueKey = UniqueKeyProvider.CreateUniqueKey(this));
     }
 
 
