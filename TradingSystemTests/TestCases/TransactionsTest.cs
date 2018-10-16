@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Extensions;
@@ -21,24 +22,65 @@ namespace TradingSystemTests.TestCases
         private TransactionCalculationHandler _handler;
 
         [SetUp]
-        private void CreateTestCandidates()
+        public void CreateTestCandidates()
         {
-            _handler = new TransactionCalculationHandler();
+            if (_handler != null)
+                return;
+
+            var portfolioValuation = new PortfolioValuation { AllocationToRisk = 1, PortfolioAsof = DateTime.Today, PortfolioValue = new decimal(100000) };
+            _handler = new TransactionCalculationHandler(portfolioValuation);
+        }
+        //Change TEST decrement
+        [TestCase(true, 0.165, TransactionType.Changed, ExpectedResult = -16500)]
+        //Closing TEST
+        [TestCase(true, 0, TransactionType.Close, ExpectedResult = -33000)]
+        //Opening TEST
+        [TestCase(false, 0.15, TransactionType.Open, ExpectedResult = 15000)]
+        public decimal? CalculateTargetAmountTest(bool isInvested, decimal targetWeight, TransactionType type)
+        {
+            var testCandidate = new TestTradingCandidate(isInvested, type) { TargetWeight = targetWeight };
+            if (type != TransactionType.Close && type != TransactionType.Changed)
+                return _handler.CalculateTargetAmount(testCandidate);
+
+            var transaction = new Transaction
+            {
+                Cancelled = 0,
+                EffectiveAmountEur = 14995,
+                EffectiveWeight = (decimal)0.1499,
+                Shares = 500,
+                TargetWeight = (decimal)0.33,
+                TargetAmountEur = 33000
+            };
+            testCandidate.LastTransaction = transaction;
+            testCandidate.CurrentPosition = transaction;
+
+            return _handler.CalculateTargetAmount(testCandidate);
+        }
+        [TestCase(true, 1.5, TransactionType.Open)]
+        [TestCase(true, -0.5, TransactionType.Changed)]
+        [TestCase(true, 0, TransactionType.Changed)]
+        [TestCase(false, 0, TransactionType.Unknown)]
+        public void CalculateTargetAmountTestThrows(bool isInvested, decimal targetWeight, TransactionType type)
+        {
+            Assert.That(() => CalculateTargetAmountTest(isInvested, targetWeight, type), Throws.ArgumentException);
         }
 
-        [TestCase()]
-        public void CalculateSharesTest()
+        [TestCase(true, 25000)]
+        public void CalculateSharesTest(bool isInvested, decimal targetAmount)
         {
-
-            var testCandidate = new TestTradingCandidate(true);
-
-            _handler.CalculateEffectiveAmountEur()
+            var testCandidate = new TestTradingCandidate(isInvested);
+            var shares = _handler.CalculateTargetShares(testCandidate, targetAmount);
         }
-
 
 
         public class TestTradingCandidate : ITradingCandidate
         {
+            public TestTradingCandidate(bool isInvested, TransactionType type = TransactionType.Unknown)
+            {
+                IsInvested = isInvested;
+                TransactionType = type;
+            }
+
             public DateTime PortfolioAsof { get; set; }
             public ITransaction LastTransaction { get; set; }
             public ITransaction CurrentPosition { get; set; }

@@ -22,29 +22,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         decimal CalculateEffectiveWeight(decimal effectiveAmountEur);
     }
 
-    public class TransactionCalculationHandler : ITransactionCalculation
-    {
-        public int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal CalculateTargetAmount(ITradingCandidate candidate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal CalculateEffectiveAmountEur(ITradingCandidate candidate, int targetShares)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal CalculateEffectiveWeight(decimal effectiveAmountEur)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class PortfolioManager : PortfolioManagerBase, IAdjustmentProvider
     {
         /// <summary>
@@ -55,7 +32,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             //Initialisierungen
             CashHandler = new CashManager(this);
-            //RebalanceProvider = new RebalanceProvider(this);
+            TransactionCaclulationProvider = new TransactionCalculationHandler(this);
             TemporaryPortfolio = new TemporaryPortfolio(this);
             CashHandler.Cash = PortfolioSettings.InitialCashValue;
 
@@ -63,20 +40,26 @@ namespace HelperLibrary.Trading.PortfolioManager
             PortfolioAsofChangedEvent += OnPortfolioAsOfChanged;
             PositionChangedEvent += OnPositionChanged;
         }
-
+      
+        /// <summary>
+        /// das Event das aufgerufen wird, wenn sich die Positonen änder
+        /// </summary>
         protected event EventHandler<PortfolioManagerEventArgs> PositionChangedEvent;
+
+        /// <summary>
+        /// die Klasse die sich um die Berechnungen der Transaktion kümmert
+        /// </summary>
+        protected TransactionCalculationHandler TransactionCaclulationProvider { get; }
 
         /// <summary>
         /// Der CashHandler der sich um die berechnung des Cash-Wertes kümmert
         /// </summary>
         public ICashManager CashHandler { get; }
 
-
         //es müsste eine List als temporäres Profolio genügen ich adde alle current Positionen und füge dann die neuen temporär hinzu
         //danach müsste es genügen sie nach scoring zu sortieren und die schlechtesten beginnend abzuschichten, so lange bis ein zulässiger investitionsgrad 
         //erreicht ist
-
-        public readonly ITemporaryPortfolio TemporaryPortfolio;
+        public ITemporaryPortfolio TemporaryPortfolio { get; }
 
         /// <summary>
         /// Das aktuelle Portfolio (alle Transaktionen die nicht geschlossen sind)
@@ -597,8 +580,8 @@ namespace HelperLibrary.Trading.PortfolioManager
             //if (candidate.IsInvested)
             //    current = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
 
-            var targetAmount = CalculateTargetAmount(candidate);
-            var targetShares = CalculateTargetShares(candidate, targetAmount);
+            var targetAmount = TransactionCaclulationProvider.CalculateTargetAmount(candidate);
+            var targetShares = TransactionCaclulationProvider.CalculateTargetShares(candidate, targetAmount);
 
 
             //wenn ich bereits investiert bin, ziehe ich die bestehenden shares ab
@@ -608,8 +591,8 @@ namespace HelperLibrary.Trading.PortfolioManager
             //    targetAmount = targetAmount - current.TargetAmountEur;
             //}
 
-            var effectiveAmountEur = CalculateEffectiveAmountEur(candidate, targetShares);
-            var effectiveWeight = CalculateEffectiveWeight(effectiveAmountEur);
+            var effectiveAmountEur = TransactionCaclulationProvider.CalculateEffectiveAmountEur(candidate, targetShares);
+            var effectiveWeight = TransactionCaclulationProvider.CalculateEffectiveWeight(effectiveAmountEur);
 
             var tempItem = TemporaryPortfolio.Get(candidate.Record.SecurityId);
             tempItem.TargetWeight = candidate.TargetWeight;
@@ -628,8 +611,8 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             //TODO:sinkenden Fall implementieren 
 
-            var targetAmount = CalculateTargetAmount(candidate);
-            var targetShares = CalculateTargetShares(candidate, targetAmount);
+            var targetAmount = TransactionCaclulationProvider.CalculateTargetAmount(candidate);
+            var targetShares = TransactionCaclulationProvider.CalculateTargetShares(candidate, targetAmount);
 
             ////wenn ich bereits investiert bin, ziehe ich die bestehenden shares ab
             // if (current != null && candidate.TargetWeight > candidate.CurrentWeight)
@@ -638,7 +621,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             //    targetAmount = targetAmount - current.TargetAmountEur;
             //}
 
-            var effectiveAmountEur = CalculateEffectiveAmountEur(candidate, targetShares);
+            var effectiveAmountEur = TransactionCaclulationProvider.CalculateEffectiveAmountEur(candidate, targetShares);
 
             //wenn es sich um ein Closing einer Position handelt
             if (candidate.TargetWeight <= 0 && candidate.IsInvested)
@@ -647,7 +630,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 targetAmount = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId].TargetAmountEur * -1;
                 effectiveAmountEur = Math.Round(targetShares * candidate.Record.AdjustedPrice, 4);
             }
-            var effectiveWeight = CalculateEffectiveWeight(effectiveAmountEur);
+            var effectiveWeight = TransactionCaclulationProvider.CalculateEffectiveWeight(effectiveAmountEur);
 
             Transaction transaction;
             switch (candidate.TransactionType)
@@ -679,41 +662,41 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
-        private decimal CalculateEffectiveWeight(decimal effectiveAmountEur)
-        {
-            //das effektive Gewicht berechnen
-            return Math.Round(effectiveAmountEur / PortfolioValue, 4);
-        }
+        //private decimal CalculateEffectiveWeight(decimal effectiveAmountEur)
+        //{
+        //    //das effektive Gewicht berechnen
+        //    return Math.Round(effectiveAmountEur / PortfolioValue, 4);
+        //}
 
-        private static decimal CalculateEffectiveAmountEur(ITradingCandidate candidate, int targetShares)
-        {
-            //das effektive gewicht
-            return Math.Round(targetShares * candidate.Record.AdjustedPrice, 4);
-        }
+        //private static decimal CalculateEffectiveAmountEur(ITradingCandidate candidate, int targetShares)
+        //{
+        //    //das effektive gewicht
+        //    return Math.Round(targetShares * candidate.Record.AdjustedPrice, 4);
+        //}
 
-        private static int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount)
-        {
-            //die gesamt ziel shares bestimmen, werden immer abgerundet
-            var completeTargetShares = (int)Math.Round(targetAmount / candidate.Record.AdjustedPrice, 2, MidpointRounding.AwayFromZero);
-            if (candidate.IsInvested)
-            {
-                //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
-                return completeTargetShares - candidate.CurrentPosition.Shares;
-            }
-            return completeTargetShares;
-        }
+        //private static int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount)
+        //{
+        //    //die gesamt ziel shares bestimmen, werden immer abgerundet
+        //    var completeTargetShares = (int)Math.Round(targetAmount / candidate.Record.AdjustedPrice, 2, MidpointRounding.AwayFromZero);
+        //    if (candidate.IsInvested)
+        //    {
+        //        //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
+        //        return completeTargetShares - candidate.CurrentPosition.Shares;
+        //    }
+        //    return completeTargetShares;
+        //}
 
-        private decimal CalculateTargetAmount(ITradingCandidate candidate)
-        {
-            //der gesamt ziel Betrag in EuR
-            var completeTargetAmount = Math.Round(PortfolioValue * candidate.TargetWeight, 4);
-            if (candidate.IsInvested)
-            {
-                //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
-                return completeTargetAmount - candidate.CurrentPosition.TargetAmountEur;
-            }
-            return completeTargetAmount;
-        }
+        //private decimal CalculateTargetAmount(ITradingCandidate candidate)
+        //{
+        //    //der gesamt ziel Betrag in EuR
+        //    var completeTargetAmount = Math.Round(PortfolioValue * candidate.TargetWeight, 4);
+        //    if (candidate.IsInvested)
+        //    {
+        //        //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
+        //        return completeTargetAmount - candidate.CurrentPosition.TargetAmountEur;
+        //    }
+        //    return completeTargetAmount;
+        //}
 
         private Transaction CreateTransaction(ITradingCandidate candidate, decimal targetAmount, int targetShares, decimal effectiveAmountEur, decimal effectiveWeight)
         {

@@ -110,6 +110,7 @@
     <Compile Include="Trading\PortfolioManager\CashManager.cs" />
     <Compile Include="Trading\PortfolioManager\CurrentPortfolio.cs" />
     <Compile Include="Trading\PortfolioManager\DefaultStopLossSettings.cs" />
+    <Compile Include="Trading\PortfolioManager\TransactionCalculationHandler.cs" />
     <Compile Include="Trading\PortfolioManager\TransactionsHandler.cs" />
     <Compile Include="Trading\ScoringResult.cs" />
     <Compile Include="Parsing\ParserFactory.cs" />
