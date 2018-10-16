@@ -6,10 +6,12 @@
         xmlns:local="clr-namespace:Trading.UI.Wpf"
         xmlns:controls="clr-namespace:Trading.UI.Wpf.Controls"
         xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
+        xmlns:viewModels="clr-namespace:Trading.UI.Wpf.ViewModels"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance viewModels:TradingViewModel}"
         Title="Backtest" Height="450" Width="800">
     <Grid>
-        <arts:SmartFlyout PanelBackground="LightBlue" >
+        <arts:SmartFlyout PanelBackground="DimGray" >
             <arts:SmartFlyout.Items>
                 <arts:SmartFlyoutItem HeaderText="Einstellungen"  TextAppearance="Header1" Background="Transparent" HeaderTextForeground="White">
                     <arts:SmartFlyoutItem.FlyoutContent>
@@ -30,10 +32,10 @@
                     </Grid.RowDefinitions>
  
                     <StackPanel Orientation="Horizontal" >
-                        <arts:SmartIconButton Icon="UwpRefresh"                                             
-                                              Description="Load Backtest" 
+                        <arts:SmartIconButton Icon="UwpOpenFile"                                             
+                                              Description="Backtesteinstellungen laden" 
                                               Command="{Binding LoadBacktestCommand}" 
-                                              Width="85" 
+                                              Width="auto" 
                                               Margin="5" 
                                               VerticalContentAlignment="Center" 
                                               HorizontalContentAlignment="Center"/>
@@ -45,6 +47,16 @@
                                               Margin="5" 
                                               VerticalContentAlignment="Center" 
                                               HorizontalContentAlignment="Center"/>
+                        
+                          <arts:SmartIconButton Icon="FaPlay"                                           
+                                              Description="Neuen Backtest starten" 
+                                              Command="{Binding RunNewBacktestCommand}" 
+                                              Width="auto" 
+                                              IconBrush="Green"
+                                              Margin="5" 
+                                              VerticalContentAlignment="Center" 
+                                              HorizontalContentAlignment="Center"/>
+                        
                     </StackPanel>
                     
                     <controls:MainChartControl Grid.Column="0" Grid.Row="1" />

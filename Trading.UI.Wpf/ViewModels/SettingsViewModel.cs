@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Common.Lib.UI.WPF.Core.Controls.Core;
+using Common.Lib.UI.WPF.Core.Controls.Input;
 using JetBrains.Annotations;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -9,13 +12,17 @@ namespace Trading.UI.Wpf.ViewModels
 {
     public class SettingsViewModel : IPortfolioSettings, INotifyPropertyChanged
     {
+        private TradingDay _selectedTradingDay;
+        private TradingIntervalUtil _selectedTradingInterval;
 
         public SettingsViewModel(IPortfolioSettings defaultSettings)
         {
             PortfolioSettings = defaultSettings;
+            SelectedTradingDay = new TradingDay(PortfolioSettings.TradingDay);
+            SelectedInterval = new TradingIntervalUtil(PortfolioSettings.Interval);
         }
 
-        public IPortfolioSettings PortfolioSettings { get; }
+        internal IPortfolioSettings PortfolioSettings { get; }
 
         public decimal MaximumInitialPositionSize
         {
@@ -65,6 +72,18 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
+        public TradingDay SelectedTradingDay
+        {
+            get => _selectedTradingDay;
+            set
+            {
+                _selectedTradingDay = value;
+                OnPropertyChanged();
+                TradingDay = value.Day;
+            }
+        }
+
+
         public TradingInterval Interval
         {
             get => PortfolioSettings.Interval;
@@ -76,6 +95,20 @@ namespace Trading.UI.Wpf.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public TradingIntervalUtil SelectedInterval
+        {
+            get => _selectedTradingInterval;
+            set
+            {
+                if (value == _selectedTradingInterval)
+                    return;
+                _selectedTradingInterval = value;
+                OnPropertyChanged();
+                Interval = value.Interval;
+            }
+        }
+
 
         public decimal MaxTotaInvestmentLevel => PortfolioSettings.MaxTotaInvestmentLevel;
 
@@ -139,6 +172,29 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
+        public IEnumerable<TradingDay> AvailableTradingDays
+        {
+            get
+            {
+                yield return new TradingDay(DayOfWeek.Monday);
+                yield return new TradingDay(DayOfWeek.Thursday);
+                yield return new TradingDay(DayOfWeek.Wednesday);
+                yield return new TradingDay(DayOfWeek.Thursday);
+                yield return new TradingDay(DayOfWeek.Friday);
+            }
+        }
+
+        public IEnumerable<TradingIntervalUtil> AvailableTradingIntervals
+        {
+            get
+            {
+                yield return new TradingIntervalUtil(TradingInterval.Monthly);
+                yield return new TradingIntervalUtil(TradingInterval.ThreeWeeks);
+                yield return new TradingIntervalUtil(TradingInterval.TwoWeeks);
+                yield return new TradingIntervalUtil(TradingInterval.Weekly);
+            }
+        }
+
         #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -151,5 +207,29 @@ namespace Trading.UI.Wpf.ViewModels
 
 
         #endregion
+    }
+
+    public class TradingIntervalUtil : IFilterableProperty
+    {
+        public readonly TradingInterval Interval;
+
+        public TradingIntervalUtil(TradingInterval interval)
+        {
+            Interval = interval;
+        }
+
+        public string FilterableText => Interval.ToString();
+    }
+
+    public class TradingDay : IFilterableProperty
+    {
+        public TradingDay(DayOfWeek day)
+        {
+            Day = day;
+        }
+
+        public DayOfWeek Day { get; }
+
+        public string FilterableText => Day.ToString();
     }
 }

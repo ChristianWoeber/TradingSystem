@@ -71,7 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\TestHelper.cs" />
-    <Compile Include="Models\BacktestHandler.cs" />
     <Compile Include="Models\TestPortfolio.cs" />
     <Compile Include="Models\TestQuote.cs" />
     <Compile Include="Models\TestSaveProvider.cs" />

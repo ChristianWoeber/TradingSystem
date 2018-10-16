@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Input;
 using Common.Lib.UI.WPF.Core.Input;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Interfaces;
 using HelperLibrary.Parsing;
+using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
 using JetBrains.Annotations;
+using Microsoft.Win32;
 using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Models;
 using Trading.UI.Wpf.Utils;
@@ -37,6 +42,7 @@ namespace Trading.UI.Wpf.ViewModels
         private IEnumerable<TransactionViewModel> _holdings;
         private DateTime _startDateTime;
         private DateTime _endDateTime;
+        private CancellationTokenSource _cancellationSource;
 
         #endregion
 
@@ -55,13 +61,13 @@ namespace Trading.UI.Wpf.ViewModels
             //TODO implementieren
 
             //Command
-            RunBacktestCommand = new RelayCommand(OnRunBacktest);
+            RunNewBacktestCommand = new RelayCommand(OnRunBacktest);
             LoadBacktestCommand = new RelayCommand(OnLoadBacktest);
             MoveCursorToNextTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDayEvent?.Invoke(this, _portfolioManager.PortfolioSettings.TradingDay));
         }
-        
 
-        #endregion  
+
+        #endregion
 
         #region Events
 
@@ -74,7 +80,8 @@ namespace Trading.UI.Wpf.ViewModels
 
         #region Commands
 
-        public ICommand RunBacktestCommand { get; }
+
+        public ICommand RunNewBacktestCommand { get; }
 
         public ICommand LoadBacktestCommand { get; }
 
@@ -103,7 +110,62 @@ namespace Trading.UI.Wpf.ViewModels
 
         #region CommandActions
 
-        private void OnRunBacktest()
+        private async void OnRunBacktest()
+        {
+
+            // zuerst Pfad auswählen wo die Backtestdatei hingespeichert werden soll
+            var fileDlg = new SaveFileDialog { InitialDirectory = Path.GetTempPath() };
+            var res = fileDlg.ShowDialog();
+            var filename = "";
+            if (res == true)
+            {
+                filename = fileDlg.FileName;
+            }
+
+
+            //Pm erstellen für den Backtest
+            var pm = new PortfolioManager(null, Settings, new TransactionsHandler(null, new BacktestTransactionsCacheProvider(() => LoadHistory(filename))));
+            //scoring Provider registrieren
+            pm.RegisterScoringProvider(_scoringProvider);
+
+            //TODO Logging?
+
+            //var navLogger = LogManager.GetLogger(Path.GetFileNameWithoutExtension(navlogName));
+            //navLogger.Info($"PortfolioAsof|PortfolioValue|AllocationToRisk");
+            //pm.PortfolioAsofChangedEvent += (sender, args) =>
+            //{
+            //    navLogger.Info($"{args.ToShortDateString()} | {pm.PortfolioValue.ToString("N", CultureInfo.InvariantCulture)} | {pm.AllocationToRisk.ToString("N", CultureInfo.InvariantCulture)}");
+            //};
+
+            //var cashLogger = LogManager.GetLogger(Path.GetFileNameWithoutExtension(cashLoggerName));
+            //pm.CashHandler.CashChangedEvent += (sender, args) =>
+            //{
+            //    cashLogger.Info($"{args.ToShortDateString()} | {pm.CashHandler.Cash.ToString("N", CultureInfo.InvariantCulture)}");
+            //};
+
+            //einen BacktestHandler erstellen
+            var candidatesProvider = new CandidatesProvider(_scoringProvider);
+
+            //backtestHandler erstellen
+            var backtestHandler = new BacktestHandler(pm, candidatesProvider, new TestSaveProvider(temporaryFilename));
+
+            //Backtest
+             _cancellationSource = new CancellationTokenSource();
+            await backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
+
+
+        }
+
+
+  
+
+        private void OnCancel()
+        {
+            _cancellationSource?.Cancel();
+        }
+
+
+        private Dictionary<int, List<ITransaction>> LoadHistory(string filename)
         {
             throw new NotImplementedException();
         }
@@ -139,13 +201,13 @@ namespace Trading.UI.Wpf.ViewModels
         {
             return _scoringProvider.GetScore(transaction.SecurityId, asof);
         }
-        
+
 
         #endregion
 
         #region Public Members
 
-              
+
         public IEnumerable<TransactionViewModel> Holdings
         {
             get => _holdings;
@@ -183,6 +245,8 @@ namespace Trading.UI.Wpf.ViewModels
         }
 
         public SettingsViewModel Settings { get; }
+
+
 
         #endregion
 

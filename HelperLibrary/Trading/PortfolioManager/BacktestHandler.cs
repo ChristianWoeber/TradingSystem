@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using HelperLibrary.Extensions;
-using HelperLibrary.Trading;
-using HelperLibrary.Trading.PortfolioManager;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
-namespace TradingSystemTests.Models
+namespace HelperLibrary.Trading.PortfolioManager
 {
     public class BacktestHandler
     {
@@ -24,10 +23,10 @@ namespace TradingSystemTests.Models
             _saveProvider = saveProvider;
         }
 
-        public async Task RunBacktest(DateTime startDateTime, DateTime? endDateTime)
+        public async Task RunBacktest(DateTime startDateTime, DateTime? endDateTime, CancellationToken? cancel = null)
         {
             _startDateTime = DateTime.Today.GetBusinessDay(false);
-            await Task.Factory.StartNew(() => Run(startDateTime, endDateTime));
+            await Task.Factory.StartNew(() => Run(startDateTime, endDateTime), cancel ?? CancellationToken.None);
         }
 
 

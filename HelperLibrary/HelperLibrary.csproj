@@ -107,6 +107,7 @@
     <Compile Include="Interfaces\IPlugin.cs" />
     <Compile Include="Interfaces\IQuote.cs" />
     <Compile Include="Trading\Candidate.cs" />
+    <Compile Include="Trading\PortfolioManager\BacktestHandler.cs" />
     <Compile Include="Trading\PortfolioManager\CashManager.cs" />
     <Compile Include="Trading\PortfolioManager\CurrentPortfolio.cs" />
     <Compile Include="Trading\PortfolioManager\DefaultStopLossSettings.cs" />

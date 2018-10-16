@@ -8,7 +8,7 @@
              xmlns:viewModels="clr-namespace:Trading.UI.Wpf.ViewModels"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
-             d:DesignHeight="450" d:DesignWidth="800" Width="325">
+             d:DesignHeight="450" d:DesignWidth="800" Width="Auto">
     <UserControl.Resources>
         <Style x:Key="LabelStyle" TargetType="arts:SmartTextBlock" BasedOn="{StaticResource {x:Type arts:SmartTextBlock}}">
             <Setter Property="Appearance" Value="Header4"/>
@@ -30,7 +30,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="150"/>
             <RowDefinition/>
-
         </Grid.RowDefinitions>
         <!--Header Portfolio Settings-->
         <arts:SmartTextBlock Appearance="Header1"
@@ -39,7 +38,7 @@
                              HorizontalAlignment="Center" 
                              VerticalAlignment="Center"/>
 
-        <UniformGrid Columns="2" Grid.Row="1" >
+        <UniformGrid Columns="2" Grid.Row="1" MinWidth="350">
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Max InitialPositionSize" Style="{StaticResource LabelStyle}"/>
                 <arts:SmartNumberUpDown Value="{Binding MaximumInitialPositionSize,StringFormat=P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
@@ -59,10 +58,40 @@
                                     DisplayMode="Integer" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
-                <arts:SmartTextBlock Text="MinimumHoldingPeriodeInDays" Style="{StaticResource LabelStyle}"/>
+                <arts:SmartTextBlock Text="MaximumPositionSizeBuffer" Style="{StaticResource LabelStyle}"/>
                 <arts:SmartNumberUpDown Value="{Binding MaximumPositionSizeBuffer, StringFormat=P}" 
                                     SmallStep="1" 
                                     DisplayMode="Decimal" />
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <arts:SmartTextBlock Text="Maximaler Investitionsgrad" Style="{StaticResource LabelStyle}"/>
+                <arts:SmartNumberUpDown Value="{Binding MaxTotaInvestmentLevel, StringFormat=P}" 
+                                        SmallStep="1" 
+                                        DisplayMode="Decimal" />
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <arts:SmartTextBlock Text="Cash Buffer_Size" Style="{StaticResource LabelStyle}"/>
+                <arts:SmartNumberUpDown Value="{Binding CashPufferSize, StringFormat=P}" 
+                                        SmallStep="1" 
+                                        DisplayMode="Decimal" />
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <arts:SmartTextBlock Text="Trading-Tag" Style="{StaticResource LabelStyle}"/>
+                <arts:SmartTextBox Text="{Binding SelectedTradingDay.FilterableText, StringFormat=P}" Height="35"
+                                   TextChangedDelay="500" 
+                                   AutoSuggestionItemsSource="{Binding AvailableTradingDays, Mode=OneWay}" />
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <arts:SmartTextBlock Text="Trading-Interval" Style="{StaticResource LabelStyle}"/>
+                <arts:SmartTextBox Text="{Binding SelectedInterval.FilterableText, StringFormat=P}" Height="35"
+                                   TextChangedDelay="500" 
+                                   AutoSuggestionItemsSource="{Binding AvailableTradingIntervals, Mode=OneWay}" />
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <arts:SmartTextBlock Text="Replace-Buffer Size" Style="{StaticResource LabelStyle}"/>
+                <arts:SmartNumberUpDown Value="{Binding ReplaceBufferPct, StringFormat=P}" 
+                                        SmallStep="1" 
+                                        DisplayMode="Decimal" />
             </StackPanel>
         </UniformGrid>
 
