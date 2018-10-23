@@ -54,7 +54,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             if (_lastAsOf == null || asof > _lastAsOf)
                 return false;
             //sonst nur wenn es noch keine Einträge hat
-            return _items.Count > 0;
+            return _items?.Count > 0;
         }
 
         /// <summary>

@@ -37,7 +37,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             _cacheProvider = cacheProvider;
             // wenn keine items supllied werden dann greife ich auf den Cache zu
-            _currentPortfolio = GetCurrentPortfolio(transactions) ?? GetCurrentPortfolio(_cacheProvider?.TransactionsCache.Value.Values);
+            _currentPortfolio = GetCurrentPortfolio(transactions) ?? GetCurrentPortfolio(_cacheProvider?.TransactionsCache.Value?.Values);
 
         }
 
@@ -225,6 +225,9 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         private IPortfolio GetCurrentPortfolio(IEnumerable<List<ITransaction>> cacheItems)
         {
+            if (cacheItems == null)
+                return null;
+
             //flatten the cacheItems
             var items = cacheItems.SelectMany(x => x).ToList();
 
@@ -267,9 +270,9 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             //Sollte nur beim Testen der Fall sein
             if (_cacheProvider == null)
-                return _currentPortfolio;
+                return _currentPortfolio ?? new CurrentPortfolio();
 
-            return GetCurrentPortfolio(_cacheProvider.TransactionsCache.Value.Values);
+            return GetCurrentPortfolio(_cacheProvider.TransactionsCache.Value?.Values);
         }
 
         private IPortfolio GetCurrentPortfolio(IEnumerable<ITransaction> transactionItems)
@@ -299,7 +302,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                     {
                         sumItem.SecurityId = secIdGrp.Key;
                         sumItem.Shares += item.Shares;
-                        sumItem.TargetAmountEur += item.Shares < 0 ? -item.TargetAmountEur : item.TargetAmountEur;
+                        sumItem.TargetAmountEur += item.TargetAmountEur;
                         //Target Weight braucht nicht aufsummiert werden
                         sumItem.TargetWeight = item.TargetWeight;
 

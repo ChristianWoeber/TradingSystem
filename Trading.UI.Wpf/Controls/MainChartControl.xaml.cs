@@ -62,17 +62,21 @@ namespace Trading.UI.Wpf.Controls
             ChartControl.Data.Clear();
             //Fints aus dem PortfolioValue erstellen
             var navFints = FINTS.Create(args.PortfolioValuations.Select(x => new Quote<double>(new SDate(x.PortfolioAsof), (double)x.PortfolioValue)));
-            var allocationFints = FINTS.Create(args.PortfolioValuations.Select(x => new Quote<double>(new SDate(x.PortfolioAsof), (double)x.AllocationToRisk)), "Investitionsgrad");
+            var allocationFints = FINTS.Create(args.PortfolioValuations.Select(x => new Quote<double>(new SDate(x.PortfolioAsof), Convert.ToDouble(x.AllocationToRisk))), "Investitionsgrad");
             allocationFints.DataType = FINTSDataType.Exposure;
 
-
             //zu ChartControl hinzufügen
-            ChartControl.Data.Add(new WLineChartFINTS(navFints) { FillColor = Colors.DodgerBlue, Caption = "Backtest", StrokeThickness = 0.75 });
-            ChartControl.Data.Add(new WLineChartFINTS(allocationFints) {
-                FINTSDataType = FINTSDataType.Exposure,
+            ChartControl.Data.Add(new WLineChartFINTS(navFints) { Color = Colors.Blue, Caption = "Backtest", StrokeThickness = 0.75 });
+            ChartControl.Data.Add(new WLineChartFINTS(allocationFints)
+            {
                 FillColor = Colors.AliceBlue,
-                Color = Colors.DodgerBlue,
-                FillAlpha = 0.25});
+                Color = Colors.LightBlue,
+                FillMode = WLCFillMode.FillAlpha,
+                FillAlpha = 0.25
+            });
+            ChartControl.Data.Add(new WLineChartFINTS(FintsSecuritiesRepo.Eurostoxx50.Value) { Color = Colors.LightCoral, Caption = "EuroStoxx 50", StrokeThickness = 0.75 });
+            ChartControl.ViewBeginDate = navFints.BeginDate;
+            ChartControl.ViewEndDate = navFints.EndDate;
         }
 
         private void OnChartControlClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)

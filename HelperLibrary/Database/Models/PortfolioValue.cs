@@ -23,21 +23,21 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Der primary Key des Tables - Das Datum des Portfolios
         /// </summary>
-        [InputMapping(KeyWords = new[] {  nameof(PortfolioAsof) })]
+        [InputMapping(KeyWords = new[] {  nameof(PortfolioAsof) }, SortIndex = 1)]
         [Column(Storage = "PORTFOLIO_ASOF")]
         public DateTime PortfolioAsof { get; set; }
 
         /// <summary>
         /// der Wert zum Zeitpunkt
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(PortfolioValue) })]
+        [InputMapping(KeyWords = new[] { nameof(PortfolioValue) }, SortIndex = 2)]
         [Column(Storage = "PORTFOLIO_VALUE")]
         public decimal PortfolioValue { get; set; }
 
         /// <summary>
         /// Der Investitionsgrad in Risikoreiche Wertpapiere (Aktienquote)
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(AllocationToRisk) })]
+        [InputMapping(KeyWords = new[] { nameof(AllocationToRisk) }, SortIndex = 3)]
         [Column(Storage = "ALLOCATION_TO_RISK")]
         public decimal AllocationToRisk { get; set; }
 

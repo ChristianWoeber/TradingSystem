@@ -30,6 +30,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="150"/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <!--Header Portfolio Settings-->
         <arts:SmartTextBlock Appearance="Header1"
@@ -38,7 +39,7 @@
                              HorizontalAlignment="Center" 
                              VerticalAlignment="Center"/>
 
-        <UniformGrid Columns="2" Grid.Row="1" MinWidth="350">
+        <UniformGrid x:Name="UniformGrid" Columns="2" Grid.Row="1" MinWidth="375">
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Max InitialPositionSize" Style="{StaticResource LabelStyle}"/>
                 <arts:SmartNumberUpDown Value="{Binding MaximumInitialPositionSize,StringFormat=P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
@@ -95,5 +96,19 @@
             </StackPanel>
         </UniformGrid>
 
+            <StackPanel Orientation="Vertical" Grid.Row="2">
+                <arts:SmartTextBlock Text="Ausgabeverzeichnis" Style="{StaticResource LabelStyle}"/>
+                <StackPanel Orientation="Horizontal">
+                <arts:SmartTextBox Text="{Binding LoggingPath}" MinHeight="35" Width="430" Margin="0" TextWrapping="WrapWithOverflow" />
+                <arts:SmartIconButton Icon="FolderOpened" Margin="5"  Command="{Binding OpenSaveDialogCommand}"
+                                      VerticalContentAlignment="Center" 
+                                      VerticalAlignment="Center"
+                                      BorderThickness="0"
+                                      IconHeight="24"
+                                      IconWidth="22"
+                                      HorizontalContentAlignment="Center" 
+                                      IconBrush="Gold" Height="Auto" Width="30" ></arts:SmartIconButton>
+                </StackPanel>
+            </StackPanel>
     </Grid>
 </UserControl>

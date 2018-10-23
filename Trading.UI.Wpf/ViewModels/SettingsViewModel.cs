@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using Common.Lib.UI.WPF.Core.Controls.Core;
-using Common.Lib.UI.WPF.Core.Controls.Input;
 using JetBrains.Annotations;
+using Microsoft.Win32;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
@@ -20,9 +22,44 @@ namespace Trading.UI.Wpf.ViewModels
             PortfolioSettings = defaultSettings;
             SelectedTradingDay = new TradingDay(PortfolioSettings.TradingDay);
             SelectedInterval = new TradingIntervalUtil(PortfolioSettings.Interval);
+
+            //Commands
+            //  OpenSaveDialogCommand = new RelayCommand(OnOpenSaveFileDialog);
+            var baseDir = Path.GetFullPath(Path.Combine(Globals.BasePath, @"..\"));
+            var initialDir = Path.Combine(baseDir, @"Backtests");
+            if (!Directory.Exists(initialDir))
+                Directory.CreateDirectory(initialDir);
+
+            LoggingPath = initialDir;
         }
 
+
+        public ICommand OpenSaveDialogCommand { get; set; }
+
         internal IPortfolioSettings PortfolioSettings { get; }
+
+        private void OnOpenSaveFileDialog()
+        {
+            var baseDir = Path.GetFullPath(Path.Combine(Globals.BasePath, @"..\"));
+            var initialDir = Path.Combine(baseDir, @"Backtests");
+            if (!Directory.Exists(initialDir))
+                Directory.CreateDirectory(initialDir);
+
+            var dlg = new SaveFileDialog
+            {
+                CheckPathExists = true,
+                InitialDirectory = initialDir,
+                DefaultExt = ".zip",
+                AddExtension = true,
+                //Filter = "Files |.zip;"
+            };
+
+            if (dlg.ShowDialog() == true)
+            {
+                LoggingPath = dlg.FileName;
+            }
+        }
+
 
         public decimal MaximumInitialPositionSize
         {

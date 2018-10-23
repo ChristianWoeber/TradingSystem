@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Common.Lib.UI.WPF.Core.Controls.Core;
 using Common.Lib.UI.WPF.Core.Input;
+using Common.Lib.UI.WPF.Core.Primitives;
 using HelperLibrary.Database.Models;
-using HelperLibrary.Interfaces;
+using HelperLibrary.Extensions;
 using HelperLibrary.Parsing;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
@@ -27,13 +28,18 @@ namespace Trading.UI.Wpf.ViewModels
     {
         public List<PortfolioValuation> PortfolioValuations { get; }
 
-        public BacktestResultEventArgs(List<PortfolioValuation> portfolioValuations)
+        //public ICashCollection CashMovements { get; }
+
+        public List<Transaction> Transactions { get; }
+
+        public BacktestResultEventArgs(List<PortfolioValuation> portfolioValuations, List<Transaction> transactions)
         {
             PortfolioValuations = portfolioValuations;
+            Transactions = transactions;
         }
     }
 
-    public class TradingViewModel : INotifyPropertyChanged
+    public class TradingViewModel : INotifyPropertyChanged, ISmartBusyRegion
     {
         #region Private Members
 
@@ -43,22 +49,18 @@ namespace Trading.UI.Wpf.ViewModels
         private DateTime _startDateTime;
         private DateTime _endDateTime;
         private CancellationTokenSource _cancellationSource;
+        private bool _isBusy;
 
         #endregion
 
         #region Constructor
 
-        public TradingViewModel(List<ITransaction> transactions, IScoringProvider scoringProvider)
+        public TradingViewModel()
         {
-            _scoringProvider = scoringProvider;
-            Settings = new SettingsViewModel(new ConservativePortfolioSettings() { LoggingPath = Globals.PortfolioValuePath });
+            Settings = new SettingsViewModel(new ConservativePortfolioSettings());
 
-            StartDateTime = DateTime.Today.AddYears(-5);
-            EndDateTime = DateTime.Today;
-
-            Init(transactions);
-
-            //TODO implementieren
+            StartDateTime = new DateTime(2000, 01, 01);
+            EndDateTime = StartDateTime.AddYears(5);
 
             //Command
             RunNewBacktestCommand = new RelayCommand(OnRunBacktest);
@@ -66,6 +68,16 @@ namespace Trading.UI.Wpf.ViewModels
             MoveCursorToNextTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDayEvent?.Invoke(this, _portfolioManager.PortfolioSettings.TradingDay));
         }
 
+        public TradingViewModel(List<ITransaction> transactions, IScoringProvider scoringProvider) : this()
+        {
+            _scoringProvider = scoringProvider;
+            Init(transactions);
+        }
+
+        public TradingViewModel(ScoringProvider scoringProvider) : this()
+        {
+            _scoringProvider = scoringProvider;
+        }
 
         #endregion
 
@@ -102,7 +114,8 @@ namespace Trading.UI.Wpf.ViewModels
             _portfolioManager.RegisterScoringProvider(_scoringProvider);
 
             //BacktestCompleted Event feuern
-            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(SimpleTextParser.GetListOfType<PortfolioValuation>(Path.Combine(_portfolioManager.PortfolioSettings.LoggingPath, "PortfolioValue"))));
+            var portfolioValuation = SimpleTextParser.GetListOfType<PortfolioValuation>(Path.Combine(_portfolioManager.PortfolioSettings.LoggingPath, "PortfolioValue"));
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(portfolioValuation, null));
         }
 
 
@@ -112,52 +125,45 @@ namespace Trading.UI.Wpf.ViewModels
 
         private async void OnRunBacktest()
         {
+            //Pm erstellen für den Backtest
 
-            // zuerst Pfad auswählen wo die Backtestdatei hingespeichert werden soll
-            var fileDlg = new SaveFileDialog { InitialDirectory = Path.GetTempPath() };
-            var res = fileDlg.ShowDialog();
-            var filename = "";
-            if (res == true)
+            using (SmartBusyRegion.Start(this))
             {
-                filename = fileDlg.FileName;
+                //Clean up
+                var files = Directory.GetFiles(Settings.LoggingPath);
+                foreach (var file in files)
+                    File.Delete(file);
+
+                var transactionsPath = Path.Combine(Settings.LoggingPath, "Transactions.csv");
+
+                var pm = new PortfolioManager(null, Settings, new TransactionsHandler(null, new BacktestTransactionsCacheProvider(() => LoadHistory(transactionsPath))));
+
+                //scoring Provider registrieren
+                pm.RegisterScoringProvider(_scoringProvider);
+
+                var loggingProvider = new LoggingSaveProvider(Settings.LoggingPath, pm);
+
+                //einen BacktestHandler erstellen
+                var candidatesProvider = new CandidatesProvider(_scoringProvider);
+
+                //backtestHandler erstellen
+                var backtestHandler = new BacktestHandler(pm, candidatesProvider, loggingProvider);
+
+                //Backtest
+                _cancellationSource = new CancellationTokenSource();
+                await backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
+                _portfolioManager = pm;
             }
 
+            //create output
+            var valuations = SimpleTextParser.GetListOfTypeFromFilePath<PortfolioValuation>(Path.Combine(Settings.LoggingPath, "PortfolioValuations.csv"));
+            var transactions = SimpleTextParser.GetListOfTypeFromFilePath<Transaction>(Path.Combine(Settings.LoggingPath, "Transactions.csv"));
+            var cashMovements = SimpleTextParser.GetListOfTypeFromFilePath<PortfolioValuation>(Path.Combine(Settings.LoggingPath, "PortfolioValue.csv"));
 
-            //Pm erstellen für den Backtest
-            var pm = new PortfolioManager(null, Settings, new TransactionsHandler(null, new BacktestTransactionsCacheProvider(() => LoadHistory(filename))));
-            //scoring Provider registrieren
-            pm.RegisterScoringProvider(_scoringProvider);
-
-            //TODO Logging?
-
-            //var navLogger = LogManager.GetLogger(Path.GetFileNameWithoutExtension(navlogName));
-            //navLogger.Info($"PortfolioAsof|PortfolioValue|AllocationToRisk");
-            //pm.PortfolioAsofChangedEvent += (sender, args) =>
-            //{
-            //    navLogger.Info($"{args.ToShortDateString()} | {pm.PortfolioValue.ToString("N", CultureInfo.InvariantCulture)} | {pm.AllocationToRisk.ToString("N", CultureInfo.InvariantCulture)}");
-            //};
-
-            //var cashLogger = LogManager.GetLogger(Path.GetFileNameWithoutExtension(cashLoggerName));
-            //pm.CashHandler.CashChangedEvent += (sender, args) =>
-            //{
-            //    cashLogger.Info($"{args.ToShortDateString()} | {pm.CashHandler.Cash.ToString("N", CultureInfo.InvariantCulture)}");
-            //};
-
-            //einen BacktestHandler erstellen
-            var candidatesProvider = new CandidatesProvider(_scoringProvider);
-
-            //backtestHandler erstellen
-            var backtestHandler = new BacktestHandler(pm, candidatesProvider, new TestSaveProvider(temporaryFilename));
-
-            //Backtest
-             _cancellationSource = new CancellationTokenSource();
-            await backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
-
-
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(valuations,transactions));
         }
 
 
-  
 
         private void OnCancel()
         {
@@ -167,14 +173,14 @@ namespace Trading.UI.Wpf.ViewModels
 
         private Dictionary<int, List<ITransaction>> LoadHistory(string filename)
         {
-            throw new NotImplementedException();
+            return SimpleTextParser.GetListOfTypeFromFilePath<Transaction>(filename)?.OfType<ITransaction>()?.ToDictionaryList(x => x.SecurityId);
         }
 
         private void OnLoadBacktest()
         {
             var filePath = _portfolioManager.PortfolioSettings.LoggingPath;
             var values = SimpleTextParser.GetListOfType<PortfolioValuation>(File.ReadAllText(filePath));
-            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(values));
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(values,null));
         }
 
         #endregion
@@ -222,7 +228,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         public DateTime StartDateTime
         {
-            get { return _startDateTime; }
+            get => _startDateTime;
             set
             {
                 if (value.Equals(_startDateTime))
@@ -234,7 +240,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         public DateTime EndDateTime
         {
-            get { return _endDateTime; }
+            get => _endDateTime;
             set
             {
                 if (value.Equals(_endDateTime))
@@ -244,8 +250,19 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
-        public SettingsViewModel Settings { get; }
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                if (value == _isBusy)
+                    return;
+                _isBusy = value;
+                OnPropertyChanged();
+            }
+        }
 
+        public SettingsViewModel Settings { get; }
 
 
         #endregion
@@ -262,5 +279,9 @@ namespace Trading.UI.Wpf.ViewModels
 
 
         #endregion
+
+
     }
+
+
 }

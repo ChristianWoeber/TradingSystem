@@ -38,10 +38,10 @@ namespace TradingSystemTests.TestCases
         [TestCase(false, 0.15, TransactionType.Open, ExpectedResult = 15000)]
         public decimal? CalculateTargetAmountTest(bool isInvested, decimal targetWeight, TransactionType type)
         {
-            var testCandidate = new TestTradingCandidate(isInvested, type) { TargetWeight = targetWeight };
+            var testCandidate = new TestTradingCandidate(isInvested, type, new TestQuote { AdjustedPrice = 100 }) { TargetWeight = targetWeight };
             if (type != TransactionType.Close && type != TransactionType.Changed)
                 return _handler.CalculateTargetAmount(testCandidate);
-          
+
             testCandidate.LastTransaction = CreateTransaction();
             testCandidate.CurrentPosition = CreateTransaction();
 
@@ -55,10 +55,11 @@ namespace TradingSystemTests.TestCases
                 Cancelled = 0,
                 EffectiveAmountEur = 14995,
                 EffectiveWeight = (decimal)0.1499,
-                Shares = 500,
+                Shares = 330,
                 TargetWeight = (decimal)0.33,
-                TargetAmountEur = 33000
+                TargetAmountEur = 33000,
             };
+
         }
 
         [TestCase(true, 1.5, TransactionType.Open)]
@@ -71,9 +72,9 @@ namespace TradingSystemTests.TestCases
         }
 
         //Change TEST decrement
-        [TestCase(true, 16500, TransactionType.Changed, ExpectedResult = -335)]
+        [TestCase(true, -16500, TransactionType.Changed, ExpectedResult = -165)]
         //Closing TEST
-        [TestCase(true, 33000, TransactionType.Close, ExpectedResult = -170)]
+        [TestCase(true, -33000, TransactionType.Close, ExpectedResult = -330)]
         //Opening TEST
         [TestCase(false, 15000, TransactionType.Open, ExpectedResult = 150)]
         public int CalculateSharesTest(bool isInvested, decimal targetAmount, TransactionType type)

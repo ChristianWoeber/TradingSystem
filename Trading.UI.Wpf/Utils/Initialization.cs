@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common.Lib.Util.CmdParser;
 using HelperLibrary.Collections;
-using HelperLibrary.Database.Interfaces;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Interfaces;
 using HelperLibrary.Parsing;
 using OfficeOpenXml;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Models;
 
@@ -37,7 +28,7 @@ namespace Trading.UI.Wpf.Utils
             if (start == null)
                 start = new DateTime(2004, 01, 01);
             if (end == null)
-                end = new DateTime(2010, 01, 01);
+                end = new DateTime(2018, 01, 01);
 
             var dic = new Dictionary<int, IPriceHistoryCollection>();
 

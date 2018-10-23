@@ -7,13 +7,15 @@
         xmlns:controls="clr-namespace:Trading.UI.Wpf.Controls"
         xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
         xmlns:viewModels="clr-namespace:Trading.UI.Wpf.ViewModels"
+        xmlns:converter="http://arts.co.at/common/lib/wpf/converter/"
         mc:Ignorable="d"
+        WindowState="Maximized"
         d:DataContext="{d:DesignInstance viewModels:TradingViewModel}"
-        Title="Backtest" Height="450" Width="800">
+        Title="Backtest" Height="800" Width="1200">
     <Grid>
-        <arts:SmartFlyout PanelBackground="DimGray" >
+        <arts:SmartFlyout PanelBackground="DimGray" PanelExtendedWidth="500"  >
             <arts:SmartFlyout.Items>
-                <arts:SmartFlyoutItem HeaderText="Einstellungen"  TextAppearance="Header1" Background="Transparent" HeaderTextForeground="White">
+                <arts:SmartFlyoutItem HeaderText="Einstellungen" TextAppearance="Header1" Background="Transparent" HeaderTextForeground="White" >
                     <arts:SmartFlyoutItem.FlyoutContent>
                     <controls:SettingsControl/>
                     </arts:SmartFlyoutItem.FlyoutContent>
@@ -59,6 +61,9 @@
                         
                     </StackPanel>
                     
+                    <arts:SmartBusyOverlay Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                           BusyText="Erstelle Backtest"
+                                           BusyAppearance="{Binding IsBusy, Converter={x:Static converter:SmartBusyRegionToBusyAppearanceConverter.Inst}}"></arts:SmartBusyOverlay>
                     <controls:MainChartControl Grid.Column="0" Grid.Row="1" />
                     <controls:CurrentHoldingsControl Grid.Column="1"  Grid.Row="1"/>
                 </Grid>

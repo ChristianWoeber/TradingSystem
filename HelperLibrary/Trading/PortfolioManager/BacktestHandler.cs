@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
-    public class BacktestHandler
+    public class BacktestHandler : IDisposable
     {
         private readonly CandidatesProvider _candidatesProvider;
         private readonly PortfolioManager _portfolioManager;
@@ -40,7 +41,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             var end = endDateTime?.GetBusinessDay(false) ?? DateTime.Today;
             while (true)
             {
-                if (date.IsUltimo()|| date.IsBusinessDayUltimo())
+                if (date.IsUltimo() || date.IsBusinessDayUltimo())
                     Trace.TraceInformation("aktuelles Datum: " + date.ToShortDateString());
                 if (date >= _startDateTime)
                     return;
@@ -105,6 +106,17 @@ namespace HelperLibrary.Trading.PortfolioManager
             _lastNavDateTime = asof;
             //Datum erhöhen
             date = date.GetBusinessDay();
+        }
+
+        public void Dispose()
+        {
+            //Clean up
+
+            var files = Directory.GetFiles(_portfolioManager.PortfolioSettings.LoggingPath);
+            foreach (var file in files)
+            {
+                File.Delete(file);
+            }
         }
     }
 }

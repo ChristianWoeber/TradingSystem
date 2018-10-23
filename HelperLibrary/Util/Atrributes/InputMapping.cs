@@ -9,5 +9,7 @@ namespace HelperLibrary.Util.Atrributes
     public class InputMapping : Attribute
     {
         public string[] KeyWords { get; set; }
+
+        public int SortIndex { get; set; }
     }
 }

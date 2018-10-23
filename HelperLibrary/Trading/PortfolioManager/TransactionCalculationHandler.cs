@@ -49,14 +49,19 @@ namespace HelperLibrary.Trading.PortfolioManager
         public int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount)
         {
             //die gesamt ziel shares bestimmen, werden immer abgerundet
-            var completeTargetShares = (int)Math.Round(targetAmount / candidate.Record.AdjustedPrice, 2, MidpointRounding.AwayFromZero);
+            //aussder wird bei aktivem investment nicht der target amount, sondern der
+            var completeTargetShares = (int)Math.Floor(!candidate.IsInvested ? targetAmount / candidate.Record.AdjustedPrice : GetCurrentTargetAmount() / candidate.Record.AdjustedPrice);
             if (candidate.IsInvested)
             {
                 //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
                 return completeTargetShares - candidate.CurrentPosition.Shares;
             }
             return completeTargetShares;
+
+            //interne methode gibt mir den aktuell bewerteten Totalen Amount in EUR zurück (Stücke mal heutiger Preis
+            decimal GetCurrentTargetAmount() => (targetAmount + (candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice));
         }
+
 
         public decimal CalculateTargetAmount(ITradingCandidate candidate)
         {
@@ -68,7 +73,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             if (candidate.IsInvested)
             {
                 //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
-                return completeTargetAmount - candidate.CurrentPosition.TargetAmountEur;
+                return completeTargetAmount - (candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice);
             }
             return completeTargetAmount;
         }

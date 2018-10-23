@@ -7,7 +7,7 @@
              xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
              mc:Ignorable="d" 
              Width="Auto"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="1450" d:DesignWidth="800">
     <UserControl.Resources>
         <Style x:Key="LabelStyle" TargetType="arts:SmartTextBlock" BasedOn="{StaticResource {x:Type arts:SmartTextBlock}}">
             <Setter Property="HorizontalAlignment" Value="Left"/>

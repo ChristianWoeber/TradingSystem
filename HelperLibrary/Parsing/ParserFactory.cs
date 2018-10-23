@@ -10,6 +10,7 @@ using HelperLibrary.Util.Atrributes;
 using HelperLibrary.Extensions;
 using System;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 
 namespace HelperLibrary.Parsing
 {
@@ -53,7 +54,7 @@ namespace HelperLibrary.Parsing
         {
             return File.Exists(path)
                 ? GetListOfType<T>(File.ReadAllText(path))
-                : null;
+                : new List<T>();
         }
 
 
@@ -227,17 +228,21 @@ namespace HelperLibrary.Parsing
 
         }
 
-
+        public static void AppendToFile<T>(T item, string path)
+        {
+            AppendToFile<T>(new List<T> { item }, path);
+        }
         public static void AppendToFile<T>(IEnumerable<T> items, string path)
         {
-            var properties = typeof(T).GetProperties().Where(x => x.GetCustomAttribute<InputMapping>() != null)
-                .ToList();
-
-            var lines = File.ReadAllLines(path);
+            //TODO: Eventuell noch getter func statt der reflection
+            var properties = typeof(T).GetProperties().Where(x => x.GetCustomAttribute<InputMapping>() != null).OrderBy(x => x.GetCustomAttribute<InputMapping>().SortIndex)
+                ./*Select(x => new InputMapper<T>(x.Name, x)).*/ToList();
 
             var content = items.ToList();
-            if (lines.Length <= 0)
+            if (!File.Exists(path))
+            {
                 WriteToFile(content, path, properties);
+            }
             else
             {
                 using (var writer = File.AppendText(path))
@@ -252,11 +257,10 @@ namespace HelperLibrary.Parsing
                         writer.WriteLine(row);
                     }
                 }
-
             }
         }
 
-        public static void WriteToFile<T>(IEnumerable<T> items, string path, List<PropertyInfo> properties)
+        private static void WriteToFile<T>(IEnumerable<T> items, string path, List<PropertyInfo> properties)
         {
             using (var writer = File.CreateText(path))
             {
@@ -267,6 +271,9 @@ namespace HelperLibrary.Parsing
                     .Aggregate((a, b) => a + DELIMITER + b);
 
                 writer.WriteLine(header);
+
+                if (items == null)
+                    return;
 
                 foreach (var item in items)
                 {

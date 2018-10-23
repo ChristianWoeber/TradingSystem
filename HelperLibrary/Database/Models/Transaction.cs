@@ -1,6 +1,8 @@
 ﻿using HelperLibrary.Util.Atrributes;
 using System;
 using System.Data.Linq.Mapping;
+using System.Linq;
+using System.Reflection;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Utils;
@@ -14,7 +16,7 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt
         /// </summary>
-        [InputMapping(KeyWords = new[] { "DateTime", nameof(TransactionDateTime) })]
+        [InputMapping(KeyWords = new[] { "DateTime", nameof(TransactionDateTime) }, SortIndex = 1)]
         [Column(Storage = "TRANSACTION_DATETIME")]
         public DateTime TransactionDateTime { get; set; }
 
@@ -22,7 +24,7 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Der zweite primary Key des Tables - Die Security Id
         /// </summary>
-        [InputMapping(KeyWords = new[] { "Id", nameof(SecurityId) })]
+        [InputMapping(KeyWords = new[] { "Id", nameof(SecurityId) }, SortIndex = 2)]
         [Column(Storage = "SECURITY_ID")]
         public int SecurityId { get; set; }
 
@@ -30,7 +32,7 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Die Anzahl der Stücke
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(Shares) })]
+        [InputMapping(KeyWords = new[] { nameof(Shares) }, SortIndex = 3)]
         [Column(Storage = "SHARES")]
         public int Shares { get; set; }
 
@@ -38,14 +40,14 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Der Gegenwert in EUR - Berechnet mit dem zuletzt verfügbaren Preis
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(TargetAmountEur), "Amount" })]
+        [InputMapping(KeyWords = new[] { nameof(TargetAmountEur), "Amount" }, SortIndex = 4)]
         [Column(Storage = "AMOUNT_EUR")]
         public decimal TargetAmountEur { get; set; }
 
         /// <summary>
         /// Der Typ der Transaktion (Opening,Closing,Changed) <see cref="Trading.DataStructures.Enums.TransactionType"/>
         /// </summary>
-        [InputMapping(KeyWords = new[] { "Type", nameof(TransactionType) })]
+        [InputMapping(KeyWords = new[] { "Type", nameof(TransactionType) }, SortIndex = 5)]
         [Column(Storage = "TRANSACTION_TYPE")]
         public TransactionType TransactionType { get; set; }
 
@@ -53,7 +55,7 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// 1 bedeutet die Transaktion wurde gecancelled
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(Cancelled) })]
+        [InputMapping(KeyWords = new[] { nameof(Cancelled) }, SortIndex = 6)]
         [Column(Storage = "IS_CANCELLED")]
         public int Cancelled { get; set; }
 
@@ -61,7 +63,7 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Das Zielgewicht der Position zum Stichtag im Portfolio
         /// </summary>
-        [InputMapping(KeyWords = new[] { "target", nameof(TargetWeight) })]
+        [InputMapping(KeyWords = new[] { "target", nameof(TargetWeight) }, SortIndex = 7)]
         [Column(Storage = "TARGET_WEIGHT")]
         public decimal TargetWeight { get; set; }
 
@@ -69,14 +71,14 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Das effektive Gewicht der Position zum Stichtag, sprich das effektive gewicht der einzelnen Transaktion
         /// </summary>
-        [InputMapping(KeyWords = new[] { "Effective", nameof(EffectiveWeight) })]
+        [InputMapping(KeyWords = new[] { "Effective", nameof(EffectiveWeight) }, SortIndex = 8)]
         [Column(Storage = "EFFECTIVE_WEIGHT")]
         public decimal EffectiveWeight { get; set; }
 
         /// <summary>
         /// Der effektive Bertrag der Position, bei Verkäufen ist dieser negativ
         /// </summary>
-        [InputMapping(KeyWords = new[] { "Effective Amount", nameof(EffectiveAmountEur) })]
+        [InputMapping(KeyWords = new[] { "Effective Amount", nameof(EffectiveAmountEur) }, SortIndex = 9)]
         [Column(Storage = "EFFECTIVE_AMOUNTEUR")]
         public decimal EffectiveAmountEur { get; set; }
 
@@ -98,6 +100,8 @@ namespace HelperLibrary.Database.Models
         }
 
         public string UniqueKey => _uniqueKey ?? (_uniqueKey = UniqueKeyProvider.CreateUniqueKey(this));
+     
+
     }
 
 

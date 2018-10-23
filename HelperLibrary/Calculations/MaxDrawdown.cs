@@ -84,10 +84,7 @@ namespace HelperLibrary.Calculations
             ITradingRecord low = null;
             var isFirst = true;
 
-            var range = _priceHistoryRange.OrderBy(x => x.Asof);
-
-
-            foreach (var item in range)
+            foreach (var item in _priceHistoryRange)
             {
                 if (isFirst)
                 {

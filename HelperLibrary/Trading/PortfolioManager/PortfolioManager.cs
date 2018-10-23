@@ -40,7 +40,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             PortfolioAsofChangedEvent += OnPortfolioAsOfChanged;
             PositionChangedEvent += OnPositionChanged;
         }
-      
+
         /// <summary>
         /// das Event das aufgerufen wird, wenn sich die Positonen änder
         /// </summary>
@@ -76,9 +76,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             //den aktuellen Portfolio Wert setzen
             CalculateCurrentPortfolioValue();
-            //if (Debugger.IsAttached)
-            //    Trace.TraceInformation($"Portfolio-Wert: {PortfolioValue:N}");
-
         }
         /// <summary>
         /// Der EventCallback wenn sich die Transaktionen ändern
@@ -152,8 +149,6 @@ namespace HelperLibrary.Trading.PortfolioManager
             {
                 if (candidate.IsInvested)
                 {
-                    //immer die letzte Transaktion holen
-                    //var lastTransaction = TransactionsHandler.GetSingle(candidate.Record.SecurityId, null);
 
                     //und zu dem Zeitpunkt den Score
                     candidate.LastScoringResult = ScoringProvider.GetScore(candidate.Record.SecurityId, candidate.LastTransaction.TransactionDateTime);
@@ -211,7 +206,6 @@ namespace HelperLibrary.Trading.PortfolioManager
                 }
             }
 
-            //TODO: das Rebalancing Refactoren
             RebalanceTemporaryPortfolio(bestCandidatesNotInvestedIn, candidates);
         }
 
@@ -624,12 +618,12 @@ namespace HelperLibrary.Trading.PortfolioManager
             var effectiveAmountEur = TransactionCaclulationProvider.CalculateEffectiveAmountEur(candidate, targetShares);
 
             //wenn es sich um ein Closing einer Position handelt
-            if (candidate.TargetWeight <= 0 && candidate.IsInvested)
-            {
-                targetShares = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId].Shares * -1;
-                targetAmount = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId].TargetAmountEur * -1;
-                effectiveAmountEur = Math.Round(targetShares * candidate.Record.AdjustedPrice, 4);
-            }
+            //if (candidate.TargetWeight <= 0 && candidate.IsInvested)
+            //{
+            //    targetShares = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId].Shares * -1;
+            //    targetAmount = TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId].TargetAmountEur * -1;
+            //    effectiveAmountEur = Math.Round(targetShares * candidate.Record.AdjustedPrice, 4);
+            //}
             var effectiveWeight = TransactionCaclulationProvider.CalculateEffectiveWeight(effectiveAmountEur);
 
             Transaction transaction;
@@ -662,41 +656,6 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
-        //private decimal CalculateEffectiveWeight(decimal effectiveAmountEur)
-        //{
-        //    //das effektive Gewicht berechnen
-        //    return Math.Round(effectiveAmountEur / PortfolioValue, 4);
-        //}
-
-        //private static decimal CalculateEffectiveAmountEur(ITradingCandidate candidate, int targetShares)
-        //{
-        //    //das effektive gewicht
-        //    return Math.Round(targetShares * candidate.Record.AdjustedPrice, 4);
-        //}
-
-        //private static int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount)
-        //{
-        //    //die gesamt ziel shares bestimmen, werden immer abgerundet
-        //    var completeTargetShares = (int)Math.Round(targetAmount / candidate.Record.AdjustedPrice, 2, MidpointRounding.AwayFromZero);
-        //    if (candidate.IsInvested)
-        //    {
-        //        //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
-        //        return completeTargetShares - candidate.CurrentPosition.Shares;
-        //    }
-        //    return completeTargetShares;
-        //}
-
-        //private decimal CalculateTargetAmount(ITradingCandidate candidate)
-        //{
-        //    //der gesamt ziel Betrag in EuR
-        //    var completeTargetAmount = Math.Round(PortfolioValue * candidate.TargetWeight, 4);
-        //    if (candidate.IsInvested)
-        //    {
-        //        //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
-        //        return completeTargetAmount - candidate.CurrentPosition.TargetAmountEur;
-        //    }
-        //    return completeTargetAmount;
-        //}
 
         private Transaction CreateTransaction(ITradingCandidate candidate, decimal targetAmount, int targetShares, decimal effectiveAmountEur, decimal effectiveWeight)
         {
@@ -753,7 +712,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             PortfolioValue = Math.Round(sumInvested, 4) + CashHandler.Cash;
 
             //die Allokation to Risk berechnen
-            AllocationToRisk = Math.Round(sumInvested, 4) / PortfolioValue;
+            AllocationToRisk = sumInvested == 0 ? 1 : Math.Round(sumInvested / PortfolioValue,4);
 
             //log Value
             //SimpleTextParser.AppendToFile(new List<PortfolioValuation> {new PortfolioValuation(this) },PortfolioSettings.LoggingPath);
