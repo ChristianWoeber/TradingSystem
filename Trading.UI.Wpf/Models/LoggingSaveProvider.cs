@@ -78,7 +78,7 @@ namespace Trading.UI.Wpf.Models
             SimpleTextParser.AppendToFile(new PortfolioValuation { AllocationToRisk = _pm.AllocationToRisk, PortfolioAsof = e, PortfolioValue = _pm.PortfolioValue }, _portfolioValuationPath);
         }
 
-        //TODO: implementieren über NLOG
+       
         public void Save(IEnumerable<ITransaction> items)
         {
 

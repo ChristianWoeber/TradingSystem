@@ -31,6 +31,7 @@ namespace Trading.UI.Wpf.ViewModels
                 Directory.CreateDirectory(initialDir);
 
             LoggingPath = initialDir;
+            IndicesDirectory = Globals.IndicesBasePath;
         }
 
 
@@ -205,6 +206,18 @@ namespace Trading.UI.Wpf.ViewModels
                 if (value == PortfolioSettings.LoggingPath)
                     return;
                 PortfolioSettings.LoggingPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string IndicesDirectory
+        {
+            get => PortfolioSettings.IndicesDirectory;
+            set
+            {
+                if (value == PortfolioSettings.IndicesDirectory)
+                    return;
+                PortfolioSettings.IndicesDirectory = value;
                 OnPropertyChanged();
             }
         }

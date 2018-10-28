@@ -243,6 +243,27 @@ namespace TradingSystemTests {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Asof;Price;SecurityId;AdjustedPrice
+        ///02.01.1990 00:00:00;48.3109;703;48.3109
+        ///03.01.1990 00:00:00;48.9337;703;48.9337
+        ///04.01.1990 00:00:00;48.9236;703;48.9236
+        ///05.01.1990 00:00:00;48.3030;703;48.3030
+        ///08.01.1990 00:00:00;47.8783;703;47.8783
+        ///09.01.1990 00:00:00;47.5016;703;47.5016
+        ///10.01.1990 00:00:00;47.0211;703;47.0211
+        ///11.01.1990 00:00:00;47.4505;703;47.4505
+        ///12.01.1990 00:00:00;46.7514;703;46.7514
+        ///15.01.1990 00:00:00;46.4642;703;46.4642
+        ///16.01.1990 00:00:00;46.5888;703;46.5888
+        ///17.01.1990 00:00:00;46.1 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string MSCIWorldEur {
+            get {
+                return ResourceManager.GetString("MSCIWorldEur", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die TransactionDateTime;SecurityId;Shares;TargetAmountEur;TransactionType;Cancelled;TargetWeight;EffectiveWeight;EffectiveAmountEur
         ///05.01.2000 00:00:00;39;344;10000.0;1;0;0.1;0.1000;10000.08
         ///05.01.2000 00:00:00;40;304;10000.0;1;0;0.1;0.1000;9996.5232

@@ -21,7 +21,7 @@ namespace HelperLibrary.Collections
         /// Standard Konstruktor
         /// </summary>
         /// <param name="dbRecord">der Db Record</param>
-        public PriceHistoryItem(YahooDataRecord dbRecord)
+        public PriceHistoryItem(TradingRecord dbRecord)
         {
             DbRecord = dbRecord;
         }
@@ -34,7 +34,7 @@ namespace HelperLibrary.Collections
         /// <summary>
         /// Der Deb Record der Im Konstruktor injected wird
         /// </summary>
-        public YahooDataRecord DbRecord { get; private set; }
+        public TradingRecord DbRecord { get; private set; }
     }
 
 
@@ -44,6 +44,9 @@ namespace HelperLibrary.Collections
     /// </summary>
     public class PriceHistoryCollection : IEnumerable<ITradingRecord>, IPriceHistoryCollection
     {
+        private readonly bool _calcMovingLows;
+
+
         #region Items and LookUp
 
         /// <summary>
@@ -73,7 +76,6 @@ namespace HelperLibrary.Collections
         /// Return the Last Item in the Enumeration
         /// </summary>
         public ITradingRecord LastItem => _last;
-
 
 
         /// <summary>
@@ -106,7 +108,10 @@ namespace HelperLibrary.Collections
                 _calculationContext.AddDailyReturn(_items[_items.Count - 2], _items[_items.Count - 1]);
 
                 //das arithmetische Mittel bereits beim Einfügern mit berechnen
-                _calculationContext.CalcArithmeticMean(item);
+                _calculationContext.CalcArithmeticMean(item, _items.Count);
+
+                if (_calcMovingLows)
+                    _calculationContext.CalcMovingLows(item, _items.Count);
             }
         }
 
@@ -136,13 +141,16 @@ namespace HelperLibrary.Collections
 
         #region Constructor
 
-        public PriceHistoryCollection(IEnumerable<ITradingRecord> dbRecords)
+        public PriceHistoryCollection(IEnumerable<ITradingRecord> tradingRecords, bool calcMovingLows = false, int movingLowsPeriode = 150)
         {
+            _calcMovingLows = calcMovingLows;
+            MovingDays = movingLowsPeriode;
             _calculationContext = new CalculationContext(this);
             //add the items to the Observable Collection this can be bound to the UI
-            AddRange(dbRecords);
+            AddRange(tradingRecords);
         }
 
+        internal int MovingDays;
 
         public void Delete(ITradingRecord selectedRecord)
         {
@@ -173,13 +181,7 @@ namespace HelperLibrary.Collections
         /// </summary>
         /// <param name="key">DateTime</param>
         /// <returns></returns>
-        public ITradingRecord this[DateTime key]
-        {
-            get
-            {
-                return Get(key);
-            }
-        }
+        public ITradingRecord this[DateTime key] => Get(key);
 
         public IEnumerable<ITradingRecord> Range(DateTime? from, DateTime? to, PriceHistoryOption option = PriceHistoryOption.PreviousItem)
         {
@@ -205,8 +207,15 @@ namespace HelperLibrary.Collections
             return new PriceHistoryCollection(_items.Where(x => x.Asof >= start && x.Asof <= end));
         }
 
-        private const int CANCELLATION_COUNT = 15;
 
+        public bool TryGetLowMetaInfo(DateTime currentDate, out LowMetaInfo info)
+        {
+            var hasfound = _calculationContext.IsDateNewLow(currentDate, out info);
+            return hasfound || _calculationContext.IsDateNewLow(currentDate.AddDays(1), out info);
+        }
+
+
+        private const int CANCELLATION_COUNT = 15;
         private int _count;
 
 

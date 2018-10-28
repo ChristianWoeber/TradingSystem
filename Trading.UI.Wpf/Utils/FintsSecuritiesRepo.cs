@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Arts.Financial;
-using Arts.Util;
+using HelperLibrary.Database.Models;
+using HelperLibrary.Parsing;
 
 namespace Trading.UI.Wpf.Utils
 {
@@ -14,7 +13,9 @@ namespace Trading.UI.Wpf.Utils
 
         private static FINTS<double> LoadEuroStoxx50History()
         {
-            return DBTools.ADBQueryFINTS<double>("INDEXQUOTES", 724, 1);
-        }
+            var path = Path.Combine(Globals.IndicesBasePath, "EuroStoxx50.csv");
+            return FINTS.Create(SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(path)
+                .Select(t => new Quote<double>(new SDate(t.Asof), (double)t.AdjustedPrice)));
+        }       
     }
 }

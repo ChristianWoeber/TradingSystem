@@ -139,6 +139,9 @@
   <data name="GetTransactionTest" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\GetTransactionTest.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="MSCIWorldEur" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\msciworldeur.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="RebalancePortfolioTestFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\RebalancePortfolioTestFile.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

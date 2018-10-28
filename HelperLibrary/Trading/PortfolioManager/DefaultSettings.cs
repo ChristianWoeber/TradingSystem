@@ -79,6 +79,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         public decimal MaximumPositionSizeBuffer { get; set; } = new decimal(0.05);
 
         public string LoggingPath { get; set; }
+        public string IndicesDirectory { get; set; }
     }
 
     public class DefaultPortfolioSettings : IPortfolioSettings
@@ -144,5 +145,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         public decimal MaximumPositionSizeBuffer { get; set; } = new decimal(0.05);
 
         public string LoggingPath { get; set; }
+        public string IndicesDirectory { get; set; }
     }
 }

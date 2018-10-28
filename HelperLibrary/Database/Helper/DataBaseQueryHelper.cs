@@ -191,17 +191,17 @@ namespace HelperLibrary.Database
             }
         }
 
-        public static Dictionary<int, List<YahooDataRecord>> SQLGetAllFirstAndLastItems(IEnumerable<object> secIds)
+        public static Dictionary<int, List<TradingRecord>> SQLGetAllFirstAndLastItems(IEnumerable<object> secIds)
         {
-            var dic = new Dictionary<int, List<YahooDataRecord>>();
+            var dic = new Dictionary<int, List<TradingRecord>>();
             foreach (var id in secIds)
             {
                 try
                 {
 
-                    var lastandFirst = SQLCmd.Call().Procedure("getSinglePriceHistoryFirstAndLastItem", id).QueryObjects<YahooDataRecord>();
+                    var lastandFirst = SQLCmd.Call().Procedure("getSinglePriceHistoryFirstAndLastItem", id).QueryObjects<TradingRecord>();
                     if (!dic.ContainsKey((int)id))
-                        dic.Add((int)id, new List<YahooDataRecord>());
+                        dic.Add((int)id, new List<TradingRecord>());
 
                     dic[(int)id].AddRange(lastandFirst);
 
@@ -224,14 +224,14 @@ namespace HelperLibrary.Database
                 {
                     var cmdDate = SQLCmd.Call().Procedure("getSinglePriceHistoryWithDateTime", secid, start);
 
-                    foreach (var item in cmdDate.QueryObjects<YahooDataRecord>())
+                    foreach (var item in cmdDate.QueryObjects<TradingRecord>())
                         yield return item;
 
                 }
                 else
                 {
                     var cmd = SQLCmd.Call().Procedure("getSinglePriceHistory", secid);
-                    foreach (var item in cmd.QueryObjects<YahooDataRecord>())
+                    foreach (var item in cmd.QueryObjects<TradingRecord>())
                         yield return item;
                 }
 
@@ -316,17 +316,17 @@ namespace HelperLibrary.Database
             return dic;
         }
 
-        public static Dictionary<int, List<YahooDataRecord>> GetDataTable()
+        public static Dictionary<int, List<TradingRecord>> GetDataTable()
         {
-            var dic = new Dictionary<int, List<YahooDataRecord>>();
+            var dic = new Dictionary<int, List<TradingRecord>>();
             using (SQLCmd.Connection = DataBaseFactory.Create(new MySqlConnection()))
             {
                 var cmd = SQLCmd.Select("Trading", "yahoo_data").Fields("ASOF", "SECURITY_ID", "CLOSE_PRICE", "ADJUSTED_CLOSE_PRICE");
 
-                foreach (var item in cmd.QueryObjects<YahooDataRecord>())
+                foreach (var item in cmd.QueryObjects<TradingRecord>())
                 {
                     if (!dic.ContainsKey(item.SecurityId))
-                        dic.Add(item.SecurityId, new List<YahooDataRecord>());
+                        dic.Add(item.SecurityId, new List<TradingRecord>());
 
                     dic[item.SecurityId].Add(item);
                 }
@@ -366,7 +366,7 @@ namespace HelperLibrary.Database
             }
         }
         // inserts the records into db or updates them
-        public static void InsertOrUpdateSingleSecurityDataHistory(List<YahooDataRecord> records, IProgress<double> progress, int secId)
+        public static void InsertOrUpdateSingleSecurityDataHistory(List<TradingRecord> records, IProgress<double> progress, int secId)
         {
             using (SQLCmd.Connection = DataBaseFactory.Create(new MySqlConnection()))
             {
@@ -415,7 +415,7 @@ namespace HelperLibrary.Database
 
 
         // inserts the records into db or updates them
-        public static void InsertOrUpdateMultipleSecurityDataPrices(List<YahooDataRecord> records, IProgress<double> progress)
+        public static void InsertOrUpdateMultipleSecurityDataPrices(List<TradingRecord> records, IProgress<double> progress)
         {
             using (SQLCmd.Connection = DataBaseFactory.Create(new MySqlConnection()))
             {

@@ -136,6 +136,20 @@ namespace TradingSystemTests.TestCases
                 Assert.IsTrue(itm.Asof.IsBusinessDayUltimo() || itm.Asof.IsUltimo());
         }
 
+        [TestCase("AdidasHistory.txt", "01.09.2008")]
+        public void CreatePriceHistoryWithLowCalculationTest(string fileName, string dateString)
+        {
+            var data = CreateTestCollecton(fileName);
+            _history = new PriceHistoryCollection(data, true);
+
+            Assert.IsTrue(_history != null, "Achtung die Collection ist null");
+            Assert.IsTrue(_history.Count > 100, "Achtung es konnten nicht alle daten geladen werden");
+
+            var date = DateTime.Parse(dateString);
+            Assert.IsTrue(_history.TryGetLowMetaInfo(date, out var lowMetaInfo));
+            Assert.IsTrue(lowMetaInfo != null && lowMetaInfo.HasNewLow);
+        }
+
 
         public static IEnumerable<TestQuote> CreateTestCollecton(string fileName)
         {

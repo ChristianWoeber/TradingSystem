@@ -104,10 +104,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             //wenn es sich um einen geplanten Verkauf handelt, den erlös cashwirksam buchen
             if (item.IsTemporary)
             {
-                if (item.Shares < 0)
-                    _cashManager.Cash += Math.Abs(item.EffectiveAmountEur);
-                else
-                    _cashManager.Cash -= Math.Abs(item.EffectiveAmountEur);
+                UpdateCash(item);
             }
             try
             {
@@ -122,6 +119,24 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             //hinzufügen
             _items.Add(item);
+        }
+
+        private void UpdateCash(ITransaction item)
+        {
+            if (item.Shares < 0)
+                IncrementCash(item);
+            else
+                DecrementCash(item);
+        }
+
+        public void DecrementCash(ITransaction item)
+        {
+            _cashManager.Cash -= Math.Abs(item.EffectiveAmountEur);
+        }
+
+        public void IncrementCash(ITransaction item)
+        {
+            _cashManager.Cash += Math.Abs(item.EffectiveAmountEur);
         }
 
         public void AddRange(IEnumerable<ITransaction> items, bool isTemporary = true)
@@ -147,7 +162,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             var item = _items.FirstOrDefault(x => x.SecurityId == candidateSecurityId && x.IsTemporary);
             if (item == null)
-                throw new NullReferenceException($"mit der {candidateSecurityId} konnte kein temporäöres item gefunden werden");
+                throw new NullReferenceException($"mit der {candidateSecurityId} konnte kein temporäres item gefunden werden");
             return item;
         }
 

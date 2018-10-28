@@ -51,12 +51,30 @@ namespace Trading.DataStructures.Interfaces
         void Clear();
 
         /// <summary>
-        /// Gibt mir ein aktuelles Item aus dem Temporären Portdolio zurück
+        /// Gibt mir ein aktuelles Item aus dem Temporären Portfolio zurück
         /// </summary>
         /// <param name="candidateSecurityId"></param>
         /// <returns></returns>
         ITransaction Get(int candidateSecurityId);
 
+        /// <summary>
+        /// Gibt true zurück wenn es den Kandidaten gibt
+        /// </summary>
+        /// <param name="temporaryCandidate"></param>
+        /// <returns></returns>
         bool ContainsCandidate(ITradingCandidate temporaryCandidate);
+
+        /// <summary>
+        /// erhöht den CashWert
+        /// </summary>
+        /// <param name="transactionToAdjust"></param>
+        void IncrementCash(ITransaction transactionToAdjust);
+
+        /// <summary>
+        /// verringert den CashWert
+        /// </summary>
+        void DecrementCash(ITransaction transactionToAdjust);
+
+
     }
 }

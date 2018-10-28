@@ -62,6 +62,8 @@ namespace Trading.UI.Wpf.ViewModels
             StartDateTime = new DateTime(2000, 01, 01);
             EndDateTime = StartDateTime.AddYears(5);
 
+            //TODO: ExposureWatcher implementieren der mir die maximale Aktienquote ausgibt
+
             //Command
             RunNewBacktestCommand = new RelayCommand(OnRunBacktest);
             LoadBacktestCommand = new RelayCommand(OnLoadBacktest);

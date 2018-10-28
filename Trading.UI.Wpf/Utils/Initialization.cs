@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using HelperLibrary.Collections;
+using HelperLibrary.Database.Models;
 using HelperLibrary.Parsing;
 using OfficeOpenXml;
 using Trading.DataStructures.Interfaces;

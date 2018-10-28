@@ -50,7 +50,7 @@ namespace HelperLibrary.Trading
             var performance30 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-30), date, null, PriceHistoryOption.NextItem);
             var performance90 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-90), date, null, PriceHistoryOption.NextItem);
             var volatility = priceHistory.Calc.GetVolatilityMonthly(date.AddDays(-250), date, null, PriceHistoryOption.NextItem);
-            var maxDrawDown = priceHistory.Calc.GetMaximumDrawdown(date.AddDays(-250), date, CaclulationOption.Adjusted);
+            //var maxDrawDown = priceHistory.Calc.GetMaximumDrawdown(date.AddDays(-250), date, CaclulationOption.Adjusted);
 
             // Das Ergebnis returnen
             return new ConservativeScoringResult
@@ -60,7 +60,7 @@ namespace HelperLibrary.Trading
                 Performance30 = performance30,
                 Performance90 = performance90,
                 Performance250 = performance250,
-                MaxDrawdown = maxDrawDown,
+                //MaxDrawdown = maxDrawDown,
                 Volatility = volatility,
             };
         }

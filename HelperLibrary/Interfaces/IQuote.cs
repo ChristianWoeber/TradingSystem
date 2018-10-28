@@ -6,6 +6,6 @@ namespace HelperLibrary.Interfaces
     public interface IQuote
     {
         DateTime Date { get; }
-        YahooDataRecord DataRecord { get; }
+        TradingRecord DataRecord { get; }
     }
 }

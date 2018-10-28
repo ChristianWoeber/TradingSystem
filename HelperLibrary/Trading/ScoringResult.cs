@@ -59,6 +59,10 @@ namespace HelperLibrary.Trading
         /// das Datum des Scoring Results
         /// </summary>
         public DateTime Asof { get; set; }
+
+        /// <summary>
+        /// Der Score ist nur dann valide wenn er größer als 1 ist
+        /// </summary>
         public bool IsValid => Score > 1;
         public decimal Performance250 { get; set; }
         public decimal Performance90 { get; set; }
@@ -72,13 +76,12 @@ namespace HelperLibrary.Trading
             get
             {
                 // Ich gewichte die performance,
-                // die aktuellsten Daten haben die größten Gewichte
-                //ich ziehe auch noch den maxdrawdown in der Periode ab
-                var avgPerf = Performance10 * (decimal)0.10
-                              + Performance30 * (decimal)0.20
-                              + Performance90 * (decimal)0.30
-                              + Performance250 * (decimal)0.20
-                              + MaxDrawdown * (decimal)0.2;
+                // die mittelfirstige, bis langfristige Daten haben die größten Gewichte
+                var avgPerf = Performance10 * (decimal) 0.20
+                              + Performance30 * (decimal) 0.20
+                              + Performance90 * (decimal) 0.40
+                              + Performance250 * (decimal) 0.20;
+                              //+ MaxDrawdown * (decimal)0.2;
 
                 return Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
 

@@ -20,6 +20,7 @@ namespace HelperLibrary.Calculations
         private readonly PriceHistoryCollection _priceHistory;
         private readonly CalculationHandler _handler;
         private decimal _arithmeticMean;
+        private decimal _arithmeticMeanDailyReturns;
 
         #endregion
 
@@ -65,11 +66,10 @@ namespace HelperLibrary.Calculations
         public decimal GetAverageReturn(DateTime from, DateTime? to = null, CaclulationOption? option = null)
         {
             var opt = option ?? CaclulationOption.Adjusted;
-            var isLast = to == null ? true : false;
-            if (isLast)
-                return _handler.CalcAverageReturn(_priceHistory.Get(from), _priceHistory.LastItem, opt);
-
-            return _handler.CalcAverageReturn(_priceHistory.Get(from), _priceHistory.Get(to.Value), opt);
+            var isLast = to == null;
+            return _handler.CalcAverageReturn(_priceHistory.Get(from), isLast
+                ? _priceHistory.LastItem
+                : _priceHistory.Get(to.Value), opt);
         }
 
         public decimal GetAverageReturnMonthly(DateTime from, DateTime? to = null, CaclulationOption? option = null)
@@ -143,17 +143,78 @@ namespace HelperLibrary.Calculations
 
         }
 
-        public void CalcArithmeticMean(ITradingRecord item)
+        public void CalcArithmeticMean(ITradingRecord item, int count)
         {
-            _arithmeticMean = _dailyReturns.Values.Sum() / _dailyReturns.Count;
+            if (count == 1)
+                _arithmeticMean = item.AdjustedPrice;
+            else
+                _arithmeticMean = (item.AdjustedPrice + _arithmeticMean) / count;
+        }
+
+        public void CalcArithmeticMeanDailyReturns()
+        {
+            _arithmeticMeanDailyReturns = _dailyReturns.Values.Sum() / _priceHistory.Count;
+        }
 
 
-            //if (item.Price <= decimal.MinValue && item.AdjustedPrice <= decimal.MinValue)
-            //    throw new ArgumentException($"Achtung es wurde kein gültiger Price mitgegeben - werder {nameof(item.AdjustedPrice)} noch {nameof(item.Price)}");
-            //if (item.AdjustedPrice <= decimal.MinValue)
-            //    _arithmeticMean += item.Price / _dailyReturns.Count;
-            //else
-            //    _arithmeticMean += item.AdjustedPrice / _dailyReturns.Count;
+        private readonly Dictionary<DateTime, LowMetaInfo> _lowMetaInfos = new Dictionary<DateTime, LowMetaInfo>();
+
+
+        public void CalcMovingLows(ITradingRecord item, int count)
+        {
+            //brauche erst rechnen ab dem Moment wo sich ein erstes Fenster ausgeht
+            if (count < _priceHistory.MovingDays)
+                return;
+
+            ITradingRecord low = null;
+            ITradingRecord first = null;
+            ITradingRecord last = null;
+
+            if (_lowMetaInfos.TryGetValue(item.Asof.AddDays(-1), out var lastLowMetaInfo))
+            {
+                //das Item von vor 150 Tagen
+                var newFirst = _priceHistory.Get(item.Asof.AddDays(-_priceHistory.MovingDays));
+
+                //wenn der aktuelle Preis höher ist als der vorherige kann es kein neues low geben
+                if (item.AdjustedPrice > lastLowMetaInfo.Last.AdjustedPrice)
+                {
+                    //merke mir das item mit hasNewlow=false
+                    _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, false));
+                    return;
+                }
+
+                //wenn das letze Low tiefer liegt, und das datum des Lows noch in der Range ist brauche ich die 150 Tage nur um eines weiterschieben
+                if (lastLowMetaInfo.Low.AdjustedPrice < item.AdjustedPrice && newFirst.Asof >= lastLowMetaInfo.Low.Asof)
+                {
+                    //merke mir das item mit hasNewlow=false
+                    _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, false));
+                    return;
+                }
+            }
+            //neu berechnen
+            foreach (var record in _priceHistory.Range(item.Asof.AddDays(-_priceHistory.MovingDays), item.Asof))
+            {
+                if (low == null)
+                {
+                    //merke mir hier den ersten
+                    low = record;
+                    first = low;
+                }
+
+                //dann gibt es ein neues Low
+                if (record.AdjustedPrice < low.AdjustedPrice)
+                    low = record;
+                //merke mir hier immer den letzten Record
+                last = record;
+            }
+
+            if (!_lowMetaInfos.TryGetValue(item.Asof, out var _))
+                _lowMetaInfos.Add(item.Asof, new LowMetaInfo(first, low, last));
+        }
+
+        public bool IsDateNewLow(DateTime currentDate, out LowMetaInfo info)
+        {
+            return _lowMetaInfos.TryGetValue(currentDate, out info);
         }
     }
 }
