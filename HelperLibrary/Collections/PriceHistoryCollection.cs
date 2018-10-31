@@ -207,11 +207,16 @@ namespace HelperLibrary.Collections
             return new PriceHistoryCollection(_items.Where(x => x.Asof >= start && x.Asof <= end));
         }
 
+        public IEnumerable<Tuple<DateTime, LowMetaInfo>> EnumLows()
+        {
+            foreach (var low in _calculationContext.EnumLows())
+                yield return low;
+        }
+
 
         public bool TryGetLowMetaInfo(DateTime currentDate, out LowMetaInfo info)
         {
-            var hasfound = _calculationContext.IsDateNewLow(currentDate, out info);
-            return hasfound || _calculationContext.IsDateNewLow(currentDate.AddDays(1), out info);
+            return _calculationContext.TryGetLastLowItem(currentDate, out info);
         }
 
 

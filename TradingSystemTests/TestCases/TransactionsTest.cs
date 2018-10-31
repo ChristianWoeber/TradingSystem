@@ -115,6 +115,7 @@ namespace TradingSystemTests.TestCases
             public decimal AveragePrice { get; }
             public TransactionType TransactionType { get; set; }
             public bool IsBelowStopp { get; set; }
+            public bool HasBetterScoring { get; }
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Trading.DataStructures.Interfaces
 {
@@ -18,5 +19,12 @@ namespace Trading.DataStructures.Interfaces
         /// Das event das gefeuert wird wenn sich der Cash Value ändert
         /// </summary>
         event EventHandler<DateTime> CashChangedEvent;
+
+        /// <summary>
+        /// Methode um das Cash zu bereiningen
+        /// </summary>
+        /// <param name="allCandidates">die investeirten Candidaten</param>
+        /// <param name="tradingCandidates"></param>
+        void CleanUpCash(List<ITradingCandidate> allCandidates, List<ITradingCandidate> tradingCandidates);
     }
 }

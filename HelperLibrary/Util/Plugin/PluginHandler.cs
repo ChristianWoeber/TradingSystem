@@ -55,7 +55,7 @@ namespace HelperLibrary.Util.Plugin
         {
             _pluginCache = new Dictionary<string, AssemblyObj>();
             string[] files;
-            if (Environment.UserName.ContainsIC("Administrator"))
+            if (Environment.UserName.ContainsIc("Administrator"))
                 files = Directory.GetFiles(MAINROOT_SERVER, "*.dll", SearchOption.AllDirectories);
             else
                 files = Directory.GetFiles(MAINROOT, "*.dll", SearchOption.AllDirectories);
@@ -93,8 +93,8 @@ namespace HelperLibrary.Util.Plugin
 
         private static AssemblyObj GetModul(string filename, Type basetype)
         {
-            if (filename.ContainsIC("HelperLibrary") || filename.ContainsIC("HtmlAgilityPack") ||
-                filename.ContainsIC("Sql") || filename.ContainsIC("YahooLibrary"))
+            if (filename.ContainsIc("HelperLibrary") || filename.ContainsIc("HtmlAgilityPack") ||
+                filename.ContainsIc("Sql") || filename.ContainsIc("YahooLibrary"))
                 return null;
             //Loads an assembly given its file name or path.
             var assembly = Assembly.LoadFrom(filename);

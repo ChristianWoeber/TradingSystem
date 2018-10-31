@@ -143,6 +143,8 @@ namespace HelperLibrary.Calculations
 
         }
 
+        public int MovingDays => _priceHistory.MovingDays;
+
         public void CalcArithmeticMean(ITradingRecord item, int count)
         {
             if (count == 1)
@@ -157,8 +159,43 @@ namespace HelperLibrary.Calculations
         }
 
 
-        private readonly Dictionary<DateTime, LowMetaInfo> _lowMetaInfos = new Dictionary<DateTime, LowMetaInfo>();
+        private readonly LowMetaInfoCollection _lowMetaInfos = new LowMetaInfoCollection();
 
+
+        public class LowMetaInfoCollection : Dictionary<DateTime, LowMetaInfo>
+        {
+            private const int MAX_TRIES = 15;
+            public bool TryGetLastItem(DateTime asof, out LowMetaInfo lastMetaInfo)
+            {
+                if (Count == 0)
+                {
+                    lastMetaInfo = null;
+                    return false;
+                }
+
+                var idx = 0;
+
+                while (idx < MAX_TRIES)
+                {
+                    if (TryGetValue(asof.AddDays(-idx), out var lastInfo))
+                    {
+                        var currentlastMetaInfo = lastInfo;
+                        if (currentlastMetaInfo != null)
+                        {
+                            lastMetaInfo = currentlastMetaInfo;
+                            return true;
+                        }
+                    }
+
+                    if (lastInfo == null)
+                        idx++;
+                }
+
+                lastMetaInfo = null;
+                return false;
+            }
+         
+        }
 
         public void CalcMovingLows(ITradingRecord item, int count)
         {
@@ -169,31 +206,37 @@ namespace HelperLibrary.Calculations
             ITradingRecord low = null;
             ITradingRecord first = null;
             ITradingRecord last = null;
+            var records = new List<ITradingRecord>();
 
-            if (_lowMetaInfos.TryGetValue(item.Asof.AddDays(-1), out var lastLowMetaInfo))
+            //hol mir das letzt Item
+            if (_lowMetaInfos.TryGetLastItem(item.Asof.AddDays(-1), out var lastLowMetaInfo))
             {
                 //das Item von vor 150 Tagen
                 var newFirst = _priceHistory.Get(item.Asof.AddDays(-_priceHistory.MovingDays));
+                lastLowMetaInfo.UpdatePeriodeRecords(item);
 
                 //wenn der aktuelle Preis höher ist als der vorherige kann es kein neues low geben
                 if (item.AdjustedPrice > lastLowMetaInfo.Last.AdjustedPrice)
                 {
                     //merke mir das item mit hasNewlow=false
-                    _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, false));
+                    _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, lastLowMetaInfo, false));
                     return;
                 }
 
                 //wenn das letze Low tiefer liegt, und das datum des Lows noch in der Range ist brauche ich die 150 Tage nur um eines weiterschieben
-                if (lastLowMetaInfo.Low.AdjustedPrice < item.AdjustedPrice && newFirst.Asof >= lastLowMetaInfo.Low.Asof)
+                if (lastLowMetaInfo.Low.AdjustedPrice < item.AdjustedPrice && lastLowMetaInfo.Low.Asof >= newFirst.Asof)
                 {
                     //merke mir das item mit hasNewlow=false
-                    _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, false));
+                    _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, lastLowMetaInfo, false));
                     return;
                 }
             }
+
             //neu berechnen
             foreach (var record in _priceHistory.Range(item.Asof.AddDays(-_priceHistory.MovingDays), item.Asof))
             {
+                records.Add(record);
+
                 if (low == null)
                 {
                     //merke mir hier den ersten
@@ -206,15 +249,25 @@ namespace HelperLibrary.Calculations
                     low = record;
                 //merke mir hier immer den letzten Record
                 last = record;
-            }
 
-            if (!_lowMetaInfos.TryGetValue(item.Asof, out var _))
-                _lowMetaInfos.Add(item.Asof, new LowMetaInfo(first, low, last));
+            }
+            //wenn lastLowMetaInfo == null bin ich beim ersten Record
+            _lowMetaInfos.Add(item.Asof, lastLowMetaInfo != null
+                    ? new LowMetaInfo(first, low, last, lastLowMetaInfo, true)
+                    : new LowMetaInfo(first, low, last, records));
         }
 
-        public bool IsDateNewLow(DateTime currentDate, out LowMetaInfo info)
+        public bool TryGetLastLowItem(DateTime currentDate, out LowMetaInfo info)
         {
-            return _lowMetaInfos.TryGetValue(currentDate, out info);
+            return _lowMetaInfos.TryGetLastItem(currentDate, out info);
+        }
+
+        public IEnumerable<Tuple<DateTime, LowMetaInfo>> EnumLows()
+        {
+            foreach (var kvp in _lowMetaInfos)
+            {
+                yield return new Tuple<DateTime, LowMetaInfo>(kvp.Key, kvp.Value);
+            }
         }
     }
 }

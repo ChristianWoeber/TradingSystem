@@ -8,6 +8,7 @@ namespace HelperLibrary.Trading
     {
         private readonly ITradingCandidateBase _tradingCandidateBase;
 
+
         public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, IPortfolioValuation valuation, bool isInvested = false)
         {
             _tradingCandidateBase = tradingCandidateBase;
@@ -123,7 +124,7 @@ namespace HelperLibrary.Trading
 
         public override string ToString()
         {
-            return $"{Name} | Score: {Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} | CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring}";
+            return $"{Name} | Score: {Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} | CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring} | SecurityId: {Record.SecurityId}";
         }
     }
 

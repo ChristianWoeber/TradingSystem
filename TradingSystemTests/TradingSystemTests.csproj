@@ -85,6 +85,7 @@
     <Compile Include="TestCases\CandidatesTest.cs" />
     <Compile Include="TestCases\PortfolioManagerTest.cs" />
     <Compile Include="TestCases\PriceHistoryCollectionTests.cs" />
+    <Compile Include="TestCases\RebalanceProviderTests.cs" />
     <Compile Include="TestCases\ScoringTests.cs" />
     <Compile Include="TestCases\TransactionsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

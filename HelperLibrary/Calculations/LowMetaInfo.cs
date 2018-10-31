@@ -1,4 +1,8 @@
-﻿using Trading.DataStructures.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Calculations
 {
@@ -23,21 +27,77 @@ namespace HelperLibrary.Calculations
         public ITradingRecord Last { get; }
 
         /// <summary>
+        /// Alle Records des MovingFensters
+        /// </summary>
+        public List<ITradingRecord> PeriodeRecords { get; }
+
+        /// <summary>
         /// Gibt an ob es ein neus Low gibt
         /// </summary>
         public bool HasNewLow { get; }
 
-        public LowMetaInfo(ITradingRecord first, ITradingRecord low, ITradingRecord last, bool hasNewLow = true)
+        /// <summary>
+        /// Der Moving Average Periode
+        /// </summary>
+        public decimal MovingAverage { get; }
+
+        /// <summary>
+        /// Die Veränderung des Moving Averages
+        /// </summary>
+        public decimal MovingAverageDelta { get; set; }
+
+        /// <summary>
+        /// Gibt an ob die aktienquote erhöht oder gesenkt werden darf
+        /// </summary>
+        public bool CanMoveToNextStep { get; set; }
+
+
+        private LowMetaInfo()
+        {
+            
+        }
+
+        private void CalcPerformance()
+        {
+            var first = PeriodeRecords[PeriodeRecords.Count - 11];
+            CanMoveToNextStep = (Last.AdjustedPrice / first.AdjustedPrice-1) > 0;
+        }
+
+        public LowMetaInfo(ITradingRecord first, ITradingRecord low, ITradingRecord last, List<ITradingRecord> periodeRecords, bool hasNewLow = true) : this()
         {
             First = first;
             Low = low;
             Last = last;
+            PeriodeRecords = periodeRecords;
             HasNewLow = hasNewLow;
+            MovingAverage = Math.Round(PeriodeRecords.Select(x => x.AdjustedPrice).Average(), 6);
+            CalcPerformance();
         }
+
+        public LowMetaInfo(ITradingRecord first, ITradingRecord low, ITradingRecord last, LowMetaInfo lastLowMetaInfo, bool hasNewLow) : this()
+        {
+            First = first;
+            Low = low;
+            Last = last;
+            PeriodeRecords = lastLowMetaInfo.PeriodeRecords;
+            HasNewLow = hasNewLow;
+            MovingAverage = Math.Round(PeriodeRecords.Select(x => x.AdjustedPrice).Average(), 6);
+            MovingAverageDelta = 1 - lastLowMetaInfo.MovingAverage / MovingAverage;
+            CalcPerformance();
+        }
+
 
         public override string ToString()
         {
             return $"NewLow: {HasNewLow} LowDate: {Low.Asof.ToShortDateString()} lastDate: {Last.Asof.ToShortDateString()} firstDate: {First.Asof.ToShortDateString()}";
+        }
+
+        public void UpdatePeriodeRecords(ITradingRecord newLast)
+        {
+            //removeOldestItem
+            PeriodeRecords.RemoveAt(0);
+            //addnew one
+            PeriodeRecords.Add(newLast);
         }
     }
 }

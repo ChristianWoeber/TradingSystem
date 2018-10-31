@@ -93,7 +93,7 @@ namespace HelperLibrary.Parsing
 
                 while ((line = rd.ReadLine()) != null)
                 {
-                    var fields = line.Split(',', ';', '|');
+                    var fields = line.Split(';', '|');
                     for (int i = 0; i < fields.Length; i++)
                     {
                         var field = fields[i].Trim();
@@ -102,7 +102,7 @@ namespace HelperLibrary.Parsing
                         {
                             foreach (var keyword in keywords)
                             {
-                                if (!keyword.PropertyName.ContainsIC(field))
+                                if (!keyword.PropertyName.ContainsIc(field))
                                     continue;
                                 if (dicInputMapping.TryGetValue(keyword.PropertyName, out _))
                                     continue;

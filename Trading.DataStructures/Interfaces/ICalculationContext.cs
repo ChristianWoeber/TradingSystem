@@ -15,5 +15,7 @@ namespace Trading.DataStructures.Interfaces
         IEnumerable<decimal> EnumDailyReturns();
         IEnumerable<decimal> EnumMonthlyReturns();
         IEnumerable<Tuple<DateTime, decimal>> EnumDailyReturnsTuple();
+
+        int MovingDays { get; }
     }
 }

@@ -74,5 +74,11 @@ namespace Trading.DataStructures.Interfaces
         /// Gibt an ob die Position unter dem Limit ist (die exekution des stopss kann aber aufgrund von lockups noch nach hinten verschoben werden)
         /// </summary>
         bool IsBelowStopp { get; set; }
+
+        /// <summary>
+        /// gibt an ob der aktuelle Candidate ein besser Scoring im vergleich zu letzten hatte
+        ///  gibt an ob der aktuelle Score höher ist als der letzte
+        /// </summary>
+        bool HasBetterScoring { get; }
     }
 }

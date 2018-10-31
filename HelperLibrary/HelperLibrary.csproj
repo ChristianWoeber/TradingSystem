@@ -114,6 +114,9 @@
     <Compile Include="Trading\PortfolioManager\CashManager.cs" />
     <Compile Include="Trading\PortfolioManager\CurrentPortfolio.cs" />
     <Compile Include="Trading\PortfolioManager\DefaultStopLossSettings.cs" />
+    <Compile Include="Trading\PortfolioManager\ExposureWatcher.cs" />
+    <Compile Include="Trading\PortfolioManager\IExposureProvider.cs" />
+    <Compile Include="Trading\PortfolioManager\IExposureReceiver.cs" />
     <Compile Include="Trading\PortfolioManager\ITransactionCalculation.cs" />
     <Compile Include="Trading\PortfolioManager\TransactionCalculationHandler.cs" />
     <Compile Include="Trading\PortfolioManager\TransactionsHandler.cs" />

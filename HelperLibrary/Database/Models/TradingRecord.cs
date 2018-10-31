@@ -15,7 +15,7 @@ namespace HelperLibrary.Database.Models
         [Column(Storage = "CLOSE_PRICE")]
         public decimal Price { get; set; }
 
-        [InputMapping(KeyWords = new[] { nameof(SecurityId),"id", "secId" })]
+        [InputMapping(KeyWords = new[] { nameof(SecurityId), "id", "secId" })]
         [Column(Storage = "SECURITY_ID")]
         public int SecurityId { get; set; }
 
@@ -25,5 +25,10 @@ namespace HelperLibrary.Database.Models
 
 
         public string Name { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Asof.ToShortDateString()} {AdjustedPrice} {Name} {SecurityId}";
+        }
     }
 }

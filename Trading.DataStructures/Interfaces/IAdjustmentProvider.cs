@@ -23,8 +23,20 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="missingCash"></param>
         /// <param name="candidate">der Trading candidate</param>
         /// <param name="adjustTargetWeightOnly"></param>
-        bool AdjustTemporaryPortfolioToCashPuffer(decimal missingCash, ITradingCandidate candidate, bool adjustTargetWeightOnly);
+        bool AdjustTemporaryPortfolioToCashPuffer(decimal missingCash, ITradingCandidate candidate, bool adjustTargetWeightOnly = false);
 
+        /// <summary>
+        /// gibt zurück ob der Candidate unter dem Minum der Holding Periode ist
+        /// </summary>
+        /// <param name="currentWorstInvestedCandidate"></param>
+        /// <returns></returns>
+        bool IsBelowMinimumHoldingPeriode(ITradingCandidate currentWorstInvestedCandidate);
 
+        /// <summary>
+        /// adjusted den Trading Candidate für den Verkauf
+        /// </summary>
+        /// <param name="currentWeight">das aktuelle gewicht auf bais dessen die höhe des Verkaufs ermittelt wird</param>
+        /// <param name="currentWorstInvestedCandidate"></param>
+        void AdjustTradingCandidateSell(decimal currentWeight, ITradingCandidate currentWorstInvestedCandidate);
     }
 }
