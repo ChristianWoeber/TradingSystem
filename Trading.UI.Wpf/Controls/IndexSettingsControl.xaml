@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="Trading.UI.Wpf.Controls.IndexSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Trading.UI.Wpf.Controls"
+             xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
+             xmlns:viewModels="clr-namespace:Trading.UI.Wpf.ViewModels"
+             xmlns:portfolioManager="clr-namespace:HelperLibrary.Trading.PortfolioManager;assembly=HelperLibrary"
+             xmlns:converter="clr-namespace:Trading.UI.Wpf.Converter"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid d:DataContext="{d:DesignInstance viewModels:IndexBacktestSettings}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+
+        </Grid.RowDefinitions>
+        <!--Header Portfolio Settings-->
+        <arts:SmartTextBlock Appearance="Header1"
+                             Grid.Row="0"
+                             Text="Index Backtest-Einstellungen"
+                             HorizontalAlignment="Center" 
+                             VerticalAlignment="Center"/>
+
+        <arts:SmartComboBox ItemsSource="{Binding Source={x:Type portfolioManager:IndexType}}"   
+                            Grid.Row="1"
+                            Width="200" 
+                            Margin="10" 
+                            HorizontalAlignment="Left" 
+                            DisplayMemberPath="Value"
+                            SelectedItem="{Binding TypeOfIndex, Converter={x:Static converter:SmartMappingItemToValueConverter.Inst}}"
+                            Height="30"></arts:SmartComboBox>
+    </Grid>
+</UserControl>

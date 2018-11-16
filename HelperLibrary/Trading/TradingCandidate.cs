@@ -1,24 +1,40 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Enums;
+using HelperLibrary.Util.Converter;
 
 namespace HelperLibrary.Trading
 {
+
     public class TradingCandidate : ITradingCandidate
     {
+        [JsonProperty]
         private readonly ITradingCandidateBase _tradingCandidateBase;
+        [JsonProperty]
+        //[JsonConverter(typeof(TransactionsHandlerConverter))]
+        private readonly ITransactionsHandler _transactionsHandler;
+        [JsonProperty]
+        [JsonConverter(typeof(PortfolioValuationConverter))]
+        private readonly IPortfolioValuation _valuation;
 
+        public TradingCandidate()
+        {
+           
+        }
 
         public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, IPortfolioValuation valuation, bool isInvested = false)
         {
             _tradingCandidateBase = tradingCandidateBase;
+            _transactionsHandler = transactionsHandler;
+            _valuation = valuation;
 
             //Initialisierungen
             IsInvested = isInvested;
             PortfolioAsof = valuation.PortfolioAsof;
 
-            Record = _tradingCandidateBase.Record;
-            ScoringResult = _tradingCandidateBase.ScoringResult;
+            Record = tradingCandidateBase.Record;
+            ScoringResult = tradingCandidateBase.ScoringResult;
             AveragePrice = transactionsHandler.GetAveragePrice(SecurityId, PortfolioAsof) ?? Record.AdjustedPrice;
             LastTransaction = transactionsHandler.GetSingle(SecurityId, null);
             CurrentWeight = transactionsHandler.GetWeight(SecurityId) ?? 0;
@@ -51,17 +67,17 @@ namespace HelperLibrary.Trading
         /// <summary>
         /// der aktuelle Score
         /// </summary>
-        public IScoringResult ScoringResult { get; }
+        public IScoringResult ScoringResult { get; set; }
 
         /// <summary>
         /// Der aktuelle Record
         /// </summary>
-        public ITradingRecord Record { get; }
+        public ITradingRecord Record { get; set; }
 
         /// <summary>
         /// das Metadaten flag das angibt ob in dem Candidaten gerade ein aktives investment besteht 
         /// </summary>
-        public bool IsInvested { get; }
+        public bool IsInvested { get; set; }
 
         /// <summary>
         /// das Metadaten flag das angibt ob der Candidate gerade im tempor#ren portfolio ist (also ein investment geplant ist) 
@@ -91,7 +107,7 @@ namespace HelperLibrary.Trading
         /// <summary>
         /// der durchschnittspreis des Candidaten
         /// </summary>
-        public decimal AveragePrice { get; }
+        public decimal AveragePrice { get; set; }
 
         /// <summary>
         /// die aktuelle Performance
@@ -124,7 +140,9 @@ namespace HelperLibrary.Trading
 
         public override string ToString()
         {
-            return $"{Name} | Score: {Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} | CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring} | SecurityId: {Record.SecurityId}";
+            return $"{Name} | Score: {Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} " +
+                   $"| CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring} | TransactionType: {TransactionType} " +
+                   $"| SecurityId: {Record.SecurityId}";
         }
     }
 

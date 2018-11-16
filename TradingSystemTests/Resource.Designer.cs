@@ -123,6 +123,46 @@ namespace TradingSystemTests {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {
+        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
+        ///  &quot;$values&quot;: [
+        ///    {
+        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
+        ///      &quot;_tradingCandidateBase&quot;: {
+        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
+        ///        &quot;Record&quot;: {
+        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
+        ///          &quot;Asof&quot;: &quot;2000-01-19T00:00:00&quot;,
+        ///          &quot;Price&quot;: 45.75,
+        ///          &quot;SecurityId&quot;: [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string BestCandidatesNotInvestedIn_05_01_2000 {
+            get {
+                return ResourceManager.GetString("BestCandidatesNotInvestedIn_05_01_2000", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {
+        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
+        ///  &quot;$values&quot;: [
+        ///    {
+        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
+        ///      &quot;_tradingCandidateBase&quot;: {
+        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
+        ///        &quot;Record&quot;: {
+        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
+        ///          &quot;Asof&quot;: &quot;2000-01-19T00:00:00&quot;,
+        ///          &quot;Price&quot;: 38.57,
+        ///          &quot;SecurityId&quot;: [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string Candidates_05_01_2000 {
+            get {
+                return ResourceManager.GetString("Candidates_05_01_2000", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die DateTime;SecurityId;Shares;EffectiveAmountEur;Type;Cancelled;TargetWeight
         ///01.10.2017;1;30;30000;1;0;0.10;
         ///01.10.2017;2;30;30000;1;0;0.10;

@@ -18,10 +18,10 @@ namespace Trading.UI.Wpf.Models
 {
     public class LoggingSaveProvider : ISaveProvider
     {
-        private string _loggingPath;
         private readonly PortfolioManager _pm;
+        private readonly string _loggingPath;
         private readonly string _transactionsPath;
-        private string _cashPath;
+        private readonly string _cashPath;
         private readonly string _portfolioValuationPath;
         //private readonly Logger _transactionsLogger;
         //private readonly Logger _navLogger;
@@ -35,40 +35,24 @@ namespace Trading.UI.Wpf.Models
             pm.CashHandler.CashChangedEvent += OnCashChangedEvent;
 
             _transactionsPath = Path.Combine(_loggingPath, nameof(Transaction) + "s.csv");
-            _cashPath = Path.Combine(_loggingPath, "Cash.csv");
+            _cashPath = Path.Combine(_loggingPath, nameof(CashMetaInfo) + "s.csv");
             _portfolioValuationPath = Path.Combine(_loggingPath, nameof(PortfolioValuation) + "s.csv");
 
 
             //clean Up
-            if(File.Exists(_transactionsPath))
+            if (File.Exists(_transactionsPath))
                 File.Delete(_transactionsPath);
             if (File.Exists(_portfolioValuationPath))
                 File.Delete(_portfolioValuationPath);
-
-            //_transactionsLogger = LogManager.GetLogger("TransactionsLogger");
-            //_navLogger = LogManager.GetLogger("PortfolioValueLogger");
-            //_cashLogger = LogManager.GetLogger("CashLogger");
-
-            //Write Headers
-            //_navLogger.Info(typeof(PortfolioValuation).GetProperties().Where(x => x.HasAttr<InputMapping>())
-            //    .OrderBy(x => x.GetCustomAttribute<InputMapping>().SortIndex)
-            //    .Select(x => x.Name)
-            //    .Aggregate((a, b) => a + "|" + b));
-
-            ////TODO: Typeof Cash Start Saldo end Saldo etc...
-            //_cashLogger.Info("DATE | VALUE");
-
-            //_transactionsLogger.Info(typeof(Transaction).GetProperties().Where(x => x.HasAttr<InputMapping>())
-            //    .OrderBy(x => x.GetCustomAttribute<InputMapping>().SortIndex)
-            //    .Select(x => x.Name)
-            //    .Aggregate((a, b) => a + "|" + b));
+            if (File.Exists(_cashPath))
+                File.Delete(_cashPath);
 
         }
 
         private void OnCashChangedEvent(object sender, DateTime e)
         {
             //_cashLogger.Info($"{e.ToShortDateString()} | {_pm.CashHandler.Cash.ToString("N", CultureInfo.InvariantCulture)}");
-            //SimpleTextParser.AppendToFile();
+            SimpleTextParser.AppendToFile(new CashMetaInfo(e, _pm.CashHandler.Cash), _cashPath);
         }
 
 
@@ -78,7 +62,7 @@ namespace Trading.UI.Wpf.Models
             SimpleTextParser.AppendToFile(new PortfolioValuation { AllocationToRisk = _pm.AllocationToRisk, PortfolioAsof = e, PortfolioValue = _pm.PortfolioValue }, _portfolioValuationPath);
         }
 
-       
+
         public void Save(IEnumerable<ITransaction> items)
         {
 

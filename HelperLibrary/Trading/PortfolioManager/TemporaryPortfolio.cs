@@ -166,9 +166,11 @@ namespace HelperLibrary.Trading.PortfolioManager
             return item;
         }
 
-        public bool ContainsCandidate(ITradingCandidate temporaryCandidate)
+        public bool ContainsCandidate(ITradingCandidate temporaryCandidate, bool exact = true)
         {
-            return _uniqueTransactions.TryGetValue(UniqueKeyProvider.CreateUniqueKey(temporaryCandidate), out var _);
+            return exact
+                ? _uniqueTransactions.TryGetValue(UniqueKeyProvider.CreateUniqueKey(temporaryCandidate), out var _)
+                : _items.FirstOrDefault(x => x.SecurityId == temporaryCandidate.Record.SecurityId) != null;
         }
 
         #endregion

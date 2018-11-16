@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HelperLibrary.Database.Models;
+using HelperLibrary.Trading.PortfolioManager;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
@@ -289,7 +290,7 @@ namespace TradingSystemTests.Models
                 }
             }
 
-            return (_currentPortfolio = new TestPortfolio(dic.Values, _lastAsOf));
+            return (_currentPortfolio = new CurrentPortfolio(dic.Values, _lastAsOf));
         }
 
         #endregion

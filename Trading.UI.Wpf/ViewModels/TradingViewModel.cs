@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using Common.Lib.Extensions;
 using Common.Lib.UI.WPF.Core.Controls.Core;
 using Common.Lib.UI.WPF.Core.Input;
 using Common.Lib.UI.WPF.Core.Primitives;
@@ -16,13 +16,22 @@ using HelperLibrary.Parsing;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
 using JetBrains.Annotations;
-using Microsoft.Win32;
 using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Models;
 using Trading.UI.Wpf.Utils;
 
 namespace Trading.UI.Wpf.ViewModels
 {
+    public class IndexBacktestResultEventArgs
+    {
+        public List<IIndexBackTestResult> Results { get; }
+
+        public IndexBacktestResultEventArgs(List<IIndexBackTestResult> results)
+        {
+            Results = results;
+        }
+    }
+
 
     public class BacktestResultEventArgs
     {
@@ -50,6 +59,7 @@ namespace Trading.UI.Wpf.ViewModels
         private DateTime _endDateTime;
         private CancellationTokenSource _cancellationSource;
         private bool _isBusy;
+        private CashInfoCollection _cashInfosDictionary;
 
         #endregion
 
@@ -58,17 +68,23 @@ namespace Trading.UI.Wpf.ViewModels
         public TradingViewModel()
         {
             Settings = new SettingsViewModel(new ConservativePortfolioSettings());
-
+            IndexSettings = new IndexBacktestSettings();
             StartDateTime = new DateTime(2000, 01, 01);
             EndDateTime = StartDateTime.AddYears(5);
 
-            //TODO: ExposureWatcher implementieren der mir die maximale Aktienquote ausgibt
 
             //Command
             RunNewBacktestCommand = new RelayCommand(OnRunBacktest);
+            RunNewIndexBacktestCommand = new RelayCommand(OnRunIndexBacktest);
             LoadBacktestCommand = new RelayCommand(OnLoadBacktest);
             MoveCursorToNextTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDayEvent?.Invoke(this, _portfolioManager.PortfolioSettings.TradingDay));
         }
+
+        //TODO: 1 => IExposureReceiver in IPortfolioSettings integrieren
+        //TODO: 2 => SmartFlyout Größe auf Itemebene einstellen, damit jedes FlyoutItem eine andere With haben kann
+        //TODO: 3 => Serialisieren der Trandingkandidaten und anschließende Tests für den RebalanceProvider
+
+
 
         public TradingViewModel(List<ITransaction> transactions, IScoringProvider scoringProvider) : this()
         {
@@ -85,6 +101,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         #region Events
 
+        public event EventHandler<IndexBacktestResultEventArgs> IndexBacktestCompletedEvent;
 
         public event EventHandler<BacktestResultEventArgs> BacktestCompletedEvent;
 
@@ -94,6 +111,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         #region Commands
 
+        public ICommand RunNewIndexBacktestCommand { get; }
 
         public ICommand RunNewBacktestCommand { get; }
 
@@ -124,6 +142,20 @@ namespace Trading.UI.Wpf.ViewModels
         #endregion
 
         #region CommandActions
+
+        private async void OnRunIndexBacktest()
+        {
+            using (SmartBusyRegion.Start(this))
+            {
+                var indexOutput = new IndexResult();
+                var exposureWatcher = new ExposureWatcher(indexOutput, new DefaultPortfolioSettings { IndicesDirectory = Globals.IndicesBasePath }, IndexSettings.TypeOfIndex);
+                var backtestHandler = new BacktestHandler(exposureWatcher);
+                _cancellationSource = new CancellationTokenSource();
+                await backtestHandler.RunIndexBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
+
+                IndexBacktestCompletedEvent?.Invoke(this, new IndexBacktestResultEventArgs(backtestHandler.IndexResults.CastToList<IIndexBackTestResult>()));
+            }
+        }
 
         private async void OnRunBacktest()
         {
@@ -160,9 +192,13 @@ namespace Trading.UI.Wpf.ViewModels
             //create output
             var valuations = SimpleTextParser.GetListOfTypeFromFilePath<PortfolioValuation>(Path.Combine(Settings.LoggingPath, "PortfolioValuations.csv"));
             var transactions = SimpleTextParser.GetListOfTypeFromFilePath<Transaction>(Path.Combine(Settings.LoggingPath, "Transactions.csv"));
-            var cashMovements = SimpleTextParser.GetListOfTypeFromFilePath<PortfolioValuation>(Path.Combine(Settings.LoggingPath, "PortfolioValue.csv"));
+            var cashMovements = SimpleTextParser.GetListOfTypeFromFilePath<CashMetaInfo>(Path.Combine(Settings.LoggingPath, nameof(CashMetaInfo) + "s.csv"));
 
-            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(valuations,transactions));
+            if (_cashInfosDictionary?.Count > 0)
+                _cashInfosDictionary.Clear();
+            //CashInfos updaten
+            _cashInfosDictionary = new CashInfoCollection(cashMovements);
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(valuations, transactions));
         }
 
 
@@ -182,7 +218,7 @@ namespace Trading.UI.Wpf.ViewModels
         {
             var filePath = _portfolioManager.PortfolioSettings.LoggingPath;
             var values = SimpleTextParser.GetListOfType<PortfolioValuation>(File.ReadAllText(filePath));
-            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(values,null));
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(values, null));
         }
 
         #endregion
@@ -191,8 +227,24 @@ namespace Trading.UI.Wpf.ViewModels
 
         public static Dictionary<int, string> NameCatalog => Factory.GetIdToNameDictionary();
 
+       
+        private IEnumerable<CashMetaInfo> _cash;
+
+        public void UpdateCash(DateTime toDateTime)
+        {
+            if (_portfolioManager == null)
+                return;
+
+            if (_cashInfosDictionary.TryGetLastCash(toDateTime, out var infos))
+                Cash = infos;
+        }
+
+
         public void UpdateHoldings(DateTime asof, bool isTradingDay = false)
         {
+            if (_portfolioManager == null)
+                return;
+
             var tradingDayTransaction = _portfolioManager.TransactionsHandler.GetTransactions(asof);
             if (tradingDayTransaction == null)
                 Holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(asof).Select(t => new TransactionViewModel(t, GetScore(t, asof)));
@@ -215,6 +267,18 @@ namespace Trading.UI.Wpf.ViewModels
 
         #region Public Members
 
+
+        public IEnumerable<CashMetaInfo> Cash
+        {
+            get => _cash;
+            set
+            {
+                if (Equals(value, _cash))
+                    return;
+                _cash = value;
+                OnPropertyChanged();
+            }
+        }
 
         public IEnumerable<TransactionViewModel> Holdings
         {
@@ -264,8 +328,11 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
+        public IndexBacktestSettings IndexSettings { get; }
+
         public SettingsViewModel Settings { get; }
 
+        public bool HasPortfolioManager => _portfolioManager != null;
 
         #endregion
 
@@ -285,5 +352,45 @@ namespace Trading.UI.Wpf.ViewModels
 
     }
 
+    public class CashInfoCollection : Dictionary<DateTime, List<CashMetaInfo>>
+    {
+        private readonly int _maxTries;
 
+
+        public CashInfoCollection(List<CashMetaInfo> cashMovements, int maxTries = 15)
+        {
+            _maxTries = maxTries;
+            foreach (var cash in cashMovements)
+            {
+                if (!TryGetValue(cash.Asof, out var _))
+                    Add(cash.Asof, new List<CashMetaInfo>());
+                this[cash.Asof].Add(cash);
+            }
+        }
+
+        public bool TryGetLastCash(DateTime key, out List<CashMetaInfo> cashMetaInfos)
+        {
+            if (TryGetValue(key, out var infos))
+            {
+                cashMetaInfos = infos;
+                return true;
+            }
+
+            var count = 0;
+            var date = key;
+
+            while (count < _maxTries)
+            {
+                count--;
+                if (TryGetLastCash(date.AddDays(count), out var match))
+                {
+                    cashMetaInfos = match;
+                    return true;
+                }
+
+            }
+            cashMetaInfos = new List<CashMetaInfo>();
+            return false;
+        }
+    }
 }

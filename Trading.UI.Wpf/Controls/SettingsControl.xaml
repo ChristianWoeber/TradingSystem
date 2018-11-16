@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Trading.UI.Wpf.Controls"
              xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
+             xmlns:viewModels="clr-namespace:Trading.UI.Wpf.ViewModels"
              mc:Ignorable="d" 
              Width="Auto"
              d:DesignHeight="1450" d:DesignWidth="800">
@@ -15,9 +16,10 @@
             <Setter Property="MaxHeight" Value="35"/>
         </Style>
     </UserControl.Resources>
-    <Grid Background="White">
+    <Grid Background="White" d:DataContext="{d:DesignInstance viewModels:TradingViewModel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="150"/>
+            <RowDefinition Height="Auto" MinHeight="50"/>
             <RowDefinition Height="Auto" MinHeight="50"/>
             <RowDefinition Height="Auto" MinHeight="50"/>
             <RowDefinition Height="Auto" MinHeight="50"/>
@@ -42,6 +44,8 @@
         </StackPanel>
 
         <local:PortfolioSettingsControl Grid.Row="3" DataContext="{Binding Settings}"/>
+        <local:IndexSettingsControl Grid.Row="4" DataContext="{Binding IndexSettings}"/>
+
 
     </Grid>
 </UserControl>

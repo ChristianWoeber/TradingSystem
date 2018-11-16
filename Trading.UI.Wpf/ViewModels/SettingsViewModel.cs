@@ -269,6 +269,7 @@ namespace Trading.UI.Wpf.ViewModels
         }
 
         public string FilterableText => Interval.ToString();
+        public object Model => this;
     }
 
     public class TradingDay : IFilterableProperty
@@ -281,5 +282,6 @@ namespace Trading.UI.Wpf.ViewModels
         public DayOfWeek Day { get; }
 
         public string FilterableText => Day.ToString();
+        public object Model => this;
     }
 }

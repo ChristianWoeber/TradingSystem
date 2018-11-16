@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
+using HelperLibrary.Util.Atrributes;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
@@ -109,7 +111,47 @@ namespace HelperLibrary.Trading.PortfolioManager
             {
                 _cash = value;
                 CashChangedEvent?.Invoke(this, _portfolioManager.PortfolioAsof);
+                //AddToDictionary(_cash);
             }
         }
+
+        private readonly Dictionary<DateTime, List<CashMetaInfo>> _cashValues = new Dictionary<DateTime, List<CashMetaInfo>>();
+
+        private void AddToDictionary(decimal cash)
+        {
+            if (!_cashValues.TryGetValue(_portfolioManager.PortfolioAsof, out var _))
+                _cashValues.Add(_portfolioManager.PortfolioAsof, new List<CashMetaInfo>());
+
+            var infos = _cashValues[_portfolioManager.PortfolioAsof];
+            //wenn der Count 0 ist handelt es sich um den StartSaldo
+            //_cashValues[_portfolioManager.PortfolioAsof].Add(infos.Count == 0
+            //    ? new CashMetaInfo(_portfolioManager.PortfolioAsof, cash, true)
+            //    : new CashMetaInfo(_portfolioManager.PortfolioAsof, cash));
+        }
+    }
+
+    public class CashMetaInfo
+    {
+        public CashMetaInfo()
+        {
+            
+        }
+        public CashMetaInfo(DateTime asof, decimal cashValue, bool isStartSaldo = false)
+        {
+            IsStartSaldo = isStartSaldo;
+            Cash = cashValue;
+            Asof = asof;
+        }
+
+        [InputMapping(KeyWords = new[] { nameof(Asof) })]
+        public DateTime Asof { get; set; }
+
+        [InputMapping(KeyWords = new[] { nameof(Cash) })]
+        public decimal Cash { get; set; }
+
+        public bool IsStartSaldo { get; set; }
+
+        public bool IsEndSaldo { get; set; }
+
     }
 }

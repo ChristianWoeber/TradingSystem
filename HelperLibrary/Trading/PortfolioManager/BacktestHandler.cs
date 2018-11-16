@@ -11,17 +11,87 @@ using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
+    public class IndexResult : IIndexBackTestResult
+    {
+        public IndexResult()
+        {
+            
+        }
+
+        public IndexResult(IExposureReceiver receiver)
+        {
+            MaximumAllocationToRisk = receiver.MaximumAllocationToRisk;
+            MinimumAllocationToRisk = receiver.MinimumAllocationToRisk;
+            Asof = ((IIndexBackTestResult) receiver).Asof;
+            SimulationNav = ((IIndexBackTestResult)receiver).SimulationNav;
+            IndexLevel = ((IIndexBackTestResult)receiver).IndexLevel;
+
+        }
+
+        public decimal MaximumAllocationToRisk { get; set; }
+        public decimal MinimumAllocationToRisk { get; set; }
+
+        public DateTime Asof { get; set; }
+
+        public decimal SimulationNav { get; set; }
+
+        public decimal IndexLevel { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Asof} {nameof(SimulationNav)}: {SimulationNav} {nameof(MaximumAllocationToRisk)}: {MaximumAllocationToRisk} {nameof(IndexLevel)} : {IndexLevel}";
+        }
+    }
+
+    public interface IIndexBackTestResult : IExposureReceiver
+    {
+        DateTime Asof { get; set; }
+
+        decimal SimulationNav { get; set; }
+
+        decimal IndexLevel { get; set; }
+    }
+
     public class BacktestHandler : IDisposable
     {
+        private readonly IExposureProvider _exposureProvider;
+        private readonly IIndexBackTestResult _output;
         private readonly CandidatesProvider _candidatesProvider;
         private readonly PortfolioManager _portfolioManager;
         private readonly ISaveProvider _saveProvider;
+
+        public BacktestHandler(IExposureProvider exposureProvider)
+        {
+            _exposureProvider = exposureProvider;
+            IndexResults = new List<IndexResult>();
+        }
 
         public BacktestHandler(PortfolioManager pm, CandidatesProvider candidatesProvider, ISaveProvider saveProvider)
         {
             _portfolioManager = pm;
             _candidatesProvider = candidatesProvider;
             _saveProvider = saveProvider;
+        }
+
+        public List<IndexResult> IndexResults { get; }
+
+        public async Task RunIndexBacktest(DateTime startDateTime, DateTime? endDateTime, CancellationToken? cancel = null)
+        {
+            _startDateTime = DateTime.Today.GetBusinessDay(false);
+            await Task.Factory.StartNew(() => RunIndex(startDateTime, endDateTime), cancel ?? CancellationToken.None);
+        }
+
+        private void RunIndex(DateTime startDateTime, DateTime? endDateTime)
+        {
+            var start = startDateTime;
+            while (start < endDateTime)
+            {
+                _exposureProvider.CalculateMaximumExposure(start);
+                _exposureProvider.CalculateIndexResult(start);
+                IndexResults.Add(new IndexResult(_exposureProvider.GetExposure()));
+                start = start.AddDays(1);
+            }
         }
 
         public async Task RunBacktest(DateTime startDateTime, DateTime? endDateTime, CancellationToken? cancel = null)

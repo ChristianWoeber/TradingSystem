@@ -6,7 +6,7 @@ namespace Trading.DataStructures.Interfaces
     /// <summary>
     /// Das aktuelle Poertfolio, das auch per Indexer dusucht werden kann
     /// </summary>
-    public interface IPortfolio : IEnumerable<ITransaction>
+    public interface IPortfolio : ICollection<ITransaction>
     {
         /// <summary>
         /// gibt das TransactionItem auf Basis der Security Id zurück

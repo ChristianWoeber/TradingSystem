@@ -7,7 +7,7 @@ namespace Trading.DataStructures.Interfaces
     public interface ICalculationContext
     {
         decimal GetAbsoluteReturn(DateTime from, DateTime? to = null, CaclulationOption? option = null, PriceHistoryOption priceHistoryOption = PriceHistoryOption.PreviousItem);
-        decimal GetDailyReturn(ITradingRecord from, ITradingRecord to);
+        bool TryGetDailyReturn(DateTime asof, out decimal dailyReturn);
         decimal GetAverageReturn(DateTime from, DateTime? to = null, CaclulationOption? option = null);
         decimal GetAverageReturnMonthly(DateTime from, DateTime? to = null, CaclulationOption? option = null);
         decimal GetMaximumDrawdown(DateTime? from = null, DateTime? to = null, CaclulationOption? option = null);

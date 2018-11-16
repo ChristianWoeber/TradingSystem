@@ -11,6 +11,7 @@ using HelperLibrary.Extensions;
 using System;
 using System.Linq;
 using System.Windows.Forms.VisualStyles;
+using System.Xml.Serialization;
 
 namespace HelperLibrary.Parsing
 {
@@ -97,6 +98,10 @@ namespace HelperLibrary.Parsing
                     for (int i = 0; i < fields.Length; i++)
                     {
                         var field = fields[i].Trim();
+
+                        if (string.IsNullOrWhiteSpace(field))
+                            continue;
+
                         // map Header //
                         if (isFirst)
                         {
@@ -141,7 +146,13 @@ namespace HelperLibrary.Parsing
                                 }
                                 else if (item.PropertyInfo.PropertyType.BaseType == typeof(Enum))
                                 {
-                                    item.SetterFunc(obj, (int)Enum.ToObject(item.PropertyInfo.PropertyType, Convert.ToInt32(value)));
+                                    if (int.TryParse(value, NumberStyles.Any, CultureInfo.CurrentCulture, out var intResult))
+                                        item.SetterFunc(obj, (int)Enum.ToObject(item.PropertyInfo.PropertyType, Convert.ToInt32(intResult)));
+                                    else
+                                    {
+                                        var parsedEnum = Enum.Parse(item.PropertyInfo.PropertyType, value);
+                                        item.SetterFunc(obj, parsedEnum);
+                                    }
                                 }
                                 else
                                     item.SetterFunc(obj, Convert.ChangeType(value, item.PropertyInfo.PropertyType,
@@ -315,6 +326,26 @@ namespace HelperLibrary.Parsing
                    || value is double
                    || value is decimal;
         }
+
+        public static T Deserialize<T>(string toDeserialize)
+        {
+            var xmlSerializer = new XmlSerializer(toDeserialize.GetType());
+            using (var textReader = new StringReader(toDeserialize))
+            {
+                return (T)xmlSerializer.Deserialize(textReader);
+            }
+        }
+
+        public static string Serialize<T>(T toSerialize)
+        {
+            var xmlSerializer = new XmlSerializer(toSerialize.GetType());
+            using (var textWriter = new StringWriter())
+            {
+                xmlSerializer.Serialize(textWriter, toSerialize);
+                return textWriter.ToString();
+            }
+        }
+
     }
 }
 

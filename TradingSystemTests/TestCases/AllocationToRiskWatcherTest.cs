@@ -35,7 +35,16 @@ namespace TradingSystemTests.TestCases
     public class DummyExposureReceiver : IExposureReceiver
     {
         public decimal MaximumAllocationToRisk { get; set; } = 1;
-        public decimal MinimumAllocationToRisk { get; set; } = new decimal(0.20);
+        public decimal MinimumAllocationToRisk { get; set; } /*= new decimal(0.20)*/
+    }
+
+    public class IndexDummyExposureReceiver : IIndexBackTestResult
+    {
+        public decimal MaximumAllocationToRisk { get; set; } = 1;
+        public decimal MinimumAllocationToRisk { get; set; } /*= new decimal(0.20)*/
+        public DateTime Asof { get; set; }
+        public decimal SimulationNav { get; set; }
+        public decimal IndexLevel { get; set; }
     }
 
     public class MovingAveragePrint
@@ -58,22 +67,22 @@ namespace TradingSystemTests.TestCases
     public class AllocationToRiskWatcherTest
     {
         private static ExposureWatcher _allocationToRiskWatcher;
-        private static DummyExposureReceiver _dummyExposure;
+        private static IExposureReceiver _dummyExposure;
         private static List<Tuple<DateTime, decimal>> _output;
 
-        public static void Init()
+        public static void Init(IExposureReceiver exposureReceiver)
         {
             if (_allocationToRiskWatcher != null)
                 return;
-            _dummyExposure = new DummyExposureReceiver();
-            _allocationToRiskWatcher = new ExposureWatcher(_dummyExposure, new DummyPortfolioSettings(), ExposureWatcher.IndexType.MsciWorldEur);
+            _dummyExposure = exposureReceiver;
+            _allocationToRiskWatcher = new ExposureWatcher(_dummyExposure, new DummyPortfolioSettings(), IndexType.MsciWorldEur);
             _output = new List<Tuple<DateTime, decimal>>();
         }
         [TestCase("01.01.2000", true)]
         [TestCase("01.09.2008", false)]
-        public void CreatePriceHistoryWithLowCalculationTest(string dateString, bool show)
+        public void CalculateMaximumExposureTest(string dateString, bool show)
         {
-            Init();
+            Init(new DummyExposureReceiver());
             if (show)
             {
                 ShowFile("MovingAverageTest.csv");
@@ -93,7 +102,7 @@ namespace TradingSystemTests.TestCases
                     daysToAdd = 2;
                 startDate = startDate.AddDays(daysToAdd);
             }
-            ShowFile("ExposureTest.csv");
+            ShowFile("ExposureTest1.csv");
 
             var dicList = _output.ToDictionaryList(x => x.Item2);
             var ret = dicList.TryGetValue(_dummyExposure.MinimumAllocationToRisk, out var minimumItems);
@@ -102,6 +111,42 @@ namespace TradingSystemTests.TestCases
             Assert.IsTrue(minimumItems.Count > 10, "Achtung keine Items mit mimum Exposre in der TimeRange gefunden");
 
         }
+
+
+        [TestCase("01.01.2000", false)]
+        public void CalculateIndexResultTest(string dateString, bool show)
+        {
+            Init(new IndexDummyExposureReceiver());
+            if (show)
+            {
+                ShowFile("MovingAverageTest.csv");
+            }
+
+            var startDate = DateTime.Parse(dateString);
+            var daysToAdd = 1;
+
+            while (startDate < DateTime.Today)
+            {
+                _allocationToRiskWatcher.CalculateMaximumExposure(startDate);
+                _allocationToRiskWatcher.CalculateIndexResult(startDate);
+                _output.Add(new Tuple<DateTime, decimal>(startDate, ((IIndexBackTestResult)_dummyExposure).SimulationNav));
+
+                if (startDate.DayOfWeek == DayOfWeek.Friday)
+                    daysToAdd = 3;
+                if (startDate.DayOfWeek == DayOfWeek.Saturday)
+                    daysToAdd = 2;
+                startDate = startDate.AddDays(daysToAdd);
+            }
+            ShowFile("IndexSimulation.csv");
+
+            var dicList = _output.ToDictionaryList(x => x.Item2);
+            var ret = dicList.TryGetValue(_dummyExposure.MinimumAllocationToRisk, out var minimumItems);
+
+            Assert.IsTrue(ret, "Achtung keine Items mit mimum Exposre in der TimeRange gefunden");
+            Assert.IsTrue(minimumItems.Count > 10, "Achtung keine Items mit mimum Exposre in der TimeRange gefunden");
+
+        }
+
 
         private static void ShowFile(string fileName)
         {

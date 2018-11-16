@@ -13,11 +13,17 @@
         d:DataContext="{d:DesignInstance viewModels:TradingViewModel}"
         Title="Backtest" Height="800" Width="1200">
     <Grid>
-        <arts:SmartFlyout PanelBackground="DimGray" PanelExtendedWidth="500"  >
+        <arts:SmartFlyout PanelBackground="DimGray" >
             <arts:SmartFlyout.Items>
-                <arts:SmartFlyoutItem HeaderText="Einstellungen" TextAppearance="Header1" Background="Transparent" HeaderTextForeground="White" >
+                <arts:SmartFlyoutItem HeaderText="Einstellungen" TextAppearance="Header2"  HeaderTextForeground="White" Width="500" >
                     <arts:SmartFlyoutItem.FlyoutContent>
                     <controls:SettingsControl/>
+                    </arts:SmartFlyoutItem.FlyoutContent>
+                </arts:SmartFlyoutItem>
+
+                <arts:SmartFlyoutItem HeaderText="Holdings" TextAppearance="Header2"  HeaderTextForeground="White" Width="850">
+                    <arts:SmartFlyoutItem.FlyoutContent>
+                        <controls:CurrentHoldingsControl />
                     </arts:SmartFlyoutItem.FlyoutContent>
                 </arts:SmartFlyoutItem>
 
@@ -58,14 +64,23 @@
                                               Margin="5" 
                                               VerticalContentAlignment="Center" 
                                               HorizontalContentAlignment="Center"/>
-                        
+
+                        <arts:SmartIconButton Icon="FaPlay"                                           
+                                              Description="Neuen Index Backtest starten" 
+                                              Command="{Binding RunNewIndexBacktestCommand}" 
+                                              Width="auto" 
+                                              IconBrush="Gold"
+                                              Margin="5" 
+                                              VerticalContentAlignment="Center" 
+                                              HorizontalContentAlignment="Center"/>
+
                     </StackPanel>
                     
                     <arts:SmartBusyOverlay Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                            BusyText="Erstelle Backtest"
                                            BusyAppearance="{Binding IsBusy, Converter={x:Static converter:SmartBusyRegionToBusyAppearanceConverter.Inst}}"></arts:SmartBusyOverlay>
                     <controls:MainChartControl Grid.Column="0" Grid.Row="1" />
-                    <controls:CurrentHoldingsControl Grid.Column="1"  Grid.Row="1"/>
+                 
                 </Grid>
             </arts:SmartFlyout.Content>
         </arts:SmartFlyout>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Extensions;
+using Newtonsoft.Json;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Enums;
 
@@ -13,6 +14,8 @@ namespace HelperLibrary.Trading.PortfolioManager
         #region private
 
         private readonly ITransactionsCacheProvider _cacheProvider;
+
+        [JsonProperty()]
         private IPortfolio _currentPortfolio;
         private DateTime? _lastAsOf;
         private IScoringProvider _scoringProvider;
@@ -21,7 +24,13 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #region Constructor
 
+        /// <summary>
+        /// Wird für Deserialisierung gebraucht
+        /// </summary>
+        public TransactionsHandler()
+        {
 
+        }
 
         public TransactionsHandler(IEnumerable<ITransaction> transactions)
         {
@@ -49,7 +58,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
 
         #region Index
-
+        [JsonIgnore]
         public IEnumerable<ITransaction> this[TransactionType key]
         {
             get
@@ -69,7 +78,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 return transactionsTypeDic.ContainsKey((int)key) ? transactionsTypeDic[(int)key] : null;
             }
         }
-
+        [JsonIgnore]
         public IEnumerable<ITransaction> this[DateTime key]
         {
             get

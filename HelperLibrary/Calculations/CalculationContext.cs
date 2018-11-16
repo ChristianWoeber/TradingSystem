@@ -21,7 +21,7 @@ namespace HelperLibrary.Calculations
         private readonly CalculationHandler _handler;
         private decimal _arithmeticMean;
         private decimal _arithmeticMeanDailyReturns;
-
+        private const int MAX_TRIES = 15;
         #endregion
 
         #region Collections
@@ -57,10 +57,29 @@ namespace HelperLibrary.Calculations
             return _handler.CalcAbsoluteReturn(_priceHistory.Get(from, priceHistoryOption), isLast ? _priceHistory.LastItem : _priceHistory.Get(to.Value, priceHistoryOption), opt);
         }
 
-        public decimal GetDailyReturn(ITradingRecord from, ITradingRecord to)
+        public bool TryGetDailyReturn(DateTime asof, out decimal dailyReturn)
         {
-            return _handler.CalcAbsoluteReturn(from, to);
+            if (_dailyReturns.Count == 0)
+            {
+                dailyReturn = decimal.MinusOne;
+                return false;
+            }
+
+            var idx = 0;
+
+            while (idx < MAX_TRIES)
+            {
+                if (_dailyReturns.TryGetValue(asof.AddDays(-idx), out var lastDailyReturn))
+                {
+                    dailyReturn = lastDailyReturn;
+                    return true;
+                }
+                idx++;
+            }
+            dailyReturn = decimal.MinusOne;
+            return false;
         }
+
 
 
         public decimal GetAverageReturn(DateTime from, DateTime? to = null, CaclulationOption? option = null)
@@ -194,7 +213,7 @@ namespace HelperLibrary.Calculations
                 lastMetaInfo = null;
                 return false;
             }
-         
+
         }
 
         public void CalcMovingLows(ITradingRecord item, int count)

@@ -12,17 +12,24 @@ using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
+    public enum IndexType
+    {
+        Dax,
+        EuroStoxx50,
+        MsciWorldEur,
+        SandP500
+    }
+
     public class ExposureWatcher : IExposureProvider
     {
         private readonly IExposureReceiver _receiver;
         private readonly PriceHistoryCollection _benchmark;
         private int _currentStep;
 
-        public enum IndexType
+
+        public IExposureReceiver GetExposure()
         {
-            Dax,
-            EuroStoxx50,
-            MsciWorldEur,
+            return _receiver;
         }
 
         public ExposureWatcher(IExposureReceiver receiver, IPortfolioSettings settings, IndexType type)
@@ -36,25 +43,44 @@ namespace HelperLibrary.Trading.PortfolioManager
             _benchmark = new PriceHistoryCollection(tradingRecords, true);
         }
 
+        private decimal? _lastSimulationNav;
+        public void CalculateIndexResult(DateTime asof)
+        {
+            if (_lastSimulationNav == null)
+                _lastSimulationNav = 100;
+
+            //berechne hier gleich den NAV der simulation
+            var indexLevel = _benchmark.Get(asof);
+            //wenn das  indexLevel.Asof < ist als das aktuelle muss ich 0 nehmen, (feiertage etc. da hat es keien veränderung gegeben)
+            var dailyReturn = indexLevel.Asof < asof ? 0 : _benchmark.GetDailyReturn(indexLevel);
+            ((IIndexBackTestResult)_receiver).Asof = asof;
+            ((IIndexBackTestResult)_receiver).IndexLevel = indexLevel.AdjustedPrice;
+            //der letzte NAV multipliziert mit der gewichteten dailyperformance => ist der neue NAV
+            ((IIndexBackTestResult)_receiver).SimulationNav = Math.Round(_lastSimulationNav.Value * (1 + dailyReturn * _receiver.MaximumAllocationToRisk), 4);
+            _lastSimulationNav = ((IIndexBackTestResult)_receiver).SimulationNav;
+
+        }
+
         public void CalculateMaximumExposure(DateTime asof)
         {
-            //Wenn das Datum das Low der letzen 10 Tage ist reduziere ich die Aktienquote
+            //Wenn das Datum das Low der letzen 150 Tage ist reduziere ich die Aktienquote
             if (!_benchmark.TryGetLowMetaInfo(asof, out var lowMetaInfo))
                 return;
 
             //wenn das Low schon hinter uns liegt und der Moving Average positiv ist
             if (lowMetaInfo.Low.Asof < asof && lowMetaInfo.MovingAverageDelta > 0 && lowMetaInfo.CanMoveToNextStep)
             {
+                //hier reduziere erhöhe ich die Aktienquote
                 if (_currentStep <= 0)
                     return;
                 if (_currentStep >= 1)
                     _currentStep--;
                 UpdateMaximumRisk();
             }
-            else if (lowMetaInfo.MovingAverageDelta < 0)
+            //Achtung ich reduziere die Aktienquoten nur bei einem neuen Low in dem moving Abschnitt
+            else if (lowMetaInfo.MovingAverageDelta < 0 && lowMetaInfo.HasNewLow)
             {
-                //sonst bin ich bei dem angefragten Asof
-                //increment current Step
+                //hier reduziere ich die Aktienquote
                 if (_currentStep < NumberOfSteps)
                     _currentStep++;
                 //calc new Targe Risk

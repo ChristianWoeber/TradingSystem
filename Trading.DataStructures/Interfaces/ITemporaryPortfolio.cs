@@ -61,8 +61,9 @@ namespace Trading.DataStructures.Interfaces
         /// Gibt true zurück wenn es den Kandidaten gibt
         /// </summary>
         /// <param name="temporaryCandidate"></param>
+        /// <param name="exact">sucht nach dem unique Key</param>
         /// <returns></returns>
-        bool ContainsCandidate(ITradingCandidate temporaryCandidate);
+        bool ContainsCandidate(ITradingCandidate temporaryCandidate, bool exact = true);
 
         /// <summary>
         /// erhöht den CashWert

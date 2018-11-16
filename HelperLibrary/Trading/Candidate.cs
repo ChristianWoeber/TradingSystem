@@ -8,6 +8,12 @@ namespace HelperLibrary.Trading
     {
         public ITradingRecord Record { get; }
         public IScoringResult ScoringResult { get; }
+
+        public Candidate()
+        {
+            
+        }
+
         public Candidate(ITradingRecord record, IScoringResult scoringResult)
         {
             ScoringResult = scoringResult;

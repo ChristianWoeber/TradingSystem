@@ -6,6 +6,7 @@ using HelperLibrary.Collections;
 using HelperLibrary.Database.Interfaces;
 using HelperLibrary.Interfaces;
 using HelperLibrary.Parsing;
+using HelperLibrary.Util.Converter;
 using OfficeOpenXml;
 using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Models;
@@ -14,6 +15,24 @@ namespace TradingSystemTests.Helper
 {
     public static class TestHelper
     {
+        public static T GetTestCollectionFromJson<T>(string filename)
+        {
+            var name = Path.GetFileNameWithoutExtension(filename);
+            if (string.IsNullOrWhiteSpace(name))
+                return default(T);
+
+            if (name.Contains("."))
+                name = name.Replace(".", "_");
+
+            var data = (string)Resource.ResourceManager.GetObject(name) ?? throw new InvalidOperationException("Achtung kein File gefunden !! -- FileName:" + name);
+
+            if (!string.IsNullOrWhiteSpace(data))
+                return JsonUtils.Deserialize<T>(data);
+
+            throw new MissingMemberException("Die Datei konnte nicht gefunden werden " + filename);
+
+        }
+
         public static IEnumerable<T> CreateTestCollection<T>(string filename)
         {
             var data = (string)Resource.ResourceManager.GetObject(Path.GetFileNameWithoutExtension(filename) ?? throw new InvalidOperationException("Achtung kein File gefunden !! -- FileName:" + filename));

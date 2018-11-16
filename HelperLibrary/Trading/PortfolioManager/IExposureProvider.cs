@@ -22,5 +22,17 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// </summary>
         /// <returns></returns>
         IEnumerable<Tuple<DateTime, LowMetaInfo>> EnumLows();
+
+        /// <summary>
+        /// Berechnet das Ergebnis der Index Simulation
+        /// </summary>
+        /// <param name="start"></param>
+        void CalculateIndexResult(DateTime start);
+
+        /// <summary>
+        /// Gibt das Exposure nach aussen
+        /// </summary>
+        /// <param name="start"></param>
+        IExposureReceiver GetExposure();
     }
 }

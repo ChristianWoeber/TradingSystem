@@ -40,17 +40,17 @@
     <Reference Include="ARTSWPFCharting, Version=1.0.6724.26839, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\Git\NuGetPackages\ARTSWPFCharting.1.0.6724.26839\lib\net452\ARTSWPFCharting.dll</HintPath>
     </Reference>
-    <Reference Include="ARTSWPFControls, Version=1.0.6830.28037, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\..\..\..\Git\NuGetPackages\ARTSWPFControls.1.0.6830.28037\lib\net452\ARTSWPFControls.dll</HintPath>
+    <Reference Include="ARTSWPFControls, Version=1.0.6891.25596, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\..\..\..\Git\NuGetPackages\ARTSWPFControls.1.0.6891.25596\lib\net452\ARTSWPFControls.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Lib.Core, Version=3.1.6829.17708, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\Git\NuGetPackages\Common.Lib.Core.3.1.6829.17708\lib\net45\Common.Lib.Core.dll</HintPath>
+    <Reference Include="Common.Lib.Core, Version=3.1.6884.19760, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\Common.Lib.Core.3.1.6884.19760\lib\net45\Common.Lib.Core.dll</HintPath>
     </Reference>
     <Reference Include="Common.Lib.UI.Images, Version=2.1.6361.22062, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\Git\NuGetPackages\Common.Lib.UI.Images.2.1.6361.22062\lib\net452\Common.Lib.UI.Images.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Lib.UI.WPF.Core, Version=3.0.6827.23615, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\Git\NuGetPackages\Common.Lib.UI.WPF.Core.3.0.6827.23615\lib\net461\Common.Lib.UI.WPF.Core.dll</HintPath>
+    <Reference Include="Common.Lib.UI.WPF.Core, Version=3.0.6892.26155, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\Common.Lib.UI.WPF.Core.3.0.6892.26155\lib\net461\Common.Lib.UI.WPF.Core.dll</HintPath>
     </Reference>
     <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\Git\NuGetPackages\EPPlus.4.5.2.1\lib\net40\EPPlus.dll</HintPath>
@@ -76,12 +76,13 @@
     <Reference Include="NSspi, Version=0.1.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\Git\NuGetPackages\NSspi.0.1.3\lib\net40\NSspi.dll</HintPath>
     </Reference>
-    <Reference Include="Ookii.Dialogs.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0c15020868fd6249, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\Git\NuGetPackages\Ookii.Dialogs.1.0\lib\net35\Ookii.Dialogs.Wpf.dll</HintPath>
+    <Reference Include="Ookii.Dialogs.Wpf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\Ookii.Dialogs.Wpf.1.0.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -128,22 +129,32 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\IndexSettingsControl.xaml.cs">
+      <DependentUpon>IndexSettingsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PortfolioSettingsControl.xaml.cs">
       <DependentUpon>PortfolioSettingsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\SettingsControl.xaml.cs">
       <DependentUpon>SettingsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converter\SmartMappingItemToValueConverter.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Models\LoggingSaveProvider.cs" />
     <Compile Include="Models\BacktestTransactionsCacheProvider.cs" />
     <Compile Include="Utils\FileHelper.cs" />
     <Compile Include="Utils\FintsSecuritiesRepo.cs" />
+    <Compile Include="ViewModels\IIndexBacktestSettings.cs" />
+    <Compile Include="ViewModels\IndexBacktestSettings.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\TradingViewModel.cs" />
     <Compile Include="Utils\Initialization.cs" />
     <Compile Include="ViewModels\TransactionViewModel.cs" />
     <Page Include="Controls\CurrentHoldingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\IndexSettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

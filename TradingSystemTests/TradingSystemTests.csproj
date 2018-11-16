@@ -143,6 +143,12 @@
   <ItemGroup>
     <None Include="Resources\RebalancePortfolioTestFile.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Candidates_05.01.2000.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BestCandidatesNotInvestedIn_05.01.2000.txt" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

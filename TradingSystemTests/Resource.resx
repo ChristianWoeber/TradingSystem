@@ -124,6 +124,12 @@
   <data name="AdidasHistoryMissingItems" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AdidasHistoryMissingItems.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="BestCandidatesNotInvestedIn_05_01_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\BestCandidatesNotInvestedIn_05.01.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Candidates_05_01_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Candidates_05.01.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="CashTest" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\CashTest.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

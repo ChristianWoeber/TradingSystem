@@ -11,7 +11,7 @@ namespace Trading.DataStructures.Utils
     {
         public static string CreateUniqueKey(ITradingCandidate candidate)
         {
-            return $"{candidate.PortfolioAsof.Date.ToShortDateString()}_{candidate.Record.SecurityId}_{(int)candidate.TransactionType}";
+            return $"{candidate.PortfolioAsof.Date.ToShortDateString()}_{candidate?.Record?.SecurityId}_{(int)candidate.TransactionType}";
         }
 
         public static string CreateUniqueKey(ITransaction transaction)

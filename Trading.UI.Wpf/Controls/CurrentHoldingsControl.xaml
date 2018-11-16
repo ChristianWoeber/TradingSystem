@@ -11,7 +11,11 @@
              d:DataContext="{d:DesignInstance viewModels:TradingViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <arts:SmartDataGrid AutoGenerateColumns="False" ItemsSource="{Binding Holdings, Mode=OneWay}" HeaderFontSize="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <arts:SmartDataGrid AutoGenerateColumns="False" ItemsSource="{Binding Holdings, Mode=OneWay}" HeaderFontSize="4" Grid.Row="0" Margin="10">
             <arts:SmartDataGrid.Columns >
                 <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
                                           ColumnEditingItemsSource="{Binding Source={x:Static viewModels:TradingViewModel.NameCatalog}}"
@@ -51,6 +55,15 @@
                     </Style.Triggers>
                 </Style>
             </arts:SmartDataGrid.RowStyle>
+        </arts:SmartDataGrid>
+
+        <arts:SmartDataGrid ItemsSource="{Binding Cash}" AutoGenerateColumns="False" Grid.Row="1"  Margin="10">
+            <arts:SmartDataGrid.Columns >
+                <arts:SmartDataGridColumn Binding="{Binding Asof, Mode=OneWay, StringFormat=d}" 
+                                          Header="Datum"  />
+                <arts:SmartDataGridColumn Binding="{Binding Cash, Mode=OneWay, StringFormat=C}" 
+                                          Header="Cash-Wert"  />
+            </arts:SmartDataGrid.Columns>
         </arts:SmartDataGrid>
     </Grid>
 </UserControl>

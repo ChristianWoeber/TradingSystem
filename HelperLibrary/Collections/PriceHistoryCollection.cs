@@ -121,9 +121,12 @@ namespace HelperLibrary.Collections
                 Add(item);
         }
 
-        private decimal GetDailyReturns(ITradingRecord from, ITradingRecord to)
+
+        public decimal GetDailyReturn(ITradingRecord record)
         {
-            return _calculationContext.GetDailyReturn(from, to);
+            if(record==null)
+                return decimal.MinusOne;
+            return _calculationContext.TryGetDailyReturn(record.Asof, out var dailyReturn) ? dailyReturn : decimal.MinusOne;
         }
 
         /// <summary>

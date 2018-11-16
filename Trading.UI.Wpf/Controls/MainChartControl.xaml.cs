@@ -32,9 +32,12 @@ namespace Trading.UI.Wpf.Controls
                 return;
 
             _model = model;
+            //Register events
             _model.BacktestCompletedEvent += OnBacktestCompleted;
+            _model.IndexBacktestCompletedEvent += OnIndexBacktestCompleted;
             _model.MoveCursorToNextTradingDayEvent += OnMoveCursorToNextTradingDay;
         }
+
 
         private void OnMoveCursorToNextTradingDay(object sender, DayOfWeek tradingDay)
         {
@@ -57,6 +60,31 @@ namespace Trading.UI.Wpf.Controls
             _model.UpdateHoldings(temp, true);
         }
 
+        private void OnIndexBacktestCompleted(object sender, IndexBacktestResultEventArgs e)
+        {
+            ChartControl.Data.Clear();
+            
+            var indexFints = FINTS.Create(e.Results.Select(x => new Quote<double>(new SDate(x.Asof), (double)x.IndexLevel)), "Index");
+            var simulationFints = FINTS.Create(e.Results.Select(x => new Quote<double>(new SDate(x.Asof), (double)x.SimulationNav)), "Simulation");
+            var allocationFints = FINTS.Create(e.Results.Select(x => new Quote<double>(new SDate(x.Asof), (double)x.MaximumAllocationToRisk)), "Aktienquote");
+            allocationFints.DataType = FINTSDataType.Exposure;
+
+            //zu ChartControl hinzufügen
+            ChartControl.Data.Add(new WLineChartFINTS(allocationFints)
+            {
+                FillColor = Colors.AliceBlue,
+                Color = Colors.LightBlue,
+                FillMode = WLCFillMode.FillAlpha,
+                FillAlpha = 0.25,
+                StairSteps = true
+            });
+            ChartControl.Data.Add(new WLineChartFINTS(simulationFints) { Color = Colors.Blue, StrokeThickness = 0.75 });
+            ChartControl.Data.Add(new WLineChartFINTS(indexFints) { Color = Colors.LightCoral, StrokeThickness = 0.75 });
+            ChartControl.ViewBeginDate = simulationFints.BeginDate;
+            ChartControl.ViewEndDate = simulationFints.EndDate;
+
+        }
+
         private void OnBacktestCompleted(object sender, BacktestResultEventArgs args)
         {
             ChartControl.Data.Clear();
@@ -65,8 +93,7 @@ namespace Trading.UI.Wpf.Controls
             var allocationFints = FINTS.Create(args.PortfolioValuations.Select(x => new Quote<double>(new SDate(x.PortfolioAsof), Convert.ToDouble(x.AllocationToRisk))), "Investitionsgrad");
             allocationFints.DataType = FINTSDataType.Exposure;
 
-            //zu ChartControl hinzufügen
-            ChartControl.Data.Add(new WLineChartFINTS(navFints) { Color = Colors.Blue, Caption = "Backtest", StrokeThickness = 0.75 });
+            //zu ChartControl hinzufügen zuerst die Aktienquote
             ChartControl.Data.Add(new WLineChartFINTS(allocationFints)
             {
                 FillColor = Colors.AliceBlue,
@@ -74,6 +101,7 @@ namespace Trading.UI.Wpf.Controls
                 FillMode = WLCFillMode.FillAlpha,
                 FillAlpha = 0.25
             });
+            ChartControl.Data.Add(new WLineChartFINTS(navFints) { Color = Colors.Blue, Caption = "Backtest", StrokeThickness = 0.75 });
             ChartControl.Data.Add(new WLineChartFINTS(FintsSecuritiesRepo.Eurostoxx50.Value) { Color = Colors.LightCoral, Caption = "EuroStoxx 50", StrokeThickness = 0.75 });
             ChartControl.ViewBeginDate = navFints.BeginDate;
             ChartControl.ViewEndDate = navFints.EndDate;
@@ -81,6 +109,9 @@ namespace Trading.UI.Wpf.Controls
 
         private void OnChartControlClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            if(!_model.HasPortfolioManager)
+                return;
+
             if (ChartControl.Cursors[0]?.IsSet == false)
                 return;
 
@@ -89,6 +120,7 @@ namespace Trading.UI.Wpf.Controls
                 return;
 
             _model.UpdateHoldings(date.Value.ToDateTime());
+            _model.UpdateCash(date.Value.ToDateTime());
         }
     }
 }
