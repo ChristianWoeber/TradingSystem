@@ -35,27 +35,34 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public event EventHandler<DateTime> CashChangedEvent;
 
-        public void CleanUpCash(List<ITradingCandidate> allCandidates, List<ITradingCandidate> investedCandidates)
+        public void CleanUpCash(List<ITradingCandidate> remainingCandidates)
         {
-            if (investedCandidates == null)
-                throw new ArgumentNullException(nameof(investedCandidates));
+            if (remainingCandidates == null)
+                throw new ArgumentNullException(nameof(remainingCandidates));
 
-            if (investedCandidates.Count == 0)
+            if (remainingCandidates.Count == 0)
                 return;
+
+            var targetCash = _portfolioManager.PortfolioSettings.CashPufferSize *
+                             _portfolioManager.PortfolioSettings.MaximumAllocationToRisk *
+                             _portfolioManager.PortfolioValue;
 
             //Hier bin nich mit dem Rebalancing fertig
             if (Cash < 0)
             {
                 //die Temporären Kandidaten
-                var tempToAdjust = allCandidates.Where(x => x.IsTemporary && x.TransactionType != TransactionType.Close)
-                    .ToList();
+                var tempToAdjust = remainingCandidates.Where(x => x.IsTemporary && x.TransactionType != TransactionType.Close).ToList();
 
                 //Cash Clean Up der temporären auf Puffer Größe
                 if (tempToAdjust.Count > 0)
                 {
                     for (var i = tempToAdjust.Count - 1; i >= 0; i--)
                     {
+                        if (Cash >= targetCash)
+                            break;
+
                         var current = tempToAdjust[i];
+                        tempToAdjust.Remove(current);
                         if (_portfolioManager.AdjustTemporaryPortfolioToCashPuffer(Cash, current, true))
                             break;
                     }
@@ -63,18 +70,18 @@ namespace HelperLibrary.Trading.PortfolioManager
                 //cash clean up der investierten
                 else
                 {
-                    var investedToAdjust = investedCandidates.Where(x => !x.IsTemporary).ToList();
+                    //var investedToAdjust = investedCandidates.Where(x => !x.IsTemporary).ToList();
 
-                    for (var i = investedToAdjust.Count - 1; i >= 0; i--)
-                    {
-                        var current = investedToAdjust[i];
-                        //sicherheitshalber nochmal checken ob nicht im temporären portfolio
-                        if (_portfolioManager.TemporaryPortfolio.IsTemporary(current.Record.SecurityId))
-                            continue;
-                        current.TransactionType = TransactionType.Changed;
-                        if (_portfolioManager.AdjustTemporaryPortfolioToCashPuffer(Cash, current))
-                            break;
-                    }
+                    //for (var i = investedToAdjust.Count - 1; i >= 0; i--)
+                    //{
+                    //    var current = investedToAdjust[i];
+                    //    //sicherheitshalber nochmal checken ob nicht im temporären portfolio
+                    //    if (_portfolioManager.TemporaryPortfolio.IsTemporary(current.Record.SecurityId))
+                    //        continue;
+                    //    current.TransactionType = TransactionType.Changed;
+                    //    if (_portfolioManager.AdjustTemporaryPortfolioToCashPuffer(Cash, current))
+                    //        break;
+                    //}
 
                     if (Cash < 0)
                     {
@@ -134,7 +141,7 @@ namespace HelperLibrary.Trading.PortfolioManager
     {
         public CashMetaInfo()
         {
-            
+
         }
         public CashMetaInfo(DateTime asof, decimal cashValue, bool isStartSaldo = false)
         {

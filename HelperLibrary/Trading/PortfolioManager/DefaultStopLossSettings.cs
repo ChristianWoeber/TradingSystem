@@ -94,6 +94,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public void AddOrRemoveDailyLimit(ITransaction transactionItem)
         {
+            //ich füge hier nur neue ein, bzw. remove bestehende Elemente
             switch (transactionItem.TransactionType)
             {
                 case TransactionType.Open:
@@ -109,7 +110,12 @@ namespace HelperLibrary.Trading.PortfolioManager
         }
 
 
-
+        /// <summary>
+        /// Wird bei jedem Change des Asof Datums invoked
+        /// </summary>
+        /// <param name="transactionItem"></param>
+        /// <param name="price"></param>
+        /// <param name="asof"></param>
         public void UpdateDailyLimits(ITransaction transactionItem, decimal? price, DateTime asof)
         {
             if (price == null)

@@ -23,6 +23,8 @@ namespace HelperLibrary.Trading.PortfolioManager
         public ConservativePortfolioSettings()
         {
             InitialCashValue = Settings.Default.PortfolioValueInitial;
+            MaximumAllocationToRisk = 1;
+            MinimumAllocationToRisk = new decimal(0.2);
         }
 
         /// <summary>
@@ -80,25 +82,36 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public string LoggingPath { get; set; }
         public string IndicesDirectory { get; set; }
+
+        /// <summary>
+        /// das Maximum der aktienquote
+        /// </summary>
+        public decimal MaximumAllocationToRisk { get; set; }
+
+        /// <summary>
+        /// das Minimum der aktienquote
+        /// </summary>
+        public decimal MinimumAllocationToRisk { get; set; }
     }
 
-    public class DefaultPortfolioSettings : IPortfolioSettings
+    public class DefaultPortfolioSettings : IPortfolioSettings, IExposureSettings
     {
         public DefaultPortfolioSettings()
         {
             InitialCashValue = Settings.Default.PortfolioValueInitial;
+            MaximumAllocationToRisk = 1;
         }
 
         /// <summary>
         /// Die maximale Initiale Positionsgröße - 10% wenn noch kein Bestand in der Position, dann wird initial eine 10% Positoneröffnet - sprich nach der ersten Allokatoin sollten 10 stocks im Bestand sein
         /// </summary>
-        public decimal MaximumInitialPositionSize { get; set; }=
+        public decimal MaximumInitialPositionSize { get; set; } =
         new decimal(0.1);
 
         /// <summary>
         /// Die maximale gesamte Positionsgröße - 33% - diese kann nach dem ersen aufstocken erreicht werden - 10% dann 20% dann 33%
         /// </summary>
-        public decimal MaximumPositionSize { get; set; }=
+        public decimal MaximumPositionSize { get; set; } =
         new decimal(0.33);
 
         /// <summary>
@@ -144,7 +157,25 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// </summary>
         public decimal MaximumPositionSizeBuffer { get; set; } = new decimal(0.05);
 
+        /// <summary>
+        /// Der Pfad in den gelogget werden soll
+        /// </summary>
         public string LoggingPath { get; set; }
+
+        /// <summary>
+        /// der Pfad in dem die Daten zu den Indices liegen
+        /// </summary>
         public string IndicesDirectory { get; set; }
+
+        /// <summary>
+        /// das Maximum der Aktienquote
+        /// </summary>
+        public decimal MaximumAllocationToRisk { get; set; }
+
+
+        /// <summary>
+        /// das Minimum der Aktienquote
+        /// </summary>
+        public decimal MinimumAllocationToRisk { get; set; }
     }
 }

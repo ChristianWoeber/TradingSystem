@@ -121,6 +121,7 @@
     <Compile Include="Trading\PortfolioManager\IExposureProvider.cs" />
     <Compile Include="Trading\PortfolioManager\IExposureReceiver.cs" />
     <Compile Include="Trading\PortfolioManager\ITransactionCalculation.cs" />
+    <Compile Include="Trading\PortfolioManager\RebalanceProvider.cs" />
     <Compile Include="Trading\PortfolioManager\TransactionCalculationHandler.cs" />
     <Compile Include="Trading\PortfolioManager\TransactionsHandler.cs" />
     <Compile Include="Trading\ScoringResult.cs" />

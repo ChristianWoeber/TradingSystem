@@ -19,22 +19,22 @@ namespace HelperLibrary.Trading.PortfolioManager
         MsciWorldEur,
         SandP500
     }
-
+    //TODO:
     public class ExposureWatcher : IExposureProvider
     {
-        private readonly IExposureReceiver _receiver;
+        private readonly IExposureSettings _receiver;
         private readonly PriceHistoryCollection _benchmark;
         private int _currentStep;
 
 
-        public IExposureReceiver GetExposure()
+        public IExposureSettings GetExposure()
         {
             return _receiver;
         }
 
-        public ExposureWatcher(IExposureReceiver receiver, IPortfolioSettings settings, IndexType type)
+        public ExposureWatcher(IExposureSettings settings, IndexType type)
         {
-            _receiver = receiver;
+            _receiver = settings;
             var files = Directory.GetFiles(settings.IndicesDirectory);
 
             var tradingRecords = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(
@@ -48,6 +48,8 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             if (_lastSimulationNav == null)
                 _lastSimulationNav = 100;
+            if(asof > _benchmark.LastItem.Asof)
+                return;
 
             //berechne hier gleich den NAV der simulation
             var indexLevel = _benchmark.Get(asof);

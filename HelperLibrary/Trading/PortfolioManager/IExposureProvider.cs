@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HelperLibrary.Calculations;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
@@ -33,6 +34,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Gibt das Exposure nach aussen
         /// </summary>
         /// <param name="start"></param>
-        IExposureReceiver GetExposure();
+        IExposureSettings GetExposure();
     }
 }

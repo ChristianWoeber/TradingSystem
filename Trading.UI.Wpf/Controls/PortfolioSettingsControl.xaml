@@ -94,6 +94,21 @@
                                         SmallStep="1" 
                                         DisplayMode="Decimal" />
             </StackPanel>
+
+            <StackPanel Orientation="Vertical">
+                <arts:SmartTextBlock Text="MaximumAllocation To Risk" Style="{StaticResource LabelStyle}"/>
+                <arts:SmartNumberUpDown Value="{Binding MaximumAllocationToRisk, StringFormat=P}" 
+                                        SmallStep="0.1" 
+                                        DisplayMode="Decimal" />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical">
+                <arts:SmartTextBlock Text="Minimum Allocation To Risk" Style="{StaticResource LabelStyle}"/>
+                <arts:SmartNumberUpDown Value="{Binding MinimumAllocationToRisk, StringFormat=P}" 
+                                        SmallStep="0.1" 
+                                        DisplayMode="Decimal" />
+            </StackPanel>
+
         </UniformGrid>
 
             <StackPanel Orientation="Vertical" Grid.Row="2">

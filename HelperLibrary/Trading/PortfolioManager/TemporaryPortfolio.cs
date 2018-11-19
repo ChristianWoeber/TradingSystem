@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Interfaces;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Utils;
 
@@ -91,6 +89,17 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #endregion
 
+        /// <summary>
+        /// die Aktuelle Auslastung
+        /// </summary>
+        public decimal CurrentSumInvestedTargetWeight
+        {
+            get
+            {
+                return _items.Sum(t => t.EffectiveWeight);
+            }
+        }
+
         #region Add
 
         public void Add(ITransaction item, bool isTemporary = true)
@@ -113,7 +122,6 @@ namespace HelperLibrary.Trading.PortfolioManager
             catch (Exception ex)
             {
                 throw ex;
-
             }
 
 
@@ -174,7 +182,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         }
 
         #endregion
-
 
 
         #region Enumerator

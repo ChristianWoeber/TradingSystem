@@ -38,5 +38,17 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="currentWeight">das aktuelle gewicht auf bais dessen die höhe des Verkaufs ermittelt wird</param>
         /// <param name="currentWorstInvestedCandidate"></param>
         void AdjustTradingCandidateSell(decimal currentWeight, ITradingCandidate currentWorstInvestedCandidate);
+
+        /// <summary>
+        /// der Aktuelle Wert des Portfolios
+        /// </summary>
+        decimal PortfolioValue { get; }
+
+        /// <summary>
+        /// Die Temporären Kandiaten
+        /// </summary>
+        /// <returns></returns>
+        List<ITradingCandidate> TemporaryCandidates { get; }
+
     }
 }

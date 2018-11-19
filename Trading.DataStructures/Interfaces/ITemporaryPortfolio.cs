@@ -76,6 +76,11 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
         void DecrementCash(ITransaction transactionToAdjust);
 
+        /// <summary>
+        /// die Aktuelle Auslastung
+        /// </summary>
+        decimal CurrentSumInvestedTargetWeight { get;  }
+
 
     }
 }

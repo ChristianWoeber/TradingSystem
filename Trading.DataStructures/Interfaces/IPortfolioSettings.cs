@@ -6,7 +6,7 @@ namespace Trading.DataStructures.Interfaces
     /// <summary>
     /// Interface Defining the Portfolio Settings
     /// </summary>
-    public interface IPortfolioSettings
+    public interface IPortfolioSettings : IExposureSettings
     {
         /// <summary>
         /// die maximale initiale Positionsgröße einer Position, die größe mit der die initiale Position eröffnet wird
@@ -64,6 +64,6 @@ namespace Trading.DataStructures.Interfaces
         //TODO: gegen ein Interface tauschen und Logging implementieren /MessageQue
         string LoggingPath { get; set; }
 
-        string IndicesDirectory { get; set; }
+      
     }
 }

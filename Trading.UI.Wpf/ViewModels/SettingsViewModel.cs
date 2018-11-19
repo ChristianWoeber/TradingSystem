@@ -210,6 +210,30 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
+        public decimal MaximumAllocationToRisk
+        {
+            get => PortfolioSettings.MaximumAllocationToRisk;
+            set
+            {
+                if (value == PortfolioSettings.MaximumAllocationToRisk)
+                    return;
+                PortfolioSettings.MaximumAllocationToRisk = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public decimal MinimumAllocationToRisk
+        {
+            get => PortfolioSettings.MinimumAllocationToRisk;
+            set
+            {
+                if (value == PortfolioSettings.MinimumAllocationToRisk)
+                    return;
+                PortfolioSettings.MinimumAllocationToRisk = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string IndicesDirectory
         {
             get => PortfolioSettings.IndicesDirectory;

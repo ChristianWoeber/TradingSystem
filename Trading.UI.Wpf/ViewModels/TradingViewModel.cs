@@ -147,8 +147,8 @@ namespace Trading.UI.Wpf.ViewModels
         {
             using (SmartBusyRegion.Start(this))
             {
-                var indexOutput = new IndexResult();
-                var exposureWatcher = new ExposureWatcher(indexOutput, new DefaultPortfolioSettings { IndicesDirectory = Globals.IndicesBasePath }, IndexSettings.TypeOfIndex);
+                var indexOutput = new IndexResult { IndicesDirectory = Globals.IndicesBasePath };
+                var exposureWatcher = new ExposureWatcher(indexOutput, IndexSettings.TypeOfIndex);
                 var backtestHandler = new BacktestHandler(exposureWatcher);
                 _cancellationSource = new CancellationTokenSource();
                 await backtestHandler.RunIndexBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
@@ -245,6 +245,7 @@ namespace Trading.UI.Wpf.ViewModels
             if (_portfolioManager == null)
                 return;
 
+            UpdateCash(asof);
             var tradingDayTransaction = _portfolioManager.TransactionsHandler.GetTransactions(asof);
             if (tradingDayTransaction == null)
                 Holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(asof).Select(t => new TransactionViewModel(t, GetScore(t, asof)));
@@ -368,6 +369,7 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
+     
         public bool TryGetLastCash(DateTime key, out List<CashMetaInfo> cashMetaInfos)
         {
             if (TryGetValue(key, out var infos))
@@ -381,8 +383,8 @@ namespace Trading.UI.Wpf.ViewModels
 
             while (count < _maxTries)
             {
-                count--;
-                if (TryGetLastCash(date.AddDays(count), out var match))
+                count++;
+                if (TryGetValue(date.AddDays(-count), out var match))
                 {
                     cashMetaInfos = match;
                     return true;

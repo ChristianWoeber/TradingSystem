@@ -18,7 +18,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             
         }
 
-        public IndexResult(IExposureReceiver receiver)
+        public IndexResult(IExposureSettings receiver)
         {
             MaximumAllocationToRisk = receiver.MaximumAllocationToRisk;
             MinimumAllocationToRisk = receiver.MinimumAllocationToRisk;
@@ -30,6 +30,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public decimal MaximumAllocationToRisk { get; set; }
         public decimal MinimumAllocationToRisk { get; set; }
+        public string IndicesDirectory { get; set; }
 
         public DateTime Asof { get; set; }
 
@@ -44,7 +45,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         }
     }
 
-    public interface IIndexBackTestResult : IExposureReceiver
+    public interface IIndexBackTestResult : IExposureSettings
     {
         DateTime Asof { get; set; }
 
