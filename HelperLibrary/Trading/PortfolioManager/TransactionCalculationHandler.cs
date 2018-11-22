@@ -92,6 +92,9 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             if (candidate.TargetWeight == 0)
             {
+                if (!candidate.IsInvested)
+                    return candidate.TransactionType == TransactionType.Close;
+
                 //Bei einem TargetWeight von 0 muss immer eine Last Transaction, eine CurrentPostion und der Transaktionstype Close sein
                 if (candidate.LastTransaction == null || candidate.TransactionType != TransactionType.Close || candidate.CurrentPosition == null)
                     return false;

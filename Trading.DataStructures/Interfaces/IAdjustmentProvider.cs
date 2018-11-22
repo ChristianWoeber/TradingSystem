@@ -48,7 +48,11 @@ namespace Trading.DataStructures.Interfaces
         /// Die Temporären Kandiaten
         /// </summary>
         /// <returns></returns>
-        List<ITradingCandidate> TemporaryCandidates { get; }
+        Dictionary<int,ITradingCandidate> TemporaryCandidates { get; }
 
+        /// <summary>
+        /// Das Temporäre Portfolio
+        /// </summary>
+        ITemporaryPortfolio TemporaryPortfolio { get; }
     }
 }

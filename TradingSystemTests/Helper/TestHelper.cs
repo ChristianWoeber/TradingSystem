@@ -15,7 +15,7 @@ namespace TradingSystemTests.Helper
 {
     public static class TestHelper
     {
-        public static T GetTestCollectionFromJson<T>(string filename)
+        public static T CreateTestCollectionFromJson<T>(string filename)
         {
             var name = Path.GetFileNameWithoutExtension(filename);
             if (string.IsNullOrWhiteSpace(name))
@@ -33,9 +33,21 @@ namespace TradingSystemTests.Helper
 
         }
 
+        private static string NormalizeName(string filename)
+        {
+            var name = Path.GetFileNameWithoutExtension(filename);
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
+
+            if (name.Contains("."))
+                name = name.Replace(".", "_");
+
+            return name;
+        }
+
         public static IEnumerable<T> CreateTestCollection<T>(string filename)
         {
-            var data = (string)Resource.ResourceManager.GetObject(Path.GetFileNameWithoutExtension(filename) ?? throw new InvalidOperationException("Achtung kein File gefunden !! -- FileName:" + filename));
+            var data = (string)Resource.ResourceManager.GetObject(Path.GetFileNameWithoutExtension(NormalizeName(filename)) ?? throw new InvalidOperationException("Achtung kein File gefunden !! -- FileName:" + filename));
 
             if (data != null)
                 return SimpleTextParser.GetListOfType<T>(data);
@@ -83,9 +95,9 @@ namespace TradingSystemTests.Helper
             if (data == null)
                 throw new MissingMemberException("Die Datei konnte nicht gefunden werden " + fileName);
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            Trace.TraceInformation("Start der StopUhr");
+            //var stopwatch = new Stopwatch();
+            //stopwatch.Start();
+            //Trace.TraceInformation("Start der StopUhr");
 
             if (start == null)
                 start = new DateTime(2004, 01, 01);
@@ -114,7 +126,7 @@ namespace TradingSystemTests.Helper
                         //alle früheren ignoriere ich
                         if (date <= start)
                             continue;
-                        //alle späteren ebenfalls indem ich komplett aus der for breake
+                        //alle späteren ebenfalls indem ich komplett aus der foreach breake
                         if (date > end)
                             break;
 
@@ -132,8 +144,8 @@ namespace TradingSystemTests.Helper
                     dic.Add(sheet.Index, new PriceHistoryCollection(quotes));
                 }
             }
-            stopwatch.Stop();
-            Trace.TraceInformation($"Dauer des Excel parsens in Sekunden: {stopwatch.Elapsed.TotalSeconds:N}");
+            //stopwatch.Stop();
+            //Trace.TraceInformation($"Dauer des Excel parsens in Sekunden: {stopwatch.Elapsed.TotalSeconds:N}");
             return dic;
         }
 

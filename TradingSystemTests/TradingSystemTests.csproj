@@ -102,6 +102,8 @@
     <None Include="Resources\EuroStoxx50Member.xlsx" />
     <None Include="Resources\MSCIWorldEur.csv" />
     <None Include="Resources\SetIntialTransactionsTest.csv" />
+    <None Include="Resources\Transactions_05.01.2000.csv" />
+    <None Include="Resources\Transactions_19.01.2000.csv" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">
@@ -148,6 +150,27 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\BestCandidatesNotInvestedIn_05.01.2000.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AllCandidates_02.02.2000.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BestCandidates_02.02.2000.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AllCandidates_16.03.2000.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AllCandidates_10.05.2000.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BestCandidates_10.05.2000.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AllCandidates_25.10.2000.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BestCandidates_25.10.2000.txt" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

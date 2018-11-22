@@ -32,6 +32,7 @@ namespace Trading.UI.Wpf.ViewModels
 
             LoggingPath = initialDir;
             IndicesDirectory = Globals.IndicesBasePath;
+            AllocationToRiskBuffer = defaultSettings.AllocationToRiskBuffer;
         }
 
 
@@ -209,6 +210,8 @@ namespace Trading.UI.Wpf.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public decimal AllocationToRiskBuffer { get; set; }
 
         public decimal MaximumAllocationToRisk
         {

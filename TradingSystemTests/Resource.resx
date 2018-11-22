@@ -124,8 +124,29 @@
   <data name="AdidasHistoryMissingItems" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AdidasHistoryMissingItems.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="AllCandidates_02_02_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AllCandidates_02.02.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="AllCandidates_10_05_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AllCandidates_10.05.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="AllCandidates_16_03_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AllCandidates_16.03.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="AllCandidates_25_10_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AllCandidates_25.10.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="BestCandidatesNotInvestedIn_05_01_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\BestCandidatesNotInvestedIn_05.01.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="BestCandidates_02_02_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\BestCandidates_02.02.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="BestCandidates_10_05_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\BestCandidates_10.05.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="BestCandidates_25_10_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\BestCandidates_25.10.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="Candidates_05_01_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Candidates_05.01.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -156,5 +177,8 @@
   </data>
   <data name="TransactionsHistoryTest" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\TransactionsHistoryTest.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Transactions_05_01_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Transactions_05.01.2000.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

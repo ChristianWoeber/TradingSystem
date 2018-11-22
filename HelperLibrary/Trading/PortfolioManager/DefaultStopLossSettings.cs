@@ -73,9 +73,16 @@ namespace HelperLibrary.Trading.PortfolioManager
                 return;
             //wenn es schon einen Wert gibt aktualisieren
             //sonst hinzufügen
-            if (_lastStopsDictionary.TryGetValue(candidate.Record.SecurityId, out var lastStopDateTime)) _lastStopsDictionary[candidate.Record.SecurityId] = candidate.Record.Asof;
+            if (_lastStopsDictionary.TryGetValue(candidate.Record.SecurityId, out _))
+                _lastStopsDictionary[candidate.Record.SecurityId] = candidate.Record.Asof;
             else
                 _lastStopsDictionary.Add(candidate.Record.SecurityId, candidate.Record.Asof);
+
+            if (_limitDictionary.TryGetValue(candidate.Record.SecurityId, out _))
+            {
+                //dann ziehe ich das high nach, sprich aktualisere es um den aktuellen Preis zu dem ich ausgestoppt wurde
+                _limitDictionary[candidate.Record.SecurityId] = new StopLossMeta(candidate.Record.AdjustedPrice, candidate.PortfolioAsof);
+            }
 
         }
 

@@ -81,6 +81,10 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
         decimal CurrentSumInvestedTargetWeight { get;  }
 
-
+        /// <summary>
+        /// Löscht den Kandidaten aus den temporären Kandidaten und bucht das Cash retour
+        /// </summary>
+        /// <param name="candidate"></param>
+        void RemoveCandidate(ITradingCandidate candidate);
     }
 }

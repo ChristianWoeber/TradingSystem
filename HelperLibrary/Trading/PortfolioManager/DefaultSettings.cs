@@ -25,6 +25,8 @@ namespace HelperLibrary.Trading.PortfolioManager
             InitialCashValue = Settings.Default.PortfolioValueInitial;
             MaximumAllocationToRisk = 1;
             MinimumAllocationToRisk = new decimal(0.2);
+            //2% Toleranz
+            AllocationToRiskBuffer = new decimal(0.02);
         }
 
         /// <summary>
@@ -81,6 +83,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         public decimal MaximumPositionSizeBuffer { get; set; } = new decimal(0.05);
 
         public string LoggingPath { get; set; }
+        public decimal AllocationToRiskBuffer { get; set; }
         public string IndicesDirectory { get; set; }
 
         /// <summary>
@@ -100,6 +103,8 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             InitialCashValue = Settings.Default.PortfolioValueInitial;
             MaximumAllocationToRisk = 1;
+            AllocationToRiskBuffer = new decimal(0.02);
+            
         }
 
         /// <summary>
@@ -161,6 +166,8 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Der Pfad in den gelogget werden soll
         /// </summary>
         public string LoggingPath { get; set; }
+
+        public decimal AllocationToRiskBuffer { get; set; }
 
         /// <summary>
         /// der Pfad in dem die Daten zu den Indices liegen

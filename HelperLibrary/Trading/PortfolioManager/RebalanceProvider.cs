@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using HelperLibrary.Util.Converter;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
@@ -141,6 +144,13 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public void RebalanceTemporaryPortfolio(List<ITradingCandidate> bestCandidates, List<ITradingCandidate> allCandidates)
         {
+            if (allCandidates.Count > 0 && allCandidates[0].PortfolioAsof >= new DateTime(2001, 10, 24))
+            {
+                //var date = allCandidates[0].PortfolioAsof;
+                //JsonUtils.SerializeToFile(bestCandidates, $"BestCandidates_{date.ToShortDateString()}.txt");
+                //JsonUtils.SerializeToFile(allCandidates, $"AllCandidates_{date.ToShortDateString()}.txt");
+            }
+
             //investierte Candidaten
             var investedCandidates = allCandidates.Where(x => x.IsInvested).ToList();
             //die aktuellen stopps
@@ -155,115 +165,156 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
 
             //temporären Kandidaten die ich aufstocken möchte
-            var temporaryInvestedCandidates = investedCandidates.Where(x => x.IsTemporary && x.HasBetterScoring).ToList();
+            var temporaryInvestedCandidates = investedCandidates.Where(x => x.HasBetterScoring && x.TransactionType != TransactionType.Unchanged).ToList();
 
-            //1. die investierten Kanidaten checken
-            EnumInvestedCandidatesWithBetterScoring(temporaryInvestedCandidates);
+            //1. die investierten Kanidaten die ich aufbauen will checken
+            AdjustInvestedCandidatesWithBetterScoring(temporaryInvestedCandidates);
 
             //dann an dieser Stelle abbrechen
             if (bestCandidates.Count == 0)
+            {
+                CashHandler.CleanUpCash(investedCandidates, new List<ITradingCandidate>());
                 return;
-
-            //2. schauen ob der ersten candidate in der Liste einen besseren Score hat als der aktuelle
-            //komme hier nun mit einem ausgegelichen Cash Konto her
-            var best = bestCandidates[0];
+            }
 
             if (investedCandidates.Count == 0)
                 return;
 
             //die Kandiaten die zum Umschichten zur Verfügung stehen 
-            investedCandidates.RemoveAll(t => _adjustmentProvider.TemporaryCandidates.FirstOrDefault(x => x.Record.SecurityId == t.Record.SecurityId) != null);
+            investedCandidates.RemoveAll(t => _adjustmentProvider.TemporaryCandidates.TryGetValue(t.Record.SecurityId, out _));
             //und die potentiellen Neukäufe hinzufügen
-            investedCandidates.AddRange(allCandidates.Where(t => t.TransactionType == TransactionType.Open));
+            //nur diejenigen die nicht dieselbe SecurityId haben
+            investedCandidates.AddRange(allCandidates.Where(t => t.TransactionType == TransactionType.Open && investedCandidates.All(x => x.Record.SecurityId != t.Record.SecurityId)));
+            //die gemergten Candiaten inklusive neuen openings
+            var mergedCandidates = investedCandidates.OrderByDescending(c => c.ScoringResult.Score).ToList();
 
-            if (best.ScoringResult.Score < _adjustmentProvider.TemporaryCandidates[_adjustmentProvider.TemporaryCandidates.Count - 1].ScoringResult.Score)
+            for (var i = mergedCandidates.Count - 1; i >= 0; i--)
             {
-                CashHandler.CleanUpCash(investedCandidates);
-                return;
-            }
-
-            var nextCandidate = GetNextCandiateToReplaceFromIdx(investedCandidates);
-            if (nextCandidate == null)
-            {
-                CashHandler.CleanUpCash(investedCandidates);
-                return;
-            }
-
-            //wenn der beste Kandidat keinen höheren Score als der aktuell schlechteste hat brauch ich mir die anderen erst gar nicht anzusehen
-            if (best.ScoringResult.Score < nextCandidate.ScoringResult.Score * (1 + _settings.ReplaceBufferPct))
-            {
-                CashHandler.CleanUpCash(investedCandidates);
-                return;
-            }
-
-            //flag das angibt ob ich aus der foreach breaken kann
-            var isbetterCandidateLeft = true;
-
-            //Hier werden nur die Kandidaten ausgetauscht
-            foreach (var notInvestedCandidate in bestCandidates)
-            {
-                //abbreuchbedingung wenn kein besser kandidat mehr in der Liste enthaltebn ist
-                if (!isbetterCandidateLeft)
-                    break;
-
-                //wenn er bereits im Temporären Portfolio ist zum nächst besseren
-                if (notInvestedCandidate.IsTemporary)
+                for (var j = 0; j < bestCandidates.Count;)
                 {
-                    //dann brauch ich einen neuen Kandiaten zum Abschichten
-                    InvestedCandidateIdx++;
-                    continue;
-                }
+                    //2. schauen ob der ersten candidate in der Liste einen besseren Score hat als der aktuelle
+                    var currentBestCandidate = bestCandidates[j];
+                    //der aktuell schlechteste Candidat den ich austauschen könnte
+                    var worstMergedCandidate = mergedCandidates[i];
 
-                //wenn er berties investiert ist weiter
-                if (notInvestedCandidate.IsInvested)
-                    continue;
-
-                while (InvestedCandidateIdx < investedCandidates.Count)
-                {
-                    var currentWorstInvestedCandidate = GetNextCandiateToReplaceFromIdx(investedCandidates);
-                    if (currentWorstInvestedCandidate == null)
+                    //wenn es den Kandidaten im Portfolio schon gibt zum nächsten
+                    if (_temporaryPortfolio.ContainsCandidate(worstMergedCandidate))
                         break;
-                    InvestedCandidateIdx++;
 
-                    if (currentWorstInvestedCandidate.HasBetterScoring || currentWorstInvestedCandidate.IsTemporary)
+                    //die Abbruchbedingung wenn der nichtinvestierte Kandiate zu schlecht ist
+                    if (currentBestCandidate.ScoringResult.Score < worstMergedCandidate.ScoringResult.Score * (1 + _settings.ReplaceBufferPct))
                     {
-                        InvestedCandidateIdx++;
-                        continue;
+                        CashHandler.CleanUpCash(mergedCandidates, bestCandidates);
+                        return;
                     }
+                    //sonst umschichten
 
-                    //wenn der nicht investierte Kandidate schlechter ist als der investierte ignorieren
-                    //an diesem Punkt kann ich davon ausgehen, dass auch die nächsten Kandidaten nicht mehr besser sind
-                    // und abbrechen
-                    if (notInvestedCandidate.ScoringResult.Score <= currentWorstInvestedCandidate.ScoringResult.Score *
-                        (1 + _settings.ReplaceBufferPct))
+                    if (!Debugger.IsAttached)
                     {
-                        isbetterCandidateLeft = false;
-                        break;
+                        //wenn kleiner als die mimimum holding periode weiter
+                        if (_adjustmentProvider.IsBelowMinimumHoldingPeriode(worstMergedCandidate))
+                            break;
                     }
-
-                    //wenn die Position bereits aufgestockt wurde tausche ich sie nicht aus
-                    if (currentWorstInvestedCandidate.CurrentWeight > new decimal(0.12))
-                        continue;
-
-                    //wenn kleiner als die mimimum holding periode weiter
-                    if (_adjustmentProvider.IsBelowMinimumHoldingPeriode(currentWorstInvestedCandidate))
-                        continue;
 
                     //investierten Verkaufen
-                    _adjustmentProvider.AdjustTradingCandidateSell(currentWorstInvestedCandidate.CurrentWeight, currentWorstInvestedCandidate);
-                    _adjustmentProvider.AddToTemporaryPortfolio(currentWorstInvestedCandidate);
+                    _adjustmentProvider.AdjustTradingCandidateSell(worstMergedCandidate.CurrentWeight, worstMergedCandidate);
+                    _adjustmentProvider.AddToTemporaryPortfolio(worstMergedCandidate);
 
                     //neuen kaufen
-                    notInvestedCandidate.TransactionType = TransactionType.Open;
-                    notInvestedCandidate.TargetWeight = _settings.MaximumInitialPositionSize;
-                    _adjustmentProvider.AddToTemporaryPortfolio(notInvestedCandidate);
-                    //weiter gehen zum nächsten nicht investierten Kandidaten                                        
+                    currentBestCandidate.TransactionType = TransactionType.Open;
+                    currentBestCandidate.TargetWeight = _settings.MaximumInitialPositionSize;
+                    _adjustmentProvider.AddToTemporaryPortfolio(currentBestCandidate);
+                    //weiter gehen zum nächsten nicht investierten Kandidaten          
+                    //vorher die candidaten noch removen
+                    mergedCandidates.Remove(worstMergedCandidate);
+                    bestCandidates.Remove(currentBestCandidate);
                     break;
                 }
             }
 
+
+            //var nextCandidate = GetNextCandiateToReplaceFromIdx(mergedCandidates);
+            //if (nextCandidate == null)
+            //{
+            //    CashHandler.CleanUpCash(mergedCandidates);
+            //    return;
+            //}
+
+            ////wenn der beste Kandidat keinen höheren Score als der aktuell schlechteste hat brauch ich mir die anderen erst gar nicht anzusehen
+            //if (best.ScoringResult.Score < nextCandidate.ScoringResult.Score * (1 + _settings.ReplaceBufferPct))
+            //{
+            //    CashHandler.CleanUpCash(mergedCandidates);
+            //    return;
+            //}
+
+            //flag das angibt ob ich aus der foreach breaken kann
+            //var isbetterCandidateLeft = true;
+
+            ////Hier werden nur die Kandidaten ausgetauscht
+            //foreach (var notInvestedCandidate in bestCandidates)
+            //{
+            //    //abbreuchbedingung wenn kein besser kandidat mehr in der Liste enthaltebn ist
+            //    if (!isbetterCandidateLeft)
+            //        break;
+
+            //    //wenn er bereits im Temporären Portfolio ist zum nächst besseren
+            //    if (notInvestedCandidate.IsTemporary)
+            //    {
+            //        //dann brauch ich einen neuen Kandiaten zum Abschichten
+            //        InvestedCandidateIdx++;
+            //        continue;
+            //    }
+
+            //    //wenn er berties investiert ist weiter
+            //    if (notInvestedCandidate.IsInvested)
+            //        continue;
+
+            //    //while (InvestedCandidateIdx < investedCandidates.Count)
+            //    //{
+            //    //    var currentWorstInvestedCandidate = GetNextCandiateToReplaceFromIdx(investedCandidates);
+            //    //    if (currentWorstInvestedCandidate == null)
+            //    //        break;
+            //    //    InvestedCandidateIdx++;
+
+            //    //    if (currentWorstInvestedCandidate.HasBetterScoring || currentWorstInvestedCandidate.IsTemporary)
+            //    //    {
+            //    //        InvestedCandidateIdx++;
+            //    //        continue;
+            //    //    }
+
+            //    //    //wenn der nicht investierte Kandidate schlechter ist als der investierte ignorieren
+            //    //    //an diesem Punkt kann ich davon ausgehen, dass auch die nächsten Kandidaten nicht mehr besser sind
+            //    //    // und abbrechen
+            //    //    if (notInvestedCandidate.ScoringResult.Score <= currentWorstInvestedCandidate.ScoringResult.Score *
+            //    //        (1 + _settings.ReplaceBufferPct))
+            //    //    {
+            //    //        isbetterCandidateLeft = false;
+            //    //        break;
+            //    //    }
+
+            //    //    //wenn die Position bereits aufgestockt wurde tausche ich sie nicht aus
+            //    //    if (currentWorstInvestedCandidate.CurrentWeight > new decimal(0.12))
+            //    //        continue;
+
+            //    //    //wenn kleiner als die mimimum holding periode weiter
+            //    //    if (_adjustmentProvider.IsBelowMinimumHoldingPeriode(currentWorstInvestedCandidate))
+            //    //        continue;
+
+            //    //    //investierten Verkaufen
+            //    //    _adjustmentProvider.AdjustTradingCandidateSell(currentWorstInvestedCandidate.CurrentWeight, currentWorstInvestedCandidate);
+            //    //    _adjustmentProvider.AddToTemporaryPortfolio(currentWorstInvestedCandidate);
+
+            //    //    //neuen kaufen
+            //    //    notInvestedCandidate.TransactionType = TransactionType.Open;
+            //    //    notInvestedCandidate.TargetWeight = _settings.MaximumInitialPositionSize;
+            //    //    _adjustmentProvider.AddToTemporaryPortfolio(notInvestedCandidate);
+            //    //    //weiter gehen zum nächsten nicht investierten Kandidaten                                        
+            //    //    break;
+            //    //}
+            //}
+
             //clean up des Cash-Wertes
-            CashHandler.CleanUpCash(investedCandidates);
+            //CashHandler.CleanUpCash(investedCandidates);
         }
 
         private void EnumStops(IEnumerable<ITradingCandidate> stops)
@@ -273,10 +324,10 @@ namespace HelperLibrary.Trading.PortfolioManager
                 _adjustmentProvider.AddToTemporaryPortfolio(stop);
         }
 
-        private void EnumInvestedCandidatesWithBetterScoring(List<ITradingCandidate> investedCandidates)
+        private void AdjustInvestedCandidatesWithBetterScoring(List<ITradingCandidate> investedCandidates)
         {
             //1. Schauen ob es bereits temporäre transaktionen bei den investierten gibt, dann werden diese bevorzugt
-            if (!investedCandidates.Any(x => x.IsTemporary))
+            if (investedCandidates.Count == 0)
                 return;
             {
                 //mach das nur für temporäre mit Aufstockung, sonst kann es sein,
@@ -290,35 +341,9 @@ namespace HelperLibrary.Trading.PortfolioManager
                     //den Kandidaten entsprechend anpassen
                     _adjustmentProvider.AddToTemporaryPortfolio(bestTemporaryCandidate);
 
-                    if (_adjustmentProvider.TemporaryCandidates.Sum(x => x.TargetWeight) >= 1)
+                    //wenn die summe der targetweights >1 hab ich genug kandidaten im temporären portfolio
+                    if (_adjustmentProvider.TemporaryPortfolio.CurrentSumInvestedTargetWeight >= _settings.MaximumAllocationToRisk)
                         break;
-
-                    ////wenn genug cash zur verfügung steht kann ich weitergehen
-                    //if (CashHandler.TryHasCash(out var remainingCash))
-                    //    continue;
-
-                    //if (remainingCash > 0)
-                    //    continue;
-
-                    ////wenn ich schon am Limit bzw über dem Limit bin stocke ich die investierten Kandiaten nicht mehr weiter auf
-                    //if (_temporaryPortfolio.CurrentSumInvestedTargetWeight >= _settings.MaximumAllocationToRisk)
-                    //    break;
-
-                    ////den aktuell schlechtesten Kandidaten holen
-                    //var worstCurrentPosition = GetNextCandiateToReplaceFromIdx(investedCandidates);
-                    //if (worstCurrentPosition == null)
-                    //    break;
-
-                    ////Für den Fall, dass alle Positonen gut laufen z.b: sobal ich bei der SecId bin kann ich breaken
-                    //if (worstCurrentPosition.Record.SecurityId == bestTemporaryCandidate.Record.SecurityId)
-                    //    break;
-
-                    //_adjustmentProvider.AdjustTradingCandidateSell(worstCurrentPosition.CurrentWeight,
-                    //    worstCurrentPosition);
-                    ////sonst den schlechtesten  verkaufen
-                    //_adjustmentProvider.AddToTemporaryPortfolio(worstCurrentPosition);
-                    ////den index  in jedem Fall erhöhen
-                    //InvestedCandidateIdx++;
                 }
             }
         }

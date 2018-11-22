@@ -29,6 +29,7 @@ namespace TradingSystemTests.TestCases
         public DummyPortfolioSettings()
         {
             IndicesDirectory = @"D:\Work\Private\Git\HelperLibrary\TradingSystemTests\Resources";
+          
         }
     }
 

@@ -14,8 +14,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         #region private
 
         private readonly ITransactionsCacheProvider _cacheProvider;
-
-        [JsonProperty()]
+        [JsonProperty]
         private IPortfolio _currentPortfolio;
         private DateTime? _lastAsOf;
         private IScoringProvider _scoringProvider;
@@ -167,9 +166,10 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public ITransaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
         {
+            if (transactionType == null && getLatest)
+                return _cacheProvider.TransactionsCache.Value.TryGetValue(secId, out var transactionItems) ? transactionItems.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault() : null;
             if (transactionType == null)
-                return CurrentPortfolio?[secId];
-
+                return CurrentPortfolio[secId];
             if (!getLatest)
                 return this[transactionType.Value]?
                     .OrderBy(x => x.TransactionDateTime)
@@ -303,11 +303,26 @@ namespace HelperLibrary.Trading.PortfolioManager
                     if (secIdGrp.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault()?.TransactionType == TransactionType.Close)
                         continue;
 
+                    //darf nur beim letzen Open beginnen zu summieren!!
+                    var transactions = secIdGrp.ToList();
+
+                    //dazu gehe cih die Transaktionen vom aktuellesten beginnend durch
+                    for (int i = transactions.Count - 1; i >= 0; i--)
+                    {
+                        var currentTransaction = transactions[i];
+                        //sobald ich auf das letzte opening gestoßen bin remove ich alle alten aus der Liste und summiere nur die verbleibenden items
+                        if (currentTransaction.TransactionType == TransactionType.Open)
+                        {
+                            transactions.RemoveRange(0,i);
+                            break;
+                        }
+                    }
+
                     //sumItem erstellen
                     var sumItem = new Transaction();
 
                     // nur nicht gecancellte Transaktionen berücksichtigen
-                    foreach (var item in secIdGrp.Where(x => x.Cancelled != 1))
+                    foreach (var item in transactions.Where(x => x.Cancelled != 1))
                     {
                         sumItem.SecurityId = secIdGrp.Key;
                         sumItem.Shares += item.Shares;

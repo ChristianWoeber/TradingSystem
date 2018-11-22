@@ -67,7 +67,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Eine Auflistung die alle Kandidaten enthält die ich zum temporären Portfolio hinzufüge
         /// </summary>
-        public List<ITradingCandidate> TemporaryCandidates { get; } = new List<ITradingCandidate>();
+        public Dictionary<int, ITradingCandidate> TemporaryCandidates { get; } = new Dictionary<int, ITradingCandidate>();
 
         /// <summary>
         /// Das aktuelle Portfolio (alle Transaktionen die nicht geschlossen sind)
@@ -169,9 +169,10 @@ namespace HelperLibrary.Trading.PortfolioManager
             {
                 if (candidate.IsInvested)
                 {
-
                     //und zu dem Zeitpunkt den Score
                     candidate.LastScoringResult = ScoringProvider.GetScore(candidate.Record.SecurityId, candidate.LastTransaction.TransactionDateTime);
+                    //den Kandidat hier defaultmäßig auf  unchanged setzen
+                    candidate.TransactionType = TransactionType.Unchanged;
 
                     //es wird nur an Handelstagen aufgestockt
                     if (PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay && candidate.HasBetterScoring)
@@ -208,6 +209,10 @@ namespace HelperLibrary.Trading.PortfolioManager
                 //solange genügen cash dafür vorhanden ist
                 if (TryHasCash(out var remainingCash))
                 {
+                    //Nur kaufen wenn zulässig
+                    if (TemporaryPortfolio.CurrentSumInvestedTargetWeight >= PortfolioSettings.MaximumAllocationToRisk)
+                        break;
+
                     //Try Open new Position//
                     //den Kadidaten entsprechend flaggen und mit MetaInfos befüllen
                     AdjustTradingCandidateBuy(0, candidate);
@@ -226,104 +231,104 @@ namespace HelperLibrary.Trading.PortfolioManager
                 }
             }
 
-            if (bestCandidatesNotInvestedIn.Count > 0)
-            {
-                if (Debugger.IsAttached && !_initialized)
-                {
-                    JsonUtils.SerializeToFile(bestCandidatesNotInvestedIn, "BestCandidatesNotInvestedIn.txt");
-                    JsonUtils.SerializeToFile(candidates, "Candidates.txt");
-                    _initialized = true;
-                }
-            }
+            //if (bestCandidatesNotInvestedIn.Count > 0)
+            //{
+            //    if (Debugger.IsAttached && !_initialized)
+            //    {
+            //        JsonUtils.SerializeToFile(bestCandidatesNotInvestedIn, "BestCandidatesNotInvestedIn.txt");
+            //        JsonUtils.SerializeToFile(candidates, "Candidates.txt");
+            //        _initialized = true;
+            //    }
+            //}
 
             //das Portfolio Rebalancen
-            RebalanceTemporaryPortfolio(bestCandidatesNotInvestedIn, candidates);
-          
+            // RebalanceTemporaryPortfolio(bestCandidatesNotInvestedIn, candidates);
+            RebalanceProvider.RebalanceTemporaryPortfolio(bestCandidatesNotInvestedIn.Select(c => (ITradingCandidate)c).ToList(), candidates.Select(c => (ITradingCandidate)c).ToList());
 
             //MaxAllocationToRisk in betracht ziehen
             if (PortfolioSettings.MaximumAllocationToRisk == 1)
                 return;
 
             //Todo Implement RiskReduction
-            var tempCandidates = TemporaryCandidates.Where(x => x.TransactionType != TransactionType.Close)
-                .OrderBy(c => c.ScoringResult.Score).ToList();
+            //var tempCandidates = TemporaryCandidates.Where(x => x.TransactionType != TransactionType.Close)
+            //    .OrderBy(c => c.ScoringResult.Score).ToList();
 
-            var investedCandidates = candidates.Where(x => x.IsInvested && x.TransactionType == TransactionType.Unknown)
-                .OrderBy(x => x.ScoringResult.Score).ToList();
+            //var investedCandidates = candidates.Where(x => x.IsInvested && x.TransactionType == TransactionType.Unknown)
+            //    .OrderBy(x => x.ScoringResult.Score).ToList();
 
 
-            if (PortfolioSettings.MaximumAllocationToRisk == 0)
-            {
-                //forcen des Totalverkaufs
-                for (var idx = 0; idx < investedCandidates.Count; idx++)
-                {
-                    var investedCandidate = investedCandidates[idx];
-                    if (!investedCandidate.IsTemporary)
-                    {
-                        AdjustTradingCandidateSell(decimal.Zero, investedCandidate);
-                        AddToTemporaryPortfolio(investedCandidate);
-                        investedCandidates.Remove(investedCandidate);
-                    }
-                    else
-                    {
-                        AdjustTemoraryPosition(investedCandidate);
-                        investedCandidates.Remove(investedCandidate);
-                    }
-                }
-            }
-            else
-            {
+            //if (PortfolioSettings.MaximumAllocationToRisk == 0)
+            //{
+            //    //forcen des Totalverkaufs
+            //    for (var idx = 0; idx < investedCandidates.Count; idx++)
+            //    {
+            //        var investedCandidate = investedCandidates[idx];
+            //        if (!investedCandidate.IsTemporary)
+            //        {
+            //            AdjustTradingCandidateSell(decimal.Zero, investedCandidate);
+            //            AddToTemporaryPortfolio(investedCandidate);
+            //            investedCandidates.Remove(investedCandidate);
+            //        }
+            //        else
+            //        {
+            //            AdjustTemoraryPosition(investedCandidate);
+            //            investedCandidates.Remove(investedCandidate);
+            //        }
+            //    }
+            //}
+            //else
+            //{
 
-                while (CurrentAllocationToRisk > PortfolioSettings.MaximumAllocationToRisk)
-                {
-                    for (var idx = 0; idx < tempCandidates.Count; idx++)
-                    {
-                        if (CurrentAllocationToRisk <= PortfolioSettings.MaximumAllocationToRisk)
-                            break;
+            //    while (CurrentAllocationToRisk > PortfolioSettings.MaximumAllocationToRisk)
+            //    {
+            //        for (var idx = 0; idx < tempCandidates.Count; idx++)
+            //        {
+            //            if (CurrentAllocationToRisk <= PortfolioSettings.MaximumAllocationToRisk)
+            //                break;
 
-                        var temporaryCandidate = tempCandidates[idx];
+            //            var temporaryCandidate = tempCandidates[idx];
 
-                        if (!temporaryCandidate.IsTemporary)
-                        {
-                            //wenn das Target Weight kleiner ist handelt es sich bereits um eine geplante Abschichtung => dann fliegt die Position komplett raus
-                            AdjustTradingCandidateSell(temporaryCandidate.TargetWeight < temporaryCandidate.CurrentWeight
-                                ? temporaryCandidate.TargetWeight
-                                : temporaryCandidate.CurrentWeight, temporaryCandidate);
+            //            if (!temporaryCandidate.IsTemporary)
+            //            {
+            //                //wenn das Target Weight kleiner ist handelt es sich bereits um eine geplante Abschichtung => dann fliegt die Position komplett raus
+            //                AdjustTradingCandidateSell(temporaryCandidate.TargetWeight < temporaryCandidate.CurrentWeight
+            //                    ? temporaryCandidate.TargetWeight
+            //                    : temporaryCandidate.CurrentWeight, temporaryCandidate);
 
-                            AddToTemporaryPortfolio(temporaryCandidate);
-                        }
-                        else
-                        {
-                            AdjustTemoraryPosition(temporaryCandidate);
-                        }
-                        //sicherstellen, dass ich die Transaktion nicht 2 mal verkaufe
-                        tempCandidates.Remove(temporaryCandidate);
-                    }
+            //                AddToTemporaryPortfolio(temporaryCandidate);
+            //            }
+            //            else
+            //            {
+            //                AdjustTemoraryPosition(temporaryCandidate);
+            //            }
+            //            //sicherstellen, dass ich die Transaktion nicht 2 mal verkaufe
+            //            tempCandidates.Remove(temporaryCandidate);
+            //        }
 
-                    //dann reichen die bestehenden temporären Postion nicht aus,
-                    //dann gehe ich die aktuellen Bestände durch
-                    for (var idx = 0; idx < investedCandidates.Count; idx++)
-                    {
-                        if (CurrentAllocationToRisk <= PortfolioSettings.MaximumAllocationToRisk)
-                            break;
+            //        //dann reichen die bestehenden temporären Postion nicht aus,
+            //        //dann gehe ich die aktuellen Bestände durch
+            //        for (var idx = 0; idx < investedCandidates.Count; idx++)
+            //        {
+            //            if (CurrentAllocationToRisk <= PortfolioSettings.MaximumAllocationToRisk)
+            //                break;
 
-                        var investedCandidate = investedCandidates[idx];
-                        if (!investedCandidate.IsTemporary)
-                        {
-                            AdjustTradingCandidateSell(investedCandidate.CurrentWeight, investedCandidate);
-                            AddToTemporaryPortfolio(investedCandidate);
-                        }
-                        else
-                        {
-                            AdjustTemoraryPosition(investedCandidate);
-                        }
-                        investedCandidates.Remove(investedCandidate);
-                    }
+            //            var investedCandidate = investedCandidates[idx];
+            //            if (!investedCandidate.IsTemporary)
+            //            {
+            //                AdjustTradingCandidateSell(investedCandidate.CurrentWeight, investedCandidate);
+            //                AddToTemporaryPortfolio(investedCandidate);
+            //            }
+            //            else
+            //            {
+            //                AdjustTemoraryPosition(investedCandidate);
+            //            }
+            //            investedCandidates.Remove(investedCandidate);
+            //        }
 
-                    if (tempCandidates.Count == 0 && investedCandidates.Count == 0)
-                        break;
-                }
-            }
+            //        if (tempCandidates.Count == 0 && investedCandidates.Count == 0)
+            //            break;
+            //    }
+            //}
 
         }
 
@@ -338,7 +343,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             //meta Info setzen
             candidate.TransactionType = TransactionType.Changed;
-            candidate.IsTemporary = true;
+            //candidate.IsTemporary = true;
 
             if (currentWeight.IsBetween(decimal.Zero, new decimal(0.08)))
             {
@@ -362,9 +367,10 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
+
         public void AdjustTradingCandidateSell(decimal currentWeight, ITradingCandidate candidate)
         {
-            candidate.IsTemporary = true;
+            //candidate.IsTemporary = true;
             candidate.TransactionType = TransactionType.Changed;
             //wennn die Position bereits am maximum ist
             if (currentWeight > PortfolioSettings.MaximumPositionSize - PortfolioSettings.MaximumPositionSizeBuffer)
@@ -390,8 +396,12 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         private void RebalanceTemporaryPortfolio([NotNull] List<TradingCandidate> bestCandidates, [NotNull] List<TradingCandidate> allCandidates)
         {
-            //allCandidates.ForEach(x => Trace.TraceInformation(PortfolioAsof.ToShortDateString() + "_" + x.ToString()));
-            //bestCandidates.ForEach(x => Trace.TraceInformation(PortfolioAsof.ToShortDateString() + "_" + x.ToString()));
+            if (PortfolioAsof == new DateTime(2000, 10, 25))
+            {
+                JsonUtils.SerializeToFile(bestCandidates, $"BestCandidates_{PortfolioAsof.ToShortDateString()}.txt");
+                JsonUtils.SerializeToFile(allCandidates, $"AllCandidates_{PortfolioAsof.ToShortDateString()}.txt");
+            }
+
             //investierte Candidaten
             var investedCandidates = allCandidates.Where(x => x.IsInvested).ToList();
 
@@ -653,7 +663,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 : TransactionsHandler.CurrentPortfolio[candidate.Record.SecurityId];
 
             //die aktuelle Bewertung der Position
-            var currentValue = candidate.IsTemporary ? Math.Abs(current.TargetAmountEur) : Math.Abs(current.Shares) * ScoringProvider.GetTradingRecord(current.SecurityId, PortfolioAsof).AdjustedPrice;
+            var currentValue = Math.Round(Math.Abs(current.Shares) * ScoringProvider.GetTradingRecord(current.SecurityId, PortfolioAsof).AdjustedPrice, 4);
 
             //das Ziel Cash inklusive Puffer
             var targetCash = PortfolioValue * PortfolioSettings.CashPufferSize;
@@ -680,7 +690,8 @@ namespace HelperLibrary.Trading.PortfolioManager
             //    ? Math.Round(candidate.TargetWeight * (targetValue / currentValue), 4)
             //    : newtargetWeight;
             candidate.TargetWeight = newtargetWeight;
-
+            if (candidate.TransactionType == TransactionType.Unknown || candidate.TransactionType == TransactionType.Unchanged)
+                candidate.TransactionType = TransactionType.Changed;
             //sonst die Position abschichten
             if (adjustPosition)
                 AdjustTemoraryPosition(candidate);
@@ -700,8 +711,15 @@ namespace HelperLibrary.Trading.PortfolioManager
             if (!TemporaryPortfolio.ContainsCandidate(candidate, false))
                 return;
 
+            if (candidate.TransactionType == TransactionType.Close)
+            {
+                //dann kann ich die transaktion komplett rauslöschen aus den temporären
+                TemporaryPortfolio.RemoveCandidate(candidate);
+                return;
+            }
             //die aktuell geplante unveränderte Transaction
             var tempItem = TemporaryPortfolio.Get(candidate.Record.SecurityId);
+
 
             //die Region reverted zuerst den Casheffect (rücklbuchung und erstellt dann einen neuen aktualisierten Eintrag)
             using (new CashEffectiveRange(tempItem, TemporaryPortfolio))
@@ -719,7 +737,8 @@ namespace HelperLibrary.Trading.PortfolioManager
         public void AddToTemporaryPortfolio(ITradingCandidate candidate)
         {
             //zur temporären Liste hinzufügen
-            TemporaryCandidates.Add(candidate);
+            TemporaryCandidates.Add(candidate.Record.SecurityId, candidate);
+            candidate.IsTemporary = true;
 
             var targetAmount = TransactionCaclulationProvider.CalculateTargetAmount(candidate);
             var targetShares = TransactionCaclulationProvider.CalculateTargetShares(candidate, targetAmount);
@@ -748,7 +767,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                     //Add to temporary Portfolio
                     TemporaryPortfolio.Add(transaction);
                     //if (targetShares < 0)
-                        PositionChangedEvent?.Invoke(this, new PortfolioManagerEventArgs(transaction));
+                    PositionChangedEvent?.Invoke(this, new PortfolioManagerEventArgs(transaction));
                     break;
 
                 default:
@@ -830,6 +849,8 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             return CashHandler.TryHasCash(out remainingCash);
         }
+
+
     }
 
     public class PortfolioManagerEventArgs

@@ -19,7 +19,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         MsciWorldEur,
         SandP500
     }
-    //TODO:
+
     public class ExposureWatcher : IExposureProvider
     {
         private readonly IExposureSettings _receiver;
@@ -48,7 +48,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             if (_lastSimulationNav == null)
                 _lastSimulationNav = 100;
-            if(asof > _benchmark.LastItem.Asof)
+            if (asof > _benchmark.LastItem.Asof)
                 return;
 
             //berechne hier gleich den NAV der simulation
@@ -72,7 +72,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             //wenn das Low schon hinter uns liegt und der Moving Average positiv ist
             if (lowMetaInfo.Low.Asof < asof && lowMetaInfo.MovingAverageDelta > 0 && lowMetaInfo.CanMoveToNextStep)
             {
-                //hier reduziere erhöhe ich die Aktienquote
+                //hier erhöhe ich die Aktienquote
                 if (_currentStep <= 0)
                     return;
                 if (_currentStep >= 1)
@@ -93,8 +93,8 @@ namespace HelperLibrary.Trading.PortfolioManager
         private void UpdateMaximumRisk()
         {
             var maxRisk = (1 - (decimal)_currentStep / NumberOfSteps);
+            //dannn setzte ich den aktuellen Wert
             if (maxRisk >= _receiver.MinimumAllocationToRisk)
-                //dannn setzte ich den aktuellen Wert
                 _receiver.MaximumAllocationToRisk = maxRisk;
         }
 

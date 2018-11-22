@@ -64,6 +64,9 @@ namespace Trading.DataStructures.Interfaces
         //TODO: gegen ein Interface tauschen und Logging implementieren /MessageQue
         string LoggingPath { get; set; }
 
-      
+        /// <summary>
+        /// die Puffergröße für das hin-Allokieren zur maximalen bzw. minimalen Aktienquote
+        /// </summary>
+        decimal AllocationToRiskBuffer { get; set; }
     }
 }

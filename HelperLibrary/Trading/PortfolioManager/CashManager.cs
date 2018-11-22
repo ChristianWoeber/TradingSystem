@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Windows.Forms;
+using HelperLibrary.Extensions;
 using HelperLibrary.Util.Atrributes;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -35,7 +36,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public event EventHandler<DateTime> CashChangedEvent;
 
-        public void CleanUpCash(List<ITradingCandidate> remainingCandidates)
+        public void CleanUpCash(List<ITradingCandidate> remainingCandidates, List<ITradingCandidate> remainingBestNotInvestedCandidates)
         {
             if (remainingCandidates == null)
                 throw new ArgumentNullException(nameof(remainingCandidates));
@@ -43,54 +44,125 @@ namespace HelperLibrary.Trading.PortfolioManager
             if (remainingCandidates.Count == 0)
                 return;
 
-            var targetCash = _portfolioManager.PortfolioSettings.CashPufferSize *
-                             _portfolioManager.PortfolioSettings.MaximumAllocationToRisk *
-                             _portfolioManager.PortfolioValue;
+            var targetCash = (1 - _portfolioManager.PortfolioSettings.MaximumAllocationToRisk) *
+                             _portfolioManager.PortfolioValue + (_portfolioManager.PortfolioSettings.CashPufferSize * _portfolioManager.PortfolioValue);
+
+            //die Temporären Kandidaten
+            var tempToAdjust = remainingCandidates.Where(x => x.TransactionType != TransactionType.Close).ToList();
+            //CleanUpTemporaryItems(tempToAdjust);
 
             //Hier bin nich mit dem Rebalancing fertig
-            if (Cash < 0)
+            if (Cash < targetCash)
             {
-                //die Temporären Kandidaten
-                var tempToAdjust = remainingCandidates.Where(x => x.IsTemporary && x.TransactionType != TransactionType.Close).ToList();
-
                 //Cash Clean Up der temporären auf Puffer Größe
                 if (tempToAdjust.Count > 0)
                 {
                     for (var i = tempToAdjust.Count - 1; i >= 0; i--)
                     {
-                        if (Cash >= targetCash)
+                        if (Cash >= targetCash || Cash > 0 && Cash < 1500)
                             break;
-
+                        //ist der aktuell schlechtest Kandiat
                         var current = tempToAdjust[i];
                         tempToAdjust.Remove(current);
-                        if (_portfolioManager.AdjustTemporaryPortfolioToCashPuffer(Cash, current, true))
+
+                        var missingCash = Cash;
+
+                        if (Cash > 0)
+                        {
+                            missingCash = Cash - targetCash;
+                        }
+
+                        if (_portfolioManager.AdjustTemporaryPortfolioToCashPuffer(missingCash, current,
+                            !current.IsInvested))
                             break;
-                    }
-                }
-                //cash clean up der investierten
-                else
-                {
-                    //var investedToAdjust = investedCandidates.Where(x => !x.IsTemporary).ToList();
-
-                    //for (var i = investedToAdjust.Count - 1; i >= 0; i--)
-                    //{
-                    //    var current = investedToAdjust[i];
-                    //    //sicherheitshalber nochmal checken ob nicht im temporären portfolio
-                    //    if (_portfolioManager.TemporaryPortfolio.IsTemporary(current.Record.SecurityId))
-                    //        continue;
-                    //    current.TransactionType = TransactionType.Changed;
-                    //    if (_portfolioManager.AdjustTemporaryPortfolioToCashPuffer(Cash, current))
-                    //        break;
-                    //}
-
-                    if (Cash < 0)
-                    {
                     }
                 }
             }
-            else if (TryHasCash(out var remainingCash))
+
+            if (Cash < 0)
             {
+                var ids = _portfolioManager.TemporaryPortfolio.Where(x => x.IsTemporary).Select(x => x.SecurityId);
+                var candidates = _portfolioManager.TemporaryCandidates
+                    .Where(x => ids.Any(id => id == x.Key)).Select(kvp => kvp.Value).Where(value => value.TransactionType != TransactionType.Close)
+                    .OrderByDescending(x => x.ScoringResult.Score)
+                    .ToList();
+
+                for (var i = candidates.Count - 1; i >= 0; i--)
+                {
+                    var current = candidates[i];
+                    if (_portfolioManager.AdjustTemporaryPortfolioToCashPuffer(Cash, current, !current.IsInvested))
+                        break;
+                }
+            }
+            else if (Cash > 0 && Cash < targetCash)
+            {
+                var missingCash = Cash - targetCash;
+                if (missingCash > -1500)
+                    return;
+
+                //sonst muss ich die bestehende Position abschichten
+                foreach (var secIdGrp in _portfolioManager.TemporaryPortfolio.GroupBy(x => x.SecurityId))
+                {
+                    if (secIdGrp.LastOrDefault()?.TransactionType == TransactionType.Close)
+                        continue;
+
+                    if (!_portfolioManager.TemporaryCandidates.TryGetValue(secIdGrp.Key, out var candidate))
+                        throw new ArgumentException($"Achtung der Key ist nicht im TemporaryCandidates Dictionary{secIdGrp.Key}");
+
+                    if (_portfolioManager.AdjustTemporaryPortfolioToCashPuffer(missingCash, candidate, true))
+                        return;
+
+                }
+            }
+            else if (TryHasCash(out _))
+            {
+                //nur neue aufbauen wenn erlaubt
+                var minBoundry = _settings.MaximumAllocationToRisk - _settings.AllocationToRiskBuffer;
+                var maxBoundry = _settings.MaximumAllocationToRisk == 1 ? 1 : _settings.MaximumAllocationToRisk + _settings.AllocationToRiskBuffer;
+                if (_portfolioManager.TemporaryPortfolio.CurrentSumInvestedTargetWeight.IsBetween(minBoundry, maxBoundry))
+                    return;
+
                 //Dann ist noch Cash für einen Kandiaten über
+                foreach (var currentBestCandidate in remainingBestNotInvestedCandidates)
+                {
+                    //neuen kaufen
+                    if (_portfolioManager.TemporaryPortfolio.ContainsCandidate(currentBestCandidate))
+                        continue;
+
+                    if (_portfolioManager.TemporaryPortfolio.CurrentSumInvestedTargetWeight.IsBetween(minBoundry, maxBoundry))
+                        return;
+
+                    //wenn ich kein Cash mehr habe breake ich an dieser Stelle
+                    if (!TryHasCash(out _))
+                    {
+                        if (Cash > 5000 + targetCash)
+                        {
+                            //noch eine kleine positon aufbauen - sonst bin ich nie voll investiert
+                            var weight = Math.Round((Cash - targetCash) / _portfolioManager.PortfolioValue, 4);
+                            currentBestCandidate.TargetWeight = weight;
+                            currentBestCandidate.TransactionType = TransactionType.Open;
+                            _portfolioManager.AddToTemporaryPortfolio(currentBestCandidate);
+                        }
+
+                        break;
+
+                    }
+                    currentBestCandidate.TransactionType = TransactionType.Open;
+                    currentBestCandidate.TargetWeight = _settings.MaximumInitialPositionSize;
+                    _portfolioManager.AddToTemporaryPortfolio(currentBestCandidate);
+                }
+            }
+
+        }
+
+        private void CleanUpTemporaryItems(List<ITradingCandidate> tempToAdjust)
+        {
+            var missing = tempToAdjust.Where(x => !_portfolioManager.TemporaryPortfolio.ContainsCandidate(x) && !x.IsInvested);
+
+            foreach (var candidate in missing)
+            {
+                Trace.TraceError($"Achtung folgender Kandidat wurde nicht im temporären Portfolio gefunden und wird daher  gefixed {Environment.NewLine + candidate}");
+                _portfolioManager.AddToTemporaryPortfolio(candidate);
             }
 
         }
@@ -104,7 +176,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
 
             //return HasCash
-            return relativeWeight - _settings.MaximumInitialPositionSize > 0;
+            return relativeWeight - _settings.MaximumInitialPositionSize >= 0;
         }
 
 

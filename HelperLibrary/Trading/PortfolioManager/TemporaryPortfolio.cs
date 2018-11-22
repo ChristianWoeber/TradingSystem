@@ -100,6 +100,17 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
+        public void RemoveCandidate(ITradingCandidate candidate)
+        {
+            var transaction = Get(candidate.Record.SecurityId);
+            if (transaction == null)
+                throw new ArgumentException($"Achtung der Kandidate konnte im temporären Portfolio nicht gefunden werden {candidate}");
+
+            UpdateCash(transaction, true);
+            _uniqueTransactions.Remove(transaction.UniqueKey);
+            _items.Remove(transaction);
+        }
+
         #region Add
 
         public void Add(ITransaction item, bool isTemporary = true)
@@ -129,8 +140,14 @@ namespace HelperLibrary.Trading.PortfolioManager
             _items.Add(item);
         }
 
-        private void UpdateCash(ITransaction item)
+        private void UpdateCash(ITransaction item, bool reverse = false)
         {
+            if (reverse)
+            {   
+                //wenn das flga gestzt ist erhöhe ich das Cash bei einem kauf, weil ich die temporäre transakion storniere
+                item.Shares *= -1;
+            }
+
             if (item.Shares < 0)
                 IncrementCash(item);
             else
