@@ -111,20 +111,32 @@
     <Compile Include="Interfaces\IParser.cs" />
     <Compile Include="Interfaces\IPlugin.cs" />
     <Compile Include="Interfaces\IQuote.cs" />
-    <Compile Include="Trading\Candidate.cs" />
+    <Compile Include="Trading\PortfolioManager\Candidates\Candidate.cs" />
     <Compile Include="Trading\PortfolioManager\BacktestHandler.cs" />
-    <Compile Include="Trading\PortfolioManager\CashEffectiveRange.cs" />
-    <Compile Include="Trading\PortfolioManager\CashManager.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\INeeedRebalancingRule.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\IRebalanceContext.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceCollection.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\AllCandidatesAreUnchangedRule.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\FirstCandidateIsNotInvesterdInRule.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\HasBetterScoringRule.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\IncreasedPositionsRule.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\IRebalanceRule.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceScoringResult.cs" />
+    <Compile Include="Trading\PortfolioManager\Cash\CashEffectiveRange.cs" />
+    <Compile Include="Trading\PortfolioManager\Cash\CashManager.cs" />
+    <Compile Include="Trading\PortfolioManager\Cash\CashMetaInfo.cs" />
     <Compile Include="Trading\PortfolioManager\CurrentPortfolio.cs" />
-    <Compile Include="Trading\PortfolioManager\DefaultStopLossSettings.cs" />
-    <Compile Include="Trading\PortfolioManager\ExposureWatcher.cs" />
-    <Compile Include="Trading\PortfolioManager\IExposureProvider.cs" />
-    <Compile Include="Trading\PortfolioManager\IExposureReceiver.cs" />
-    <Compile Include="Trading\PortfolioManager\ITransactionCalculation.cs" />
-    <Compile Include="Trading\PortfolioManager\RebalanceProvider.cs" />
-    <Compile Include="Trading\PortfolioManager\TransactionCalculationHandler.cs" />
-    <Compile Include="Trading\PortfolioManager\TransactionsHandler.cs" />
-    <Compile Include="Trading\ScoringResult.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\ScanCandidatesRules.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\TransactionTypRule.cs" />
+    <Compile Include="Trading\PortfolioManager\Settings\DefaultStopLossSettings.cs" />
+    <Compile Include="Trading\PortfolioManager\Exposure\ExposureWatcher.cs" />
+    <Compile Include="Trading\PortfolioManager\Exposure\IExposureProvider.cs" />
+    <Compile Include="Trading\PortfolioManager\Exposure\IExposureReceiver.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceProvider.cs" />
+    <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceRulesService.cs" />
+    <Compile Include="Trading\PortfolioManager\Transactions\TransactionCalculationHandler.cs" />
+    <Compile Include="Trading\PortfolioManager\Transactions\TransactionsHandler.cs" />
+    <Compile Include="Trading\Scoring\ScoringResult.cs" />
     <Compile Include="Parsing\ParserFactory.cs" />
     <Compile Include="Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -132,15 +144,17 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="Trading\CandidatesProvider.cs" />
-    <Compile Include="Trading\PortfolioManager\DefaultSettings.cs" />
+    <Compile Include="Trading\PortfolioManager\Candidates\CandidatesProvider.cs" />
+    <Compile Include="Trading\PortfolioManager\Settings\DefaultSettings.cs" />
     <Compile Include="Trading\PortfolioManager\PortfolioManager.cs" />
     <Compile Include="Trading\PortfolioManager\PortfolioManagerBase.cs" />
     <Compile Include="Trading\PortfolioManager\TemporaryPortfolio.cs" />
-    <Compile Include="Trading\ScoringProvider.cs" />
-    <Compile Include="Trading\TradingCandidate.cs" />
+    <Compile Include="Trading\Scoring\ScoringProvider.cs" />
+    <Compile Include="Trading\PortfolioManager\Candidates\TradingCandidate.cs" />
     <Compile Include="Util\Atrributes\InputMapping.cs" />
     <Compile Include="Util\Converter\JsonConverter.cs" />
+    <Compile Include="Util\Converter\JsonUtils.cs" />
+    <Compile Include="Util\Converter\PortfolioValuationConverter.cs" />
     <Compile Include="Util\Logging\ILogger.cs" />
     <Compile Include="Util\Logging\FileLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -177,6 +191,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

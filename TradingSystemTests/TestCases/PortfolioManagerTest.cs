@@ -9,6 +9,7 @@ using HelperLibrary.Extensions;
 using HelperLibrary.Parsing;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
+using HelperLibrary.Trading.PortfolioManager.Cash;
 using NLog;
 using NUnit.Framework;
 using Trading.DataStructures.Interfaces;
@@ -158,12 +159,6 @@ namespace TradingSystemTests.TestCases
         [TestCase("01.01.2000", 5, "ConsTransactions.csv", true, true, "ConsPortfolioValue.csv", "ConsCash.csv")]
         public void SimpleBacktestTest(string startDate, int testYears, string temporaryFilename, bool showTransactions, bool clearOldFile, string navlogName, string cashLoggerName)
         {
-            //TODO : File aich auf NLOG umstellen
-            //TODO: überlegen wie ich das Risiko rausbekomme
-            //TODO: aufstocken nur nach x tagen zulassen und auch das verdrängen erst nach x tagen zulassen
-            //TODO: Kandidaten die verdrägen müssen deutlich besser sein (maybe 100% besser?)
-            //TODO: mit gui beginnen und die transaktionen als cache verwenden
-
             var filename = Path.Combine(Path.GetTempPath(), temporaryFilename);
             if (clearOldFile && File.Exists(filename))
                 File.Delete(filename);

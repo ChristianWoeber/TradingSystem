@@ -8,6 +8,7 @@ using Trading.DataStructures.Interfaces;
 
 namespace TradingSystemTests.Models
 {
+    [Obsolete("durch TransactionsHandler ersetzt")]
     public class TestTransactionsHandler : ITransactionsHandler
     {
         #region private
@@ -317,6 +318,10 @@ namespace TradingSystemTests.Models
             throw new NotImplementedException();
         }
 
+        public int? GetCurrentShares(int securityId)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
     }

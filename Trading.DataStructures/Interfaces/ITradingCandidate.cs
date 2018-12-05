@@ -80,5 +80,15 @@ namespace Trading.DataStructures.Interfaces
         ///  gibt an ob der aktuelle Score höher ist als der letzte
         /// </summary>
         bool HasBetterScoring { get; }
+
+        /// <summary>
+        /// Das Result des Calculated Scores für das Rebalancing
+        /// </summary>
+        IRebalanceScoringResult RebalanceScore { get; }
+
+        /// <summary>
+        /// Gibt an ob es sich um einen temporären Verkauf handelt, sprich der Candidate schon im temporären Portfolio ist und beretis abgeschichtet wurde
+        /// </summary>
+        bool IsTemporarySell { get;  }
     }
 }

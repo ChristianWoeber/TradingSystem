@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HelperLibrary.Extensions;
+using HelperLibrary.Trading.PortfolioManager.Exposure;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 

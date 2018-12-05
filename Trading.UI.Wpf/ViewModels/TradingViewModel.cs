@@ -15,6 +15,10 @@ using HelperLibrary.Extensions;
 using HelperLibrary.Parsing;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
+using HelperLibrary.Trading.PortfolioManager.Cash;
+using HelperLibrary.Trading.PortfolioManager.Exposure;
+using HelperLibrary.Trading.PortfolioManager.Settings;
+using HelperLibrary.Trading.PortfolioManager.Transactions;
 using JetBrains.Annotations;
 using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Models;
@@ -70,7 +74,7 @@ namespace Trading.UI.Wpf.ViewModels
             Settings = new SettingsViewModel(new ConservativePortfolioSettings());
             IndexSettings = new IndexBacktestSettings();
             StartDateTime = new DateTime(2000, 01, 01);
-            EndDateTime = StartDateTime.AddYears(5);
+            EndDateTime = StartDateTime.AddYears(2);
 
 
             //Command
@@ -79,12 +83,7 @@ namespace Trading.UI.Wpf.ViewModels
             LoadBacktestCommand = new RelayCommand(OnLoadBacktest);
             MoveCursorToNextTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDayEvent?.Invoke(this, _portfolioManager.PortfolioSettings.TradingDay));
         }
-
-        //TODO: 1 => IExposureReceiver in IPortfolioSettings integrieren
-        //TODO: 2 => SmartFlyout Größe auf Itemebene einstellen, damit jedes FlyoutItem eine andere With haben kann
-        //TODO: 3 => Serialisieren der Trandingkandidaten und anschließende Tests für den RebalanceProvider
-
-
+      
 
         public TradingViewModel(List<ITransaction> transactions, IScoringProvider scoringProvider) : this()
         {
@@ -171,9 +170,10 @@ namespace Trading.UI.Wpf.ViewModels
                 var transactionsPath = Path.Combine(Settings.LoggingPath, "Transactions.csv");
 
                 var pm = new PortfolioManager(null, Settings, new TransactionsHandler(null, new BacktestTransactionsCacheProvider(() => LoadHistory(transactionsPath))));
-
+       
                 //scoring Provider registrieren
                 pm.RegisterScoringProvider(_scoringProvider);
+                pm.CalcStartingAllocationToRisk(StartDateTime);
 
                 var loggingProvider = new LoggingSaveProvider(Settings.LoggingPath, pm);
 

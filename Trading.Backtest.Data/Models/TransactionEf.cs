@@ -75,6 +75,7 @@ namespace Trading.Backtest.Data.Models
         [NotMapped]
         public string UniqueKey => _uniqueKey ?? (_uniqueKey = UniqueKeyProvider.CreateUniqueKey(this));
 
+        public event EventHandler CancelledEvent;
 
         #endregion
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using Trading.DataStructures.Interfaces;
 
-namespace HelperLibrary.Trading.PortfolioManager
+namespace HelperLibrary.Trading.PortfolioManager.Cash
 {
     /// <summary>
     /// Die Klasse hilft beim Adjustieren von beretis zum Temporären Portfolio hinzugefügten Positionen und stellt sicher, dass der CashWert auch wieder bereiningt wird

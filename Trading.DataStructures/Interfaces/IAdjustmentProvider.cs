@@ -54,5 +54,16 @@ namespace Trading.DataStructures.Interfaces
         /// Das Temporäre Portfolio
         /// </summary>
         ITemporaryPortfolio TemporaryPortfolio { get; }
+
+        /// <summary>
+        /// die MindestRiskogrenze inklusive Puffer
+        /// </summary>
+        decimal MinimumBoundary { get; }
+
+        /// <summary>
+        /// die maximale Riskogrenze inklusive Puffer
+        /// </summary>
+        decimal MaximumBoundary { get; }
+
     }
 }

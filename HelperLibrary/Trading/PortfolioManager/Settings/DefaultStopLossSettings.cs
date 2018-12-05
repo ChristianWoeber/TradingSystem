@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using HelperLibrary.Database.Models;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
-namespace HelperLibrary.Trading.PortfolioManager
+namespace HelperLibrary.Trading.PortfolioManager.Settings
 {
     internal class StopLossMeta
     {

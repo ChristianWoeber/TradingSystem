@@ -1,13 +1,9 @@
-﻿using HelperLibrary.Database.Models;
-using HelperLibrary.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using HelperLibrary.Calculations;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
-
-namespace HelperLibrary.Trading.PortfolioManager
+namespace HelperLibrary.Trading.PortfolioManager.Settings
 {
     public class DefaultSaveProvider : ISaveProvider
     {
@@ -22,7 +18,7 @@ namespace HelperLibrary.Trading.PortfolioManager
     {
         public ConservativePortfolioSettings()
         {
-            InitialCashValue = Settings.Default.PortfolioValueInitial;
+            InitialCashValue = HelperLibrary.Settings.Default.PortfolioValueInitial;
             MaximumAllocationToRisk = 1;
             MinimumAllocationToRisk = new decimal(0.2);
             //2% Toleranz
@@ -101,7 +97,7 @@ namespace HelperLibrary.Trading.PortfolioManager
     {
         public DefaultPortfolioSettings()
         {
-            InitialCashValue = Settings.Default.PortfolioValueInitial;
+            InitialCashValue = HelperLibrary.Settings.Default.PortfolioValueInitial;
             MaximumAllocationToRisk = 1;
             AllocationToRiskBuffer = new decimal(0.02);
             

@@ -1,4 +1,4 @@
-﻿namespace HelperLibrary.Trading.PortfolioManager
+﻿namespace HelperLibrary.Trading.PortfolioManager.Exposure
 {
     //public interface IExposureReceiver
     //{

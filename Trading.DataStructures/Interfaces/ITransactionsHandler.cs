@@ -97,5 +97,12 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="asof">der Stichtag</param>
         /// <returns></returns>
         IEnumerable<ITransaction> GetTransactions(DateTime asof);
+
+        /// <summary>
+        /// Gibt mir die aktuellen Shares aus dem Current Portfolio zurück, wenn die Position nicht im CurrentPortfolio ist dann null
+        /// </summary>
+        /// <param name="securityId"></param>
+        /// <returns></returns>
+        int? GetCurrentShares(int securityId);
     }
 }

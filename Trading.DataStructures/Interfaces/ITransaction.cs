@@ -55,6 +55,15 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
         bool IsTemporary { get; set; }
 
+        /// <summary>
+        /// Der eindeutige Key der Transaktion
+        /// </summary>
         string UniqueKey { get; }
+
+        /// <summary>
+        /// Das Event das gefeuert wird wenn eine Transaktion gecancelled wird
+        /// </summary>
+
+        event EventHandler CancelledEvent;
     }
 }

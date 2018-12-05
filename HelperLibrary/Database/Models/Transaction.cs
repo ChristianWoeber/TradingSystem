@@ -10,6 +10,12 @@ namespace HelperLibrary.Database.Models
     public class Transaction : ITransaction
     {
         private string _uniqueKey;
+        private int _cancelled;
+
+        /// <summary>
+        /// Das Event das gefeuert wird wenn eine Transaktion gecancelled wird
+        /// </summary>
+        public event EventHandler CancelledEvent;
 
         /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt
@@ -49,14 +55,22 @@ namespace HelperLibrary.Database.Models
         [Column(Storage = "TRANSACTION_TYPE")]
         public TransactionType TransactionType { get; set; }
 
-
         /// <summary>
         /// 1 bedeutet die Transaktion wurde gecancelled
         /// </summary>
         [InputMapping(KeyWords = new[] { nameof(Cancelled) }, SortIndex = 6)]
         [Column(Storage = "IS_CANCELLED")]
-        public int Cancelled { get; set; }
-
+        public int Cancelled
+        {
+            get => _cancelled;
+            set
+            {
+                if (value == _cancelled)
+                    return;
+                _cancelled = value;
+                CancelledEvent?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         /// <summary>
         /// Das Zielgewicht der Position zum Stichtag im Portfolio
@@ -98,7 +112,7 @@ namespace HelperLibrary.Database.Models
         }
 
         public string UniqueKey => _uniqueKey ?? (_uniqueKey = UniqueKeyProvider.CreateUniqueKey(this));
-     
+
 
     }
 

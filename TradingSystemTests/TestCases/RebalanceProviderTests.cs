@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Windows.Documents;
-using HelperLibrary.Database.Models;
 using HelperLibrary.Extensions;
-using HelperLibrary.Parsing;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
-using HelperLibrary.Util.Atrributes;
+using HelperLibrary.Trading.PortfolioManager.Rebalancing;
+using HelperLibrary.Trading.PortfolioManager.Settings;
 using NUnit.Framework;
-using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Helper;
 
@@ -31,7 +27,7 @@ namespace TradingSystemTests.TestCases
 
         }
 
-        private void Init(TradingCandidate candidate, DateTime? start = null, DateTime? end = null)
+        private void Init(ITradingCandidate candidate, DateTime? start = null, DateTime? end = null)
         {
             var startDate = start ?? new DateTime(1999, 01, 1);
             var endDate = end ?? new DateTime(2002, 12, 31);
@@ -62,7 +58,7 @@ namespace TradingSystemTests.TestCases
             _rebalanceProvider = new RebalanceProvider(_portfolioManager.TemporaryPortfolio, _adjustmentProvider, _portfolioManager.PortfolioSettings);
         }
 
-        private ITransactionsHandler GetHandler(TradingCandidate candidate)
+        private ITransactionsHandler GetHandler(ITradingCandidate candidate)
         {
             //hol mir aus dem serilaiiserten Backingfield den "echten" transactionsHandler
             var transactionsHandler = typeof(TradingCandidate).GetField("_transactionsHandler", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -110,19 +106,19 @@ namespace TradingSystemTests.TestCases
         }
 
 
-        [TestCase("BestCandidates_10.05.2000.txt", "AllCandidates_10.05.2000.txt")]
-        [TestCase("BestCandidates_02.02.2000.txt", "AllCandidates_02.02.2000.txt")]
-        [TestCase("BestCandidatesNotInvestedIn_05.01.2000.txt", "Candidates_05.01.2000.txt")]
+       
+        [TestCase("BestCandidates_16.02.2000.txt", "AllCandidates_16.02.2000.txt")]
+       
         public void RebalanceTemporaryPortfolioTest(string bestCandidatesfileName, string candidatesFileName)
         {
-            var bestCandidates = TestHelper.CreateTestCollectionFromJson<List<TradingCandidate>>(bestCandidatesfileName) ?? new List<TradingCandidate>();
-            var candidates = TestHelper.CreateTestCollectionFromJson<List<TradingCandidate>>(candidatesFileName) ?? new List<TradingCandidate>();
+            var bestCandidates = TestHelper.CreateTestCollectionFromJson<List<ITradingCandidate>>(bestCandidatesfileName) ?? new List<ITradingCandidate>();
+            var candidates = TestHelper.CreateTestCollectionFromJson<List<ITradingCandidate>>(candidatesFileName) ?? new List<ITradingCandidate>();
 
             var file = bestCandidatesfileName ?? candidatesFileName;
             var date = file.Substring(file.IndexOf("_", StringComparison.Ordinal), 11).Replace("_", "");
 
             Init(candidates[0], null, DateTime.Parse(date));
-            _rebalanceProvider.RebalanceTemporaryPortfolio(bestCandidates.Select(c => (ITradingCandidate)c).ToList(), candidates.Select(c => (ITradingCandidate)c).ToList());
+            _rebalanceProvider.RebalanceTemporaryPortfolio(bestCandidates, candidates);
 
             var dateTimeGroup = _portfolioManager.TemporaryPortfolio.GroupBy(x => x.TransactionDateTime);
 

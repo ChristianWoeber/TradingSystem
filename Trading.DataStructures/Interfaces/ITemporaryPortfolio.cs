@@ -85,6 +85,6 @@ namespace Trading.DataStructures.Interfaces
         /// Löscht den Kandidaten aus den temporären Kandidaten und bucht das Cash retour
         /// </summary>
         /// <param name="candidate"></param>
-        void RemoveCandidate(ITradingCandidate candidate);
+        void CancelCandidate(ITradingCandidate candidate);
     }
 }

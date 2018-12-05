@@ -4,10 +4,10 @@ using System.Linq;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Extensions;
 using Newtonsoft.Json;
-using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 
-namespace HelperLibrary.Trading.PortfolioManager
+namespace HelperLibrary.Trading.PortfolioManager.Transactions
 {
     public class TransactionsHandler : ITransactionsHandler
     {
@@ -234,6 +234,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         private IPortfolio GetCurrentPortfolio(IEnumerable<List<ITransaction>> cacheItems)
         {
+            
             if (cacheItems == null)
                 return null;
 
@@ -247,6 +248,12 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             //sonst muss ich es neu rechnen
             _lastAsOf = currentAsof;
+
+            if (_lastAsOf >= new DateTime(2001, 01, 17))
+            {
+
+            }
+
 
             return GetCurrentPortfolio(items);
         }
@@ -274,6 +281,15 @@ namespace HelperLibrary.Trading.PortfolioManager
                 : tradingDayTransactions;
         }
 
+        /// <summary>
+        /// Gibt nur einen Wert zurück wenn die Position im CurrentPrtfolio enthalten ist
+        /// </summary>
+        /// <param name="securityId"></param>
+        /// <returns></returns>
+        public int? GetCurrentShares(int securityId)
+        {
+            return CurrentPortfolio[securityId]?.Shares;
+        }
 
         public IPortfolio GetCurrentPortfolio()
         {

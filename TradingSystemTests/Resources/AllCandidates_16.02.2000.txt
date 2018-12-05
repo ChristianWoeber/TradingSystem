@@ -1,0 +1,4189 @@
+{
+  "$type": "System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib",
+  "$values": [
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 50.19,
+          "SecurityId": 39,
+          "AdjustedPrice": 50.19,
+          "Name": "SAFRAN SA"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 3.5835616438356164383561643836,
+          "Performance90": 2.3571906354515050167224080268,
+          "Performance30": 0.2398715415019762845849802372,
+          "Performance10": 0.0934640522875816993464052288,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.158708638776515,
+          "Score": 145.23
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-02-02T00:00:00",
+        "SecurityId": 39,
+        "Shares": 935,
+        "TargetAmountEur": 34351.6823,
+        "TransactionType": 3,
+        "Cancelled": 0,
+        "TargetWeight": 0.33,
+        "EffectiveWeight": 0.3039,
+        "EffectiveAmountEur": 34254.47,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "02.02.2000_39_3"
+      },
+      "SecurityId": 39,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-02-02T00:00:00",
+        "SecurityId": 39,
+        "Shares": 338,
+        "TargetAmountEur": 14517.5661,
+        "TransactionType": 3,
+        "Cancelled": 0,
+        "TargetWeight": 0.33,
+        "EffectiveWeight": 0.1192,
+        "EffectiveAmountEur": 14486.68,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "02.02.2000_39_3"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 3.5835616438356164383561643836,
+        "Performance90": 2.3571906354515050167224080268,
+        "Performance30": 0.2398715415019762845849802372,
+        "Performance10": 0.0934640522875816993464052288,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.158708638776515,
+        "Score": 145.23
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 50.19,
+        "SecurityId": 39,
+        "AdjustedPrice": 50.19,
+        "Name": "SAFRAN SA"
+      },
+      "IsInvested": true,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-02T00:00:00",
+        "IsValid": true,
+        "Performance250": 2.8647430117222723174030658251,
+        "Performance90": 1.9951083158630328441649196366,
+        "Performance30": 0.3043213633597078514911746805,
+        "Performance10": 0.1264126149802890932982917214,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.157785469339894,
+        "Score": 122.72
+      },
+      "TargetWeight": 0.3693422098641652591102536629,
+      "CurrentWeight": 0.3693422098641652591102536629,
+      "AveragePrice": 36.635796791443850267379679144,
+      "Performance": 0.2700578443625453224271831213,
+      "HasBetterScoring": true,
+      "Name": "SAFRAN SA",
+      "Score": 145.23,
+      "TransactionType": 4,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 3.5835616438356164383561643836,
+          "Performance90": 2.3571906354515050167224080268,
+          "Performance30": 0.2398715415019762845849802372,
+          "Performance10": 0.0934640522875816993464052288,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.158708638776515,
+          "Score": 145.23
+        },
+        "Score": 145.23
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 108.467002868652,
+          "SecurityId": 1,
+          "AdjustedPrice": 108.467002868652,
+          "Name": "SIEMENS AG-REG"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.3665699918251045832013682879,
+          "Performance90": 0.6501148593344506897483667055,
+          "Performance30": 0.1729586297599731816453719244,
+          "Performance10": -0.0018404570714199977183722628,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.134974768980262,
+          "Score": 49.10
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 1,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-01-19T00:00:00",
+        "SecurityId": 1,
+        "Shares": -131,
+        "TargetAmountEur": -11462.5000,
+        "TransactionType": 2,
+        "Cancelled": 0,
+        "TargetWeight": 0.0,
+        "EffectiveWeight": -0.0994,
+        "EffectiveAmountEur": -11462.5,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "19.01.2000_1_2"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 1.3665699918251045832013682879,
+        "Performance90": 0.6501148593344506897483667055,
+        "Performance30": 0.1729586297599731816453719244,
+        "Performance10": -0.0018404570714199977183722628,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.134974768980262,
+        "Score": 49.10
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 108.467002868652,
+        "SecurityId": 1,
+        "AdjustedPrice": 108.467002868652,
+        "Name": "SIEMENS AG-REG"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 108.467002868652,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "SIEMENS AG-REG",
+      "Score": 49.10,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.3665699918251045832013682879,
+          "Performance90": 0.6501148593344506897483667055,
+          "Performance30": 0.1729586297599731816453719244,
+          "Performance10": -0.0018404570714199977183722628,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.134974768980262,
+          "Score": 49.10
+        },
+        "Score": 49.10
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 54.5830001831055,
+          "SecurityId": 8,
+          "AdjustedPrice": 54.5830001831055,
+          "Name": "SAP SE"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.0564765488530505129987280803,
+          "Performance90": 0.8398557494857318548373503942,
+          "Performance30": 0.1312538898052953367875647668,
+          "Performance10": 0.0369504858995796269685432624,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.173892065038293,
+          "Score": 47.99
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 8,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 1.0564765488530505129987280803,
+        "Performance90": 0.8398557494857318548373503942,
+        "Performance30": 0.1312538898052953367875647668,
+        "Performance10": 0.0369504858995796269685432624,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.173892065038293,
+        "Score": 47.99
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 54.5830001831055,
+        "SecurityId": 8,
+        "AdjustedPrice": 54.5830001831055,
+        "Name": "SAP SE"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 54.5830001831055,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "SAP SE",
+      "Score": 47.99,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.0564765488530505129987280803,
+          "Performance90": 0.8398557494857318548373503942,
+          "Performance30": 0.1312538898052953367875647668,
+          "Performance10": 0.0369504858995796269685432624,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.173892065038293,
+          "Score": 47.99
+        },
+        "Score": 47.99
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 43.6333,
+          "SecurityId": 40,
+          "AdjustedPrice": 43.6333,
+          "Name": "ASML HOLDING NV"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.6989614454403186797552994736,
+          "Performance90": 0.5318906166069240572546018193,
+          "Performance30": 0.0471983622413102069518344385,
+          "Performance10": -0.0310881059127356867029509274,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.203132027015849,
+          "Score": 44.29
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-02-02T00:00:00",
+        "SecurityId": 40,
+        "Shares": 887,
+        "TargetAmountEur": 35252.3355,
+        "TransactionType": 3,
+        "Cancelled": 0,
+        "TargetWeight": 0.33,
+        "EffectiveWeight": 0.3122,
+        "EffectiveAmountEur": 35221.4652,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "02.02.2000_40_3"
+      },
+      "SecurityId": 40,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-02-02T00:00:00",
+        "SecurityId": 40,
+        "Shares": 323,
+        "TargetAmountEur": 14612.1861,
+        "TransactionType": 3,
+        "Cancelled": 0,
+        "TargetWeight": 0.33,
+        "EffectiveWeight": 0.1201,
+        "EffectiveAmountEur": 14599.6,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "02.02.2000_40_3"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 1.6989614454403186797552994736,
+        "Performance90": 0.5318906166069240572546018193,
+        "Performance30": 0.0471983622413102069518344385,
+        "Performance10": -0.0310881059127356867029509274,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.203132027015849,
+        "Score": 44.29
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 43.6333,
+        "SecurityId": 40,
+        "AdjustedPrice": 43.6333,
+        "Name": "ASML HOLDING NV"
+      },
+      "IsInvested": true,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-02T00:00:00",
+        "IsValid": true,
+        "Performance250": 2.2094750520119574247513011865,
+        "Performance90": 0.8092085513122766007693139017,
+        "Performance30": 0.1837635825085835954461767317,
+        "Performance10": -0.0156087001025770580202845588,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.195127703983013,
+        "Score": 64.33
+      },
+      "TargetWeight": 0.3046083587885993595310553039,
+      "CurrentWeight": 0.3046083587885993595310553039,
+      "AveragePrice": 39.708528974069898534385569335,
+      "Performance": 0.0899489845125191417017376789,
+      "HasBetterScoring": false,
+      "Name": "ASML HOLDING NV",
+      "Score": 44.29,
+      "TransactionType": 4,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.6989614454403186797552994736,
+          "Performance90": 0.5318906166069240572546018193,
+          "Performance30": 0.0471983622413102069518344385,
+          "Performance10": -0.0310881059127356867029509274,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.203132027015849,
+          "Score": 44.29
+        },
+        "Score": 44.29
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 26.1438,
+          "SecurityId": 14,
+          "AdjustedPrice": 26.1438,
+          "Name": "TELEFONICA SA"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.9444130421848039507348128756,
+          "Performance90": 0.5509073328152529201345427149,
+          "Performance30": 0.1144464810946758173835201842,
+          "Performance10": 0.0380950111974079191880688045,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0978492865922774,
+          "Score": 39.67
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 14,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-02-02T00:00:00",
+        "SecurityId": 14,
+        "Shares": -996,
+        "TargetAmountEur": -24347.1204,
+        "TransactionType": 2,
+        "Cancelled": 0,
+        "TargetWeight": 0.0,
+        "EffectiveWeight": -0.2003,
+        "EffectiveAmountEur": -24347.1204,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "02.02.2000_14_2"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.9444130421848039507348128756,
+        "Performance90": 0.5509073328152529201345427149,
+        "Performance30": 0.1144464810946758173835201842,
+        "Performance10": 0.0380950111974079191880688045,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.0978492865922774,
+        "Score": 39.67
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 26.1438,
+        "SecurityId": 14,
+        "AdjustedPrice": 26.1438,
+        "Name": "TELEFONICA SA"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 26.1438,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "TELEFONICA SA",
+      "Score": 39.67,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.9444130421848039507348128756,
+          "Performance90": 0.5509073328152529201345427149,
+          "Performance30": 0.1144464810946758173835201842,
+          "Performance10": 0.0380950111974079191880688045,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0978492865922774,
+          "Score": 39.67
+        },
+        "Score": 39.67
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 47.5999984741211,
+          "SecurityId": 16,
+          "AdjustedPrice": 47.5999984741211,
+          "Name": "NOKIA OYJ"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.4425285483235556530705637924,
+          "Performance90": 0.443386425771706603295214497,
+          "Performance30": 0.0450054724785279510314956716,
+          "Performance10": -0.0364373076145522497600281203,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.181143510028314,
+          "Score": 38.29
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-02-02T00:00:00",
+        "SecurityId": 16,
+        "Shares": 843,
+        "TargetAmountEur": 37212.8365050170931,
+        "TransactionType": 3,
+        "Cancelled": 0,
+        "TargetWeight": 0.33,
+        "EffectiveWeight": 0.3286,
+        "EffectiveAmountEur": 37156.3091,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "02.02.2000_16_3"
+      },
+      "SecurityId": 16,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-02-02T00:00:00",
+        "SecurityId": 16,
+        "Shares": 322,
+        "TargetAmountEur": 15344.4603050170931,
+        "TransactionType": 3,
+        "Cancelled": 0,
+        "TargetWeight": 0.33,
+        "EffectiveWeight": 0.1259,
+        "EffectiveAmountEur": 15303.0505,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "02.02.2000_16_3"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 1.4425285483235556530705637924,
+        "Performance90": 0.443386425771706603295214497,
+        "Performance30": 0.0450054724785279510314956716,
+        "Performance10": -0.0364373076145522497600281203,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.181143510028314,
+        "Score": 38.29
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 47.5999984741211,
+        "SecurityId": 16,
+        "AdjustedPrice": 47.5999984741211,
+        "Name": "NOKIA OYJ"
+      },
+      "IsInvested": true,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-02T00:00:00",
+        "IsValid": true,
+        "Performance250": 1.7873902435477430332664689694,
+        "Performance90": 0.7501381080520877822692012042,
+        "Performance30": 0.0015806272230469381417260873,
+        "Performance10": 0.0416438690603594520547945205,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.169722323153952,
+        "Score": 55.31
+      },
+      "TargetWeight": 0.3158163792920937813678428045,
+      "CurrentWeight": 0.3158163792920937813678428045,
+      "AveragePrice": 44.076285972006949228944246734,
+      "Performance": 0.0740275759468753555995878005,
+      "HasBetterScoring": false,
+      "Name": "NOKIA OYJ",
+      "Score": 38.29,
+      "TransactionType": 4,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.4425285483235556530705637924,
+          "Performance90": 0.443386425771706603295214497,
+          "Performance30": 0.0450054724785279510314956716,
+          "Performance10": -0.0364373076145522497600281203,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.181143510028314,
+          "Score": 38.29
+        },
+        "Score": 38.29
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 85.0,
+          "SecurityId": 11,
+          "AdjustedPrice": 85.0,
+          "Name": "DEUTSCHE TELEKOM AG-REG"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.936218611516284166287129482,
+          "Performance90": 0.6007533416677165377638319427,
+          "Performance30": 0.1602511264187299492895619856,
+          "Performance10": 0.0545905906845847452127099005,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.207727285638921,
+          "Score": 37.28
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 11,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-01-19T00:00:00",
+        "SecurityId": 11,
+        "Shares": -153,
+        "TargetAmountEur": -10595.2500,
+        "TransactionType": 2,
+        "Cancelled": 0,
+        "TargetWeight": 0.0,
+        "EffectiveWeight": -0.0919,
+        "EffectiveAmountEur": -10595.25,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "19.01.2000_11_2"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.936218611516284166287129482,
+        "Performance90": 0.6007533416677165377638319427,
+        "Performance30": 0.1602511264187299492895619856,
+        "Performance10": 0.0545905906845847452127099005,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.207727285638921,
+        "Score": 37.28
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 85.0,
+        "SecurityId": 11,
+        "AdjustedPrice": 85.0,
+        "Name": "DEUTSCHE TELEKOM AG-REG"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 85.0,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "DEUTSCHE TELEKOM AG-REG",
+      "Score": 37.28,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.936218611516284166287129482,
+          "Performance90": 0.6007533416677165377638319427,
+          "Performance30": 0.1602511264187299492895619856,
+          "Performance10": 0.0545905906845847452127099005,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.207727285638921,
+          "Score": 37.28
+        },
+        "Score": 37.28
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 133.729995727539,
+          "SecurityId": 31,
+          "AdjustedPrice": 133.729995727539,
+          "Name": "ORANGE"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.1146425075613813597323280448,
+          "Performance90": 0.4677861357883150429566968744,
+          "Performance30": 0.2253069129137577873441258294,
+          "Performance10": 0.0190505226045310893658271935,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.257558567154913,
+          "Score": 34.07
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 31,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 1.1146425075613813597323280448,
+        "Performance90": 0.4677861357883150429566968744,
+        "Performance30": 0.2253069129137577873441258294,
+        "Performance10": 0.0190505226045310893658271935,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.257558567154913,
+        "Score": 34.07
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 133.729995727539,
+        "SecurityId": 31,
+        "AdjustedPrice": 133.729995727539,
+        "Name": "ORANGE"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 133.729995727539,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "ORANGE",
+      "Score": 34.07,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 1.1146425075613813597323280448,
+          "Performance90": 0.4677861357883150429566968744,
+          "Performance30": 0.2253069129137577873441258294,
+          "Performance10": 0.0190505226045310893658271935,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.257558567154913,
+          "Score": 34.07
+        },
+        "Score": 34.07
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 42.3079986572266,
+          "SecurityId": 27,
+          "AdjustedPrice": 42.3079986572266,
+          "Name": "KONINKLIJKE PHILIPS NV"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.8742745201357435938307647654,
+          "Performance90": 0.4845432415783940100293443499,
+          "Performance30": 0.0557468002150180294385716989,
+          "Performance10": 0.0053704177765146240276456369,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.125184423133104,
+          "Score": 33.32
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 27,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-01-19T00:00:00",
+        "SecurityId": 27,
+        "Shares": -300,
+        "TargetAmountEur": -11231.1000823974600,
+        "TransactionType": 2,
+        "Cancelled": 0,
+        "TargetWeight": 0.0,
+        "EffectiveWeight": -0.0974,
+        "EffectiveAmountEur": -11231.1001,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "19.01.2000_27_2"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.8742745201357435938307647654,
+        "Performance90": 0.4845432415783940100293443499,
+        "Performance30": 0.0557468002150180294385716989,
+        "Performance10": 0.0053704177765146240276456369,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.125184423133104,
+        "Score": 33.32
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 42.3079986572266,
+        "SecurityId": 27,
+        "AdjustedPrice": 42.3079986572266,
+        "Name": "KONINKLIJKE PHILIPS NV"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 42.3079986572266,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "KONINKLIJKE PHILIPS NV",
+      "Score": 33.32,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.8742745201357435938307647654,
+          "Performance90": 0.4845432415783940100293443499,
+          "Performance30": 0.0557468002150180294385716989,
+          "Performance10": 0.0053704177765146240276456369,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.125184423133104,
+          "Score": 33.32
+        },
+        "Score": 33.32
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 117.5,
+          "SecurityId": 43,
+          "AdjustedPrice": 117.5,
+          "Name": "VIVENDI"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.5239948420937947245104175235,
+          "Performance90": 0.5656228543917154197444132234,
+          "Performance30": 0.2580299580342465895894823506,
+          "Performance10": -0.0126050420168067226890756303,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.218783926098848,
+          "Score": 29.70
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 43,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.5239948420937947245104175235,
+        "Performance90": 0.5656228543917154197444132234,
+        "Performance30": 0.2580299580342465895894823506,
+        "Performance10": -0.0126050420168067226890756303,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.218783926098848,
+        "Score": 29.70
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 117.5,
+        "SecurityId": 43,
+        "AdjustedPrice": 117.5,
+        "Name": "VIVENDI"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 117.5,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "VIVENDI",
+      "Score": 29.70,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.5239948420937947245104175235,
+          "Performance90": 0.5656228543917154197444132234,
+          "Performance30": 0.2580299580342465895894823506,
+          "Performance10": -0.0126050420168067226890756303,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.218783926098848,
+          "Score": 29.70
+        },
+        "Score": 29.70
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 285.3330078125,
+          "SecurityId": 9,
+          "AdjustedPrice": 285.3330078125,
+          "Name": "MUENCHENER RUECKVER AG-REG"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.8016860302443276422893600032,
+          "Performance90": 0.3057642885213907527457200609,
+          "Performance30": -0.0415353489627029017419636846,
+          "Performance10": 0.0944878958651796166052190239,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.165099175912214,
+          "Score": 24.48
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 9,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-02-02T00:00:00",
+        "SecurityId": 9,
+        "Shares": -80,
+        "TargetAmountEur": -21038.559570312480,
+        "TransactionType": 2,
+        "Cancelled": 0,
+        "TargetWeight": 0.0,
+        "EffectiveWeight": -0.1731,
+        "EffectiveAmountEur": -21038.5596,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "02.02.2000_9_2"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.8016860302443276422893600032,
+        "Performance90": 0.3057642885213907527457200609,
+        "Performance30": -0.0415353489627029017419636846,
+        "Performance10": 0.0944878958651796166052190239,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.165099175912214,
+        "Score": 24.48
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 285.3330078125,
+        "SecurityId": 9,
+        "AdjustedPrice": 285.3330078125,
+        "Name": "MUENCHENER RUECKVER AG-REG"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 285.3330078125,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "MUENCHENER RUECKVER AG-REG",
+      "Score": 24.48,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.8016860302443276422893600032,
+          "Performance90": 0.3057642885213907527457200609,
+          "Performance30": -0.0415353489627029017419636846,
+          "Performance10": 0.0944878958651796166052190239,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.165099175912214,
+          "Score": 24.48
+        },
+        "Score": 24.48
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 333.891998291016,
+          "SecurityId": 10,
+          "AdjustedPrice": 333.891998291016,
+          "Name": "ALLIANZ SE-REG"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.3794397161229362536195008828,
+          "Performance90": 0.2382559211154015672273278571,
+          "Performance30": -0.0010830072761961115371493691,
+          "Performance10": 0.0792643228524446028890672538,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.191682609812839,
+          "Score": 15.10
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 10,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.3794397161229362536195008828,
+        "Performance90": 0.2382559211154015672273278571,
+        "Performance30": -0.0010830072761961115371493691,
+        "Performance10": 0.0792643228524446028890672538,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.191682609812839,
+        "Score": 15.10
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 333.891998291016,
+        "SecurityId": 10,
+        "AdjustedPrice": 333.891998291016,
+        "Name": "ALLIANZ SE-REG"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 333.891998291016,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "ALLIANZ SE-REG",
+      "Score": 15.10,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.3794397161229362536195008828,
+          "Performance90": 0.2382559211154015672273278571,
+          "Performance30": -0.0010830072761961115371493691,
+          "Performance10": 0.0792643228524446028890672538,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.191682609812839,
+          "Score": 15.10
+        },
+        "Score": 15.10
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 81.379997253418,
+          "SecurityId": 7,
+          "AdjustedPrice": 81.379997253418,
+          "Name": "DEUTSCHE BANK AG-REGISTERED"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.5354716462909056603773584906,
+          "Performance90": 0.1709352122793956834532374101,
+          "Performance30": -0.0573381729717058831315298931,
+          "Performance10": -0.0099756657575123574900394838,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.106971643435074,
+          "Score": 14.47
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 7,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-01-19T00:00:00",
+        "SecurityId": 7,
+        "Shares": -124,
+        "TargetAmountEur": -10515.2003784179672,
+        "TransactionType": 2,
+        "Cancelled": 0,
+        "TargetWeight": 0.0,
+        "EffectiveWeight": -0.0912,
+        "EffectiveAmountEur": -10515.2004,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "19.01.2000_7_2"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.5354716462909056603773584906,
+        "Performance90": 0.1709352122793956834532374101,
+        "Performance30": -0.0573381729717058831315298931,
+        "Performance10": -0.0099756657575123574900394838,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.106971643435074,
+        "Score": 14.47
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 81.379997253418,
+        "SecurityId": 7,
+        "AdjustedPrice": 81.379997253418,
+        "Name": "DEUTSCHE BANK AG-REGISTERED"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.1,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 81.379997253418,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "DEUTSCHE BANK AG-REGISTERED",
+      "Score": 14.47,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.5354716462909056603773584906,
+          "Performance90": 0.1709352122793956834532374101,
+          "Performance30": -0.0573381729717058831315298931,
+          "Performance10": -0.0099756657575123574900394838,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.106971643435074,
+          "Score": 14.47
+        },
+        "Score": 14.47
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 15.3100004196167,
+          "SecurityId": 30,
+          "AdjustedPrice": 15.3100004196167,
+          "Name": "BANCO BILBAO VIZCAYA ARGENTA"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.0781690581169836255659901496,
+          "Performance90": 0.1519940153169161551764033538,
+          "Performance30": 0.1923676197566844916922899104,
+          "Performance10": 0.1731800916360392750811657066,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.085064554831661,
+          "Score": 13.68
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 30,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.0781690581169836255659901496,
+        "Performance90": 0.1519940153169161551764033538,
+        "Performance30": 0.1923676197566844916922899104,
+        "Performance10": 0.1731800916360392750811657066,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.085064554831661,
+        "Score": 13.68
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 15.3100004196167,
+        "SecurityId": 30,
+        "AdjustedPrice": 15.3100004196167,
+        "Name": "BANCO BILBAO VIZCAYA ARGENTA"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.0,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 15.3100004196167,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "BANCO BILBAO VIZCAYA ARGENTA",
+      "Score": 13.68,
+      "TransactionType": 0,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.0781690581169836255659901496,
+          "Performance90": 0.1519940153169161551764033538,
+          "Performance30": 0.1923676197566844916922899104,
+          "Performance10": 0.1731800916360392750811657066,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.085064554831661,
+          "Score": 13.68
+        },
+        "Score": 13.68
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 80.1999969482422,
+          "SecurityId": 23,
+          "AdjustedPrice": 80.1999969482422,
+          "Name": "LVMH MOET HENNESSY LOUIS VUI"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.5293668773552244159045288585,
+          "Performance90": 0.2221882595458995080753464997,
+          "Performance30": -0.1376344414167505376344086022,
+          "Performance10": -0.0834286063058034285714285714,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.107810334681941,
+          "Score": 13.43
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 23,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": {
+        "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+        "TransactionDateTime": "2000-01-19T00:00:00",
+        "SecurityId": 23,
+        "Shares": -128,
+        "TargetAmountEur": -11264.0000,
+        "TransactionType": 2,
+        "Cancelled": 0,
+        "TargetWeight": 0.0,
+        "EffectiveWeight": -0.0977,
+        "EffectiveAmountEur": -11264.0,
+        "IsTemporary": false,
+        "Name": null,
+        "UniqueKey": "19.01.2000_23_2"
+      },
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.5293668773552244159045288585,
+        "Performance90": 0.2221882595458995080753464997,
+        "Performance30": -0.1376344414167505376344086022,
+        "Performance10": -0.0834286063058034285714285714,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.107810334681941,
+        "Score": 13.43
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 80.1999969482422,
+        "SecurityId": 23,
+        "AdjustedPrice": 80.1999969482422,
+        "Name": "LVMH MOET HENNESSY LOUIS VUI"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.0,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 80.1999969482422,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "LVMH MOET HENNESSY LOUIS VUI",
+      "Score": 13.43,
+      "TransactionType": 0,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.5293668773552244159045288585,
+          "Performance90": 0.2221882595458995080753464997,
+          "Performance30": -0.1376344414167505376344086022,
+          "Performance10": -0.0834286063058034285714285714,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.107810334681941,
+          "Score": 13.43
+        },
+        "Score": 13.43
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 35.439998626709,
+          "SecurityId": 32,
+          "AdjustedPrice": 35.439998626709,
+          "Name": "TOTAL SA"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.1506493345644387312659787977,
+          "Performance90": 0.0445033394621826636297328583,
+          "Performance30": 0.1308231797753371323152149071,
+          "Performance10": 0.0620317578987492806225402344,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0652994165828541,
+          "Score": 8.09
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 32,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.1506493345644387312659787977,
+        "Performance90": 0.0445033394621826636297328583,
+        "Performance30": 0.1308231797753371323152149071,
+        "Performance10": 0.0620317578987492806225402344,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.0652994165828541,
+        "Score": 8.09
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 35.439998626709,
+        "SecurityId": 32,
+        "AdjustedPrice": 35.439998626709,
+        "Name": "TOTAL SA"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.0,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 35.439998626709,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "TOTAL SA",
+      "Score": 8.09,
+      "TransactionType": 0,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.1506493345644387312659787977,
+          "Performance90": 0.0445033394621826636297328583,
+          "Performance30": 0.1308231797753371323152149071,
+          "Performance10": 0.0620317578987492806225402344,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0652994165828541,
+          "Score": 8.09
+        },
+        "Score": 8.09
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 10.3584,
+          "SecurityId": 25,
+          "AdjustedPrice": 10.3584,
+          "Name": "BANCO SANTANDER SA"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.0978230917608156516946817305,
+          "Performance90": 0.0192667230826756932281109165,
+          "Performance30": 0.0441724965222475353319489526,
+          "Performance10": 0.034443501273281070554751086,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0891470644893634,
+          "Score": 3.92
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 25,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.0978230917608156516946817305,
+        "Performance90": 0.0192667230826756932281109165,
+        "Performance30": 0.0441724965222475353319489526,
+        "Performance10": 0.034443501273281070554751086,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.0891470644893634,
+        "Score": 3.92
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 10.3584,
+        "SecurityId": 25,
+        "AdjustedPrice": 10.3584,
+        "Name": "BANCO SANTANDER SA"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.0,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 10.3584,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "BANCO SANTANDER SA",
+      "Score": 3.92,
+      "TransactionType": 0,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.0978230917608156516946817305,
+          "Performance90": 0.0192667230826756932281109165,
+          "Performance30": 0.0441724965222475353319489526,
+          "Performance10": 0.034443501273281070554751086,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0891470644893634,
+          "Score": 3.92
+        },
+        "Score": 3.92
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 34.9434,
+          "SecurityId": 35,
+          "AdjustedPrice": 34.9434,
+          "Name": "SCHNEIDER ELECTRIC SE"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.2607163087047346223089717178,
+          "Performance90": 0.0276563832603005617151427815,
+          "Performance30": -0.0686007180725589131356101618,
+          "Performance10": -0.0459452523057265017937978824,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0885569320894709,
+          "Score": 3.67
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 35,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.2607163087047346223089717178,
+        "Performance90": 0.0276563832603005617151427815,
+        "Performance30": -0.0686007180725589131356101618,
+        "Performance10": -0.0459452523057265017937978824,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.0885569320894709,
+        "Score": 3.67
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 34.9434,
+        "SecurityId": 35,
+        "AdjustedPrice": 34.9434,
+        "Name": "SCHNEIDER ELECTRIC SE"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.0,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 34.9434,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "SCHNEIDER ELECTRIC SE",
+      "Score": 3.67,
+      "TransactionType": 0,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.2607163087047346223089717178,
+          "Performance90": 0.0276563832603005617151427815,
+          "Performance30": -0.0686007180725589131356101618,
+          "Performance10": -0.0459452523057265017937978824,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0885569320894709,
+          "Score": 3.67
+        },
+        "Score": 3.67
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 41.0,
+          "SecurityId": 20,
+          "AdjustedPrice": 41.0,
+          "Name": "SANOFI"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.1310344827586206896551724138,
+          "Performance90": -0.0398126635261065662058635139,
+          "Performance30": 0.0499360000265695748699353524,
+          "Performance10": 0.0512820512820512820512820513,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.101191497687303,
+          "Score": 2.74
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 20,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.1310344827586206896551724138,
+        "Performance90": -0.0398126635261065662058635139,
+        "Performance30": 0.0499360000265695748699353524,
+        "Performance10": 0.0512820512820512820512820513,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.101191497687303,
+        "Score": 2.74
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 41.0,
+        "SecurityId": 20,
+        "AdjustedPrice": 41.0,
+        "Name": "SANOFI"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.0,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 41.0,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "SANOFI",
+      "Score": 2.74,
+      "TransactionType": 0,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.1310344827586206896551724138,
+          "Performance90": -0.0398126635261065662058635139,
+          "Performance30": 0.0499360000265695748699353524,
+          "Performance10": 0.0512820512820512820512820513,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.101191497687303,
+          "Score": 2.74
+        },
+        "Score": 2.74
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 40.0579986572266,
+          "SecurityId": 5,
+          "AdjustedPrice": 40.0579986572266,
+          "Name": "BAYER AG-REG"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.0557414495306421917024283398,
+          "Performance90": 0.0215749469000052962361132799,
+          "Performance30": -0.0789359265777578563462345176,
+          "Performance10": 0.0570508432025136883171515451,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.138027355772726,
+          "Score": 1.33
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 5,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.0557414495306421917024283398,
+        "Performance90": 0.0215749469000052962361132799,
+        "Performance30": -0.0789359265777578563462345176,
+        "Performance10": 0.0570508432025136883171515451,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.138027355772726,
+        "Score": 1.33
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 40.0579986572266,
+        "SecurityId": 5,
+        "AdjustedPrice": 40.0579986572266,
+        "Name": "BAYER AG-REG"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.0,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 40.0579986572266,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "BAYER AG-REG",
+      "Score": 1.33,
+      "TransactionType": 0,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.0557414495306421917024283398,
+          "Performance90": 0.0215749469000052962361132799,
+          "Performance30": -0.0789359265777578563462345176,
+          "Performance10": 0.0570508432025136883171515451,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.138027355772726,
+          "Score": 1.33
+        },
+        "Score": 1.33
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "Price": 67.0999984741211,
+          "SecurityId": 18,
+          "AdjustedPrice": 67.0999984741211,
+          "Name": "L'OREAL"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.1421276336020612765957446809,
+          "Performance90": 0.0419254174575945672013168502,
+          "Performance30": -0.1059294371001427592275809915,
+          "Performance10": -0.0562587916433769776107630785,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0716645019464532,
+          "Score": 1.18
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": [
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 39,
+              "Shares": 935,
+              "TargetAmountEur": 34351.6823,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3039,
+              "EffectiveAmountEur": 34254.47,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_39_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 16,
+              "Shares": 843,
+              "TargetAmountEur": 37212.8365050170931,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3286,
+              "EffectiveAmountEur": 37156.3091,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_16_3"
+            },
+            {
+              "$type": "HelperLibrary.Database.Models.Transaction, HelperLibrary",
+              "TransactionDateTime": "2000-02-02T00:00:00",
+              "SecurityId": 40,
+              "Shares": 887,
+              "TargetAmountEur": 35252.3355,
+              "TransactionType": 3,
+              "Cancelled": 0,
+              "TargetWeight": 0.33,
+              "EffectiveWeight": 0.3122,
+              "EffectiveAmountEur": 35221.4652,
+              "IsTemporary": false,
+              "Name": null,
+              "UniqueKey": "02.02.2000_40_3"
+            }
+          ]
+        }
+      },
+      "_valuation": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-02-16T00:00:00",
+        "PortfolioValue": 127057.3705,
+        "AllocationToRisk": 0.9898
+      },
+      "CurrentPosition": null,
+      "SecurityId": 18,
+      "PortfolioAsof": "2000-02-16T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.1421276336020612765957446809,
+        "Performance90": 0.0419254174575945672013168502,
+        "Performance30": -0.1059294371001427592275809915,
+        "Performance10": -0.0562587916433769776107630785,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.0716645019464532,
+        "Score": 1.18
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-02-16T00:00:00",
+        "Price": 67.0999984741211,
+        "SecurityId": 18,
+        "AdjustedPrice": 67.0999984741211,
+        "Name": "L'OREAL"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.0,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 67.0999984741211,
+      "Performance": 0.0,
+      "HasBetterScoring": false,
+      "Name": "L'OREAL",
+      "Score": 1.18,
+      "TransactionType": 0,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-02-16T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.1421276336020612765957446809,
+          "Performance90": 0.0419254174575945672013168502,
+          "Performance30": -0.1059294371001427592275809915,
+          "Performance10": -0.0562587916433769776107630785,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.0716645019464532,
+          "Score": 1.18
+        },
+        "Score": 1.18
+      },
+      "IsTemporarySell": false
+    }
+  ]
+}

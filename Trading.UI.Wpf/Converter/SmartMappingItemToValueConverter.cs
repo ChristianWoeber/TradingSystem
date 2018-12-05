@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using Common.Lib.UI.WPF.Core.Controls.Data;
 using HelperLibrary.Trading.PortfolioManager;
+using HelperLibrary.Trading.PortfolioManager.Exposure;
 
 namespace Trading.UI.Wpf.Converter
 {

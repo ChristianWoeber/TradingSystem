@@ -124,7 +124,7 @@ namespace TradingSystemTests {
         
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {
-        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
+        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib&quot;,
         ///  &quot;$values&quot;: [
         ///    {
         ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
@@ -134,7 +134,7 @@ namespace TradingSystemTests {
         ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
         ///          &quot;Asof&quot;: &quot;2000-02-02T00:00:00&quot;,
         ///          &quot;Price&quot;: 42.86,
-        ///          &quot;SecurityId&quot;: [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///  [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string AllCandidates_02_02_2000 {
             get {
@@ -144,7 +144,7 @@ namespace TradingSystemTests {
         
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {
-        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
+        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib&quot;,
         ///  &quot;$values&quot;: [
         ///    {
         ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
@@ -152,139 +152,19 @@ namespace TradingSystemTests {
         ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
         ///        &quot;Record&quot;: {
         ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
-        ///          &quot;Asof&quot;: &quot;2000-05-10T00:00:00&quot;,
-        ///          &quot;Price&quot;: 61.93,
-        ///          &quot;SecurityId&quot;: [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///          &quot;Asof&quot;: &quot;2000-02-16T00:00:00&quot;,
+        ///          &quot;Price&quot;: 50.19,
+        ///  [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string AllCandidates_10_05_2000 {
+        internal static string AllCandidates_16_02_2000 {
             get {
-                return ResourceManager.GetString("AllCandidates_10_05_2000", resourceCulture);
+                return ResourceManager.GetString("AllCandidates_16_02_2000", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {
-        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
-        ///  &quot;$values&quot;: [
-        ///    {
-        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
-        ///      &quot;_tradingCandidateBase&quot;: {
-        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
-        ///        &quot;Record&quot;: {
-        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
-        ///          &quot;Asof&quot;: &quot;2000-03-16T00:00:00&quot;,
-        ///          &quot;Price&quot;: 59.05,
-        ///          &quot;SecurityId&quot;: [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
-        /// </summary>
-        internal static string AllCandidates_16_03_2000 {
-            get {
-                return ResourceManager.GetString("AllCandidates_16_03_2000", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die {
-        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
-        ///  &quot;$values&quot;: [
-        ///    {
-        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
-        ///      &quot;_tradingCandidateBase&quot;: {
-        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
-        ///        &quot;Record&quot;: {
-        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
-        ///          &quot;Asof&quot;: &quot;2000-10-25T00:00:00&quot;,
-        ///          &quot;Price&quot;: 41.2200012207031,
-        ///          &quot;S [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
-        /// </summary>
-        internal static string AllCandidates_25_10_2000 {
-            get {
-                return ResourceManager.GetString("AllCandidates_25_10_2000", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die {
-        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
-        ///  &quot;$values&quot;: [
-        ///    {
-        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
-        ///      &quot;_tradingCandidateBase&quot;: {
-        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
-        ///        &quot;Record&quot;: {
-        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
-        ///          &quot;Asof&quot;: &quot;2000-02-02T00:00:00&quot;,
-        ///          &quot;Price&quot;: 51.4080009460449,
-        ///          &quot;S [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
-        /// </summary>
-        internal static string BestCandidates_02_02_2000 {
-            get {
-                return ResourceManager.GetString("BestCandidates_02_02_2000", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die {
-        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
-        ///  &quot;$values&quot;: [
-        ///    {
-        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
-        ///      &quot;_tradingCandidateBase&quot;: {
-        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
-        ///        &quot;Record&quot;: {
-        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
-        ///          &quot;Asof&quot;: &quot;2000-05-10T00:00:00&quot;,
-        ///          &quot;Price&quot;: 90.6800003051758,
-        ///          &quot;S [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
-        /// </summary>
-        internal static string BestCandidates_10_05_2000 {
-            get {
-                return ResourceManager.GetString("BestCandidates_10_05_2000", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die {
-        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
-        ///  &quot;$values&quot;: [
-        ///    {
-        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
-        ///      &quot;_tradingCandidateBase&quot;: {
-        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
-        ///        &quot;Record&quot;: {
-        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
-        ///          &quot;Asof&quot;: &quot;2000-10-25T00:00:00&quot;,
-        ///          &quot;Price&quot;: 42.8699989318848,
-        ///          &quot;S [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
-        /// </summary>
-        internal static string BestCandidates_25_10_2000 {
-            get {
-                return ResourceManager.GetString("BestCandidates_25_10_2000", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die {
-        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
-        ///  &quot;$values&quot;: [
-        ///    {
-        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
-        ///      &quot;_tradingCandidateBase&quot;: {
-        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
-        ///        &quot;Record&quot;: {
-        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
-        ///          &quot;Asof&quot;: &quot;2000-01-19T00:00:00&quot;,
-        ///          &quot;Price&quot;: 45.75,
-        ///          &quot;SecurityId&quot;: [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
-        /// </summary>
-        internal static string BestCandidatesNotInvestedIn_05_01_2000 {
-            get {
-                return ResourceManager.GetString("BestCandidatesNotInvestedIn_05_01_2000", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die {
-        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib&quot;,
+        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib&quot;,
         ///  &quot;$values&quot;: [
         ///    {
         ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
@@ -294,11 +174,69 @@ namespace TradingSystemTests {
         ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
         ///          &quot;Asof&quot;: &quot;2000-01-19T00:00:00&quot;,
         ///          &quot;Price&quot;: 38.57,
-        ///          &quot;SecurityId&quot;: [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///  [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string Candidates_05_01_2000 {
+        internal static string AllCandidates_19_01_2000 {
             get {
-                return ResourceManager.GetString("Candidates_05_01_2000", resourceCulture);
+                return ResourceManager.GetString("AllCandidates_19_01_2000", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {
+        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib&quot;,
+        ///  &quot;$values&quot;: [
+        ///    {
+        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
+        ///      &quot;_tradingCandidateBase&quot;: {
+        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
+        ///        &quot;Record&quot;: {
+        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
+        ///          &quot;Asof&quot;: &quot;2000-02-02T00:00:00&quot;,
+        ///          &quot;Price&quot;: 51.408000 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string BestCandidates_02_02_2000 {
+            get {
+                return ResourceManager.GetString("BestCandidates_02_02_2000", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {
+        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib&quot;,
+        ///  &quot;$values&quot;: [
+        ///    {
+        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
+        ///      &quot;_tradingCandidateBase&quot;: {
+        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
+        ///        &quot;Record&quot;: {
+        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
+        ///          &quot;Asof&quot;: &quot;2000-02-16T00:00:00&quot;,
+        ///          &quot;Price&quot;: 108.46700 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string BestCandidates_16_02_2000 {
+            get {
+                return ResourceManager.GetString("BestCandidates_16_02_2000", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {
+        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib&quot;,
+        ///  &quot;$values&quot;: [
+        ///    {
+        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
+        ///      &quot;_tradingCandidateBase&quot;: {
+        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
+        ///        &quot;Record&quot;: {
+        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
+        ///          &quot;Asof&quot;: &quot;2000-01-19T00:00:00&quot;,
+        ///          &quot;Price&quot;: 45.75,
+        ///  [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string BestCandidates_19_01_2000 {
+            get {
+                return ResourceManager.GetString("BestCandidates_19_01_2000", resourceCulture);
             }
         }
         

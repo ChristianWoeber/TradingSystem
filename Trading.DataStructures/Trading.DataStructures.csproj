@@ -56,6 +56,7 @@
     <Compile Include="Interfaces\IPriceHistoryCollection.cs" />
     <Compile Include="Interfaces\IPriceHistoryStorageProvider.cs" />
     <Compile Include="Interfaces\IRebalanceProvider.cs" />
+    <Compile Include="Interfaces\IRebalanceScoringResult.cs" />
     <Compile Include="Interfaces\ITradingCandidate.cs" />
     <Compile Include="Interfaces\ITradingCandidateBase.cs" />
     <Compile Include="Interfaces\ITradingRecord.cs" />

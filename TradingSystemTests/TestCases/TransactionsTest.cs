@@ -7,6 +7,7 @@ using HelperLibrary.Extensions;
 using HelperLibrary.Interfaces;
 using HelperLibrary.Trading;
 using HelperLibrary.Trading.PortfolioManager;
+using HelperLibrary.Trading.PortfolioManager.Transactions;
 using NUnit.Framework;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -116,6 +117,10 @@ namespace TradingSystemTests.TestCases
             public TransactionType TransactionType { get; set; }
             public bool IsBelowStopp { get; set; }
             public bool HasBetterScoring { get; }
+            public IRebalanceScoringResult RebalanceScore { get; }
+            public decimal CalculatedScore { get; }
+
+            public bool IsTemporarySell => throw new NotImplementedException();
         }
     }
 

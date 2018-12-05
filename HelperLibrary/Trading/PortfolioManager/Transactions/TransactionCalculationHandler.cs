@@ -3,7 +3,7 @@ using HelperLibrary.Database.Models;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
-namespace HelperLibrary.Trading.PortfolioManager
+namespace HelperLibrary.Trading.PortfolioManager.Transactions
 {
     /// <summary>
     /// die Methoden bauen aufeinander auf

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using HelperLibrary.Trading.PortfolioManager.Settings;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Utils;
 
@@ -32,15 +33,15 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #endregion
 
-        #region TryHasCash
+        //#region TryHasCash
 
 
-        public bool TryHasCash(out decimal remainingCash)
-        {
-            return _cashManager.TryHasCash(out remainingCash);
-        }
+        //public bool TryHasCash(out decimal remainingCash)
+        //{
+        //    return _cashManager.TryHasCash(out remainingCash);
+        //}
 
-        #endregion
+        //#endregion
 
         #region Count
 
@@ -48,7 +49,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Der Count
         /// </summary>
         public int Count => _items.Count;
-
 
         #endregion
 
@@ -58,7 +58,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Das Flag das angbit ob es zu Änderungen gekommen ist
         /// </summary>
         public bool HasChanges { get; set; }
-
 
         #endregion
 
@@ -85,8 +84,6 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
-
-
         #endregion
 
         /// <summary>
@@ -100,15 +97,16 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
-        public void RemoveCandidate(ITradingCandidate candidate)
+       
+        public void CancelCandidate(ITradingCandidate candidate)
         {
+            if (candidate.IsInvested && !candidate.IsTemporary)
+                throw new ArgumentException("Achtung das darf eigentlich nicht sein!");
+
             var transaction = Get(candidate.Record.SecurityId);
             if (transaction == null)
                 throw new ArgumentException($"Achtung der Kandidate konnte im temporären Portfolio nicht gefunden werden {candidate}");
-
-            UpdateCash(transaction, true);
-            _uniqueTransactions.Remove(transaction.UniqueKey);
-            _items.Remove(transaction);
+            transaction.Cancelled = 1;
         }
 
         #region Add
@@ -135,16 +133,30 @@ namespace HelperLibrary.Trading.PortfolioManager
                 throw ex;
             }
 
-
+            item.CancelledEvent += OnTransactionCancelled;
             //hinzufügen
             _items.Add(item);
+        }
+
+        private void OnTransactionCancelled(object sender, EventArgs e)
+        {
+            if (!(sender is ITransaction transaction))
+                return;
+
+            if (transaction.Cancelled == 1)
+                UpdateCash(transaction, true);
+            else
+            {
+                //Sollte hier eigentlich im Backtest niemals hinkommen
+                UpdateCash(transaction);
+            }
         }
 
         private void UpdateCash(ITransaction item, bool reverse = false)
         {
             if (reverse)
-            {   
-                //wenn das flga gestzt ist erhöhe ich das Cash bei einem kauf, weil ich die temporäre transakion storniere
+            {
+                //wenn das flag gestzt ist erhöhe ich das Cash bei einem kauf, weil ich die temporäre transakion storniere
                 item.Shares *= -1;
             }
 
@@ -185,7 +197,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public ITransaction Get(int candidateSecurityId)
         {
-            var item = _items.FirstOrDefault(x => x.SecurityId == candidateSecurityId && x.IsTemporary);
+            var item = _items.Where(x => x.SecurityId == candidateSecurityId).OrderByDescending(x => x.TransactionDateTime).FirstOrDefault();
             if (item == null)
                 throw new NullReferenceException($"mit der {candidateSecurityId} konnte kein temporäres item gefunden werden");
             return item;

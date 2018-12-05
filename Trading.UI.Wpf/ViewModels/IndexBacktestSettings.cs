@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using HelperLibrary.Trading.PortfolioManager;
+using HelperLibrary.Trading.PortfolioManager.Exposure;
 using JetBrains.Annotations;
 
 namespace Trading.UI.Wpf.ViewModels
@@ -11,7 +12,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         public IndexBacktestSettings()
         {
-
+            TypeOfIndex = IndexType.EuroStoxx50;
         }
 
         public IndexType TypeOfIndex

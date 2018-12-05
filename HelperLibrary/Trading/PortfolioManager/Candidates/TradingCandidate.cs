@@ -1,4 +1,5 @@
 ﻿using System;
+using HelperLibrary.Trading.PortfolioManager.Rebalancing;
 using Newtonsoft.Json;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Enums;
@@ -12,7 +13,6 @@ namespace HelperLibrary.Trading
         [JsonProperty]
         private readonly ITradingCandidateBase _tradingCandidateBase;
         [JsonProperty]
-        //[JsonConverter(typeof(TransactionsHandlerConverter))]
         private readonly ITransactionsHandler _transactionsHandler;
         [JsonProperty]
         [JsonConverter(typeof(PortfolioValuationConverter))]
@@ -20,7 +20,7 @@ namespace HelperLibrary.Trading
 
         public TradingCandidate()
         {
-           
+            
         }
 
         public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, IPortfolioValuation valuation, bool isInvested = false)
@@ -32,18 +32,36 @@ namespace HelperLibrary.Trading
             //Initialisierungen
             IsInvested = isInvested;
             PortfolioAsof = valuation.PortfolioAsof;
+            RebalanceScore = new RebalanceScoringResult(tradingCandidateBase.ScoringResult);
 
             Record = tradingCandidateBase.Record;
             ScoringResult = tradingCandidateBase.ScoringResult;
             AveragePrice = transactionsHandler.GetAveragePrice(SecurityId, PortfolioAsof) ?? Record.AdjustedPrice;
             LastTransaction = transactionsHandler.GetSingle(SecurityId, null);
-            CurrentWeight = transactionsHandler.GetWeight(SecurityId) ?? 0;
+
+            //TODO: Das Current Weight auf Basis der Shares im CurrentPortfolio * dem aktuellen Preis berechnen
+            CurrentWeight = GetCurrentWeight();
 
             //Das Target Weight wird auch mit dem current initialisiert
             TargetWeight = CurrentWeight;
             if (IsInvested)
                 CurrentPosition = transactionsHandler.CurrentPortfolio[SecurityId];
+
         }
+
+        /// <summary>
+        /// Berechnet das Aktuelle Gewicht auf Basis des aktuellen Preises
+        /// </summary>
+        /// <returns></returns>
+        private decimal GetCurrentWeight()
+        {
+            var shares = _transactionsHandler.GetCurrentShares(SecurityId);
+            if (shares == null)
+                return 0;
+
+            return (Record.AdjustedPrice * shares.Value) / _valuation.PortfolioValue;
+        }
+
         /// <summary>
         /// Die aktulle Position im Portfolio
         /// </summary>
@@ -115,7 +133,9 @@ namespace HelperLibrary.Trading
         public decimal Performance => 1 - AveragePrice / Record.AdjustedPrice;
 
         //gibt an ob der aktuelle Score höher ist als der letzte
-        public bool HasBetterScoring => ScoringResult.Score > LastScoringResult?.Score;
+        // muss mindestens 25% besser sein
+        public bool HasBetterScoring => ScoringResult.Score * new decimal(1.25) > LastScoringResult?.Score;
+
 
         /// <summary>
         /// Der Name des Records
@@ -137,13 +157,24 @@ namespace HelperLibrary.Trading
         /// </summary>
         public bool IsBelowStopp { get; set; }
 
+        /// <summary>
+        /// Der Score wonach die Kandidaten im RebelanceProvider sortiert werden
+        /// Die Basis ist der aktuelle Score
+        /// </summary>
+        public IRebalanceScoringResult RebalanceScore { get; set; }
+
+        /// <summary>
+        /// Wenn der TransaktionsType Changed ist und das Zielgewicht kleiner als das aktuelle dann ist bereits eine Abschichtung erfolgt
+        /// </summary>
+        public bool IsTemporarySell => TransactionType == TransactionType.Changed && TargetWeight < CurrentWeight;
 
         public override string ToString()
         {
-            return $"{Name} | Score: {Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} " +
-                   $"| CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring} | TransactionType: {TransactionType} " +
-                   $"| SecurityId: {Record.SecurityId}";
+            return
+                $"{Name} | Score: {Score} | | {nameof(RebalanceScore)}: {RebalanceScore.Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} " +
+                $"| CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring} | TransactionType: {TransactionType} " +
+                $"| SecurityId: {Record.SecurityId} ";
+            ;
         }
     }
-
 }

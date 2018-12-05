@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,7 +9,7 @@ using HelperLibrary.Extensions;
 using HelperLibrary.Parsing;
 using Trading.DataStructures.Interfaces;
 
-namespace HelperLibrary.Trading.PortfolioManager
+namespace HelperLibrary.Trading.PortfolioManager.Exposure
 {
     public enum IndexType
     {

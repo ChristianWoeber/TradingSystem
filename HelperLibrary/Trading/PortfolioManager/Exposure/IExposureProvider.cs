@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using HelperLibrary.Calculations;
 using Trading.DataStructures.Interfaces;
 
-namespace HelperLibrary.Trading.PortfolioManager
+namespace HelperLibrary.Trading.PortfolioManager.Exposure
 {
     public interface IExposureProvider
     {

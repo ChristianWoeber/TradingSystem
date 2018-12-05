@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using HelperLibrary.Extensions;
 using HelperLibrary.Parsing;
 using HelperLibrary.Trading.PortfolioManager;
+using HelperLibrary.Trading.PortfolioManager.Exposure;
+using HelperLibrary.Trading.PortfolioManager.Settings;
 using HelperLibrary.Util.Atrributes;
 using NUnit.Framework;
 using Trading.DataStructures.Enums;

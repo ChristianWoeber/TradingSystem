@@ -1,5 +1,5 @@
 {
-  "$type": "System.Collections.Generic.List`1[[HelperLibrary.Trading.TradingCandidate, HelperLibrary]], mscorlib",
+  "$type": "System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib",
   "$values": [
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -27,7 +27,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -373,15 +373,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 45.75,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "SAP SE",
       "Score": 38.45,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 38.45
+      },
+      "IsTemporarySell": false
     },
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -409,7 +414,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -755,15 +760,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 107.76000213623,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "ORANGE",
       "Score": 27.70,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 27.70
+      },
+      "IsTemporarySell": false
     },
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -791,7 +801,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -1137,15 +1147,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 325.747985839844,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "ALLIANZ SE-REG",
       "Score": 19.30,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 19.30
+      },
+      "IsTemporarySell": false
     },
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -1173,7 +1188,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -1519,15 +1534,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 90.4000015258789,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "VIVENDI",
       "Score": 16.87,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 16.87
+      },
+      "IsTemporarySell": false
     },
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -1555,7 +1575,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -1901,15 +1921,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 24.496,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "BASF SE",
       "Score": 12.50,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 12.50
+      },
+      "IsTemporarySell": false
     },
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -1937,7 +1962,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -2283,15 +2308,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 42.4090003967285,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "BAYER AG-REG",
       "Score": 11.05,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 11.05
+      },
+      "IsTemporarySell": false
     },
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -2319,7 +2349,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -2665,15 +2695,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 37.0222,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "SCHNEIDER ELECTRIC SE",
       "Score": 9.07,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 9.07
+      },
+      "IsTemporarySell": false
     },
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -2701,7 +2736,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -3047,15 +3082,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 69.9000015258789,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "L'OREAL",
       "Score": 8.89,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 8.89
+      },
+      "IsTemporarySell": false
     },
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -3083,7 +3123,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -3429,15 +3469,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 53.7900009155273,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "AIR LIQUIDE SA",
       "Score": 7.79,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 7.79
+      },
+      "IsTemporarySell": false
     },
     {
       "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
@@ -3465,7 +3510,7 @@
         }
       },
       "_transactionsHandler": {
-        "$type": "HelperLibrary.Trading.PortfolioManager.TransactionsHandler, HelperLibrary",
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
         "_currentPortfolio": {
           "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
           "$values": [
@@ -3811,15 +3856,20 @@
       "IsTemporary": false,
       "HasStopp": false,
       "LastScoringResult": null,
-      "TargetWeight": 0.0,
+      "TargetWeight": 0.1,
       "CurrentWeight": 0.0,
       "AveragePrice": 19.0841999053955,
       "Performance": 0.0,
       "HasBetterScoring": false,
       "Name": "CRH PLC",
       "Score": 7.23,
-      "TransactionType": 0,
-      "IsBelowStopp": false
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "Score": 7.23
+      },
+      "IsTemporarySell": false
     }
   ]
 }
