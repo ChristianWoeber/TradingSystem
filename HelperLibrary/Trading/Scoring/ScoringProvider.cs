@@ -49,7 +49,7 @@ namespace HelperLibrary.Trading
             var performance10 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-10), date, null, PriceHistoryOption.NextItem);
             var performance30 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-30), date, null, PriceHistoryOption.NextItem);
             var performance90 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-90), date, null, PriceHistoryOption.NextItem);
-            var volatility = priceHistory.Calc.GetVolatilityMonthly(date.AddDays(-250), date, null, PriceHistoryOption.NextItem);
+             priceHistory.Calc.TryGetLastVolatility(date.AddDays(-250), out var volatility);
             //var maxDrawDown = priceHistory.Calc.GetMaximumDrawdown(date.AddDays(-250), date, CaclulationOption.Adjusted);
 
             // Das Ergebnis returnen

@@ -108,7 +108,7 @@ namespace HelperLibrary.Database.Models
 
         public override string ToString()
         {
-            return $"TradeDate: {TransactionDateTime}_ID: {SecurityId}_Shares: {Shares}_Target Weight: {TargetWeight}_TransactionType: {(TransactionType)TransactionType} IsTemporary:{IsTemporary} {Name}";
+            return $"TradeDate: {TransactionDateTime}_ID: {SecurityId}_Shares: {Shares}_Target Weight: {TargetWeight}_EffectiveWeight: {EffectiveWeight}_EffectiveAmountEur: {EffectiveAmountEur}_TransactionType: {TransactionType}_IsTemporary:{IsTemporary}";
         }
 
         public string UniqueKey => _uniqueKey ?? (_uniqueKey = UniqueKeyProvider.CreateUniqueKey(this));

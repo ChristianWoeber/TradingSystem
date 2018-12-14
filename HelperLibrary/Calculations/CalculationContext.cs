@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using HelperLibrary.Collections;
-using HelperLibrary.Database.Interfaces;
-using HelperLibrary.Interfaces;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
@@ -74,6 +73,7 @@ namespace HelperLibrary.Calculations
                     dailyReturn = lastDailyReturn;
                     return true;
                 }
+
                 idx++;
             }
             dailyReturn = decimal.MinusOne;
@@ -159,10 +159,7 @@ namespace HelperLibrary.Calculations
         {
             foreach (var item in _dailyReturns)
                 yield return Tuple.Create(item.Key, item.Value);
-
         }
-
-        public int MovingDays => _priceHistory.MovingDays;
 
         public void CalcArithmeticMean(ITradingRecord item, int count)
         {
@@ -181,10 +178,19 @@ namespace HelperLibrary.Calculations
         private readonly LowMetaInfoCollection _lowMetaInfos = new LowMetaInfoCollection();
 
 
-        public class LowMetaInfoCollection : Dictionary<DateTime, LowMetaInfo>
+        internal class MovingVolatilityCollection : LastItemDictionaryBase<MovingVolaMetaInfo>
         {
-            private const int MAX_TRIES = 15;
-            public bool TryGetLastItem(DateTime asof, out LowMetaInfo lastMetaInfo)
+        }
+
+        public class LowMetaInfoCollection : LastItemDictionaryBase<LowMetaInfo>
+        {
+        }
+
+        public abstract class LastItemDictionaryBase<TValue> : Dictionary<DateTime, TValue> where TValue : class
+        {
+            private const int MAX_TRIES = 30;
+
+            public bool TryGetLastItem(DateTime key, out TValue lastMetaInfo)
             {
                 if (Count == 0)
                 {
@@ -196,7 +202,8 @@ namespace HelperLibrary.Calculations
 
                 while (idx < MAX_TRIES)
                 {
-                    if (TryGetValue(asof.AddDays(-idx), out var lastInfo))
+                    var newDate = key.AddDays(-idx);
+                    if (TryGetValue(newDate, out var lastInfo))
                     {
                         var currentlastMetaInfo = lastInfo;
                         if (currentlastMetaInfo != null)
@@ -213,72 +220,144 @@ namespace HelperLibrary.Calculations
                 lastMetaInfo = null;
                 return false;
             }
-
         }
+
+        public bool TryGetLastVolatility(DateTime asof, out decimal volatility)
+        {
+            volatility = decimal.MinusOne;
+            if (!_movingVolaMetaInfos.TryGetLastItem(asof, out var metaInfo))
+                return false;
+
+            volatility = metaInfo.DailyVolatility;
+            return true;
+        }
+
+        private readonly MovingVolatilityCollection _movingVolaMetaInfos = new MovingVolatilityCollection();
+
+        public void CalcMovingVola(ITradingRecord item, int count)
+        {
+            try
+            {
+                if (_movingVolaMetaInfos.Count > 0)
+                {
+                    if (!_movingVolaMetaInfos.TryGetLastItem(item.Asof, out var lastMetaInfo))
+                        throw new ArgumentException("Achtung keine MetaInfo gefunden bei"+_priceHistory.Settings?.Name);
+
+                    var firstItem = _priceHistory.Get(_movingVolaMetaInfos.Count);
+                    var daysCount = _priceHistory.Count - _movingVolaMetaInfos.Count;
+
+                    //hole mir hier den letzten und den aktuellen Daily Return und aktualisere damit die Berechnung
+                    //sonst werfe ich eine exception
+                    if (!TryGetDailyReturn(item.Asof, out var lastDailyReturn) || !TryGetDailyReturn(firstItem.Asof, out var firstDailyReturn))
+                        throw new ArgumentException("Achtung es konnten keine DailyReturns gefunden werden");
+
+                    _movingVolaMetaInfos.Add(item.Asof, MovingVolaMetaInfo.Create(lastMetaInfo, item, firstDailyReturn, lastDailyReturn, daysCount));
+                    return;
+                }
+
+                // --------- hier komme ich nur initial rein und durchlaufe die records 2 mal ----------- //
+
+                var variance = 0d;
+                //einmal alle Returns druchlaufen und den Average berechnen
+                var averageReturn = EnumDailyReturns().Average();
+
+                //danach nich einmal durchlaufen und die varianz rechnen
+                foreach (var dailyReturn in EnumDailyReturns())
+                {
+                    variance += Math.Pow((double)dailyReturn - (double)averageReturn, 2);
+                }
+
+                //dann brauche ich den eigentlichen Count nicht injecten
+                _movingVolaMetaInfos.Add(item.Asof, new MovingVolaMetaInfo(averageReturn, (decimal)variance, _priceHistory.Settings, count));
+
+            }
+            catch (Exception e)
+            {
+
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
 
         public void CalcMovingLows(ITradingRecord item, int count)
         {
             //brauche erst rechnen ab dem Moment wo sich ein erstes Fenster ausgeht
-            if (count < _priceHistory.MovingDays)
+            if (count < _priceHistory.Settings.MovingAverageLengthInDays)
                 return;
 
-            ITradingRecord low = null;
-            ITradingRecord first = null;
-            ITradingRecord last = null;
-            var records = new List<ITradingRecord>();
-
-            //hol mir das letzt Item
-            if (_lowMetaInfos.TryGetLastItem(item.Asof.AddDays(-1), out var lastLowMetaInfo))
+            try
             {
-                //das Item von vor 150 Tagen
-                var newFirst = _priceHistory.Get(item.Asof.AddDays(-_priceHistory.MovingDays));
-                lastLowMetaInfo.UpdatePeriodeRecords(item);
 
-                //wenn der aktuelle Preis höher ist als der vorherige kann es kein neues low geben
-                if (item.AdjustedPrice > lastLowMetaInfo.Last.AdjustedPrice)
+                ITradingRecord low = null;
+                ITradingRecord first = null;
+                ITradingRecord last = null;
+                var records = new List<ITradingRecord>();
+
+                //hol mir das letzt Item
+                if (_lowMetaInfos.TryGetLastItem(item.Asof.AddDays(-1), out var lastLowMetaInfo))
                 {
-                    //merke mir das item mit hasNewlow=false
-                    _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, lastLowMetaInfo, false));
-                    return;
+                    //das Item von vor 150 Tagen
+                    var newFirst = _priceHistory.Get(item.Asof.AddDays(-_priceHistory.Settings.MovingAverageLengthInDays));
+                    lastLowMetaInfo.UpdatePeriodeRecords(item);
+
+                    //wenn der aktuelle Preis höher ist als der vorherige kann es kein neues low geben
+                    if (item.AdjustedPrice > lastLowMetaInfo.Last.AdjustedPrice)
+                    {
+                        //merke mir das item mit hasNewlow=false
+                        _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, lastLowMetaInfo, false));
+                        return;
+                    }
+
+                    //wenn das letze Low tiefer liegt, und das datum des Lows noch in der Range ist brauche ich die 150 Tage nur um eines weiterschieben
+                    if (lastLowMetaInfo.Low.AdjustedPrice < item.AdjustedPrice && lastLowMetaInfo.Low.Asof >= newFirst.Asof)
+                    {
+                        //merke mir das item mit hasNewlow=false
+                        _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, lastLowMetaInfo, false));
+                        return;
+                    }
                 }
 
-                //wenn das letze Low tiefer liegt, und das datum des Lows noch in der Range ist brauche ich die 150 Tage nur um eines weiterschieben
-                if (lastLowMetaInfo.Low.AdjustedPrice < item.AdjustedPrice && lastLowMetaInfo.Low.Asof >= newFirst.Asof)
+                //neu berechnen
+                foreach (var record in _priceHistory.Range(item.Asof.AddDays(-_priceHistory.Settings.MovingAverageLengthInDays), item.Asof))
                 {
-                    //merke mir das item mit hasNewlow=false
-                    _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, lastLowMetaInfo, false));
-                    return;
+                    records.Add(record);
+
+                    if (low == null)
+                    {
+                        //merke mir hier den ersten
+                        low = record;
+                        first = low;
+                    }
+
+                    //dann gibt es ein neues Low
+                    if (record.AdjustedPrice < low.AdjustedPrice)
+                        low = record;
+                    //merke mir hier immer den letzten Record
+                    last = record;
+
                 }
+                //wenn lastLowMetaInfo == null bin ich beim ersten Record
+                _lowMetaInfos.Add(item.Asof, lastLowMetaInfo != null
+                        ? new LowMetaInfo(first, low, last, lastLowMetaInfo, true)
+                        : new LowMetaInfo(first, low, last, records));
+
             }
-
-            //neu berechnen
-            foreach (var record in _priceHistory.Range(item.Asof.AddDays(-_priceHistory.MovingDays), item.Asof))
+            catch (Exception e)
             {
-                records.Add(record);
-
-                if (low == null)
-                {
-                    //merke mir hier den ersten
-                    low = record;
-                    first = low;
-                }
-
-                //dann gibt es ein neues Low
-                if (record.AdjustedPrice < low.AdjustedPrice)
-                    low = record;
-                //merke mir hier immer den letzten Record
-                last = record;
-
+                Console.WriteLine(e);
+                throw;
             }
-            //wenn lastLowMetaInfo == null bin ich beim ersten Record
-            _lowMetaInfos.Add(item.Asof, lastLowMetaInfo != null
-                    ? new LowMetaInfo(first, low, last, lastLowMetaInfo, true)
-                    : new LowMetaInfo(first, low, last, records));
         }
 
         public bool TryGetLastLowItem(DateTime currentDate, out LowMetaInfo info)
         {
             return _lowMetaInfos.TryGetLastItem(currentDate, out info);
+        }
+
+        public bool TryGetLastVolatilityInfo(DateTime currentDate, out MovingVolaMetaInfo vola)
+        {
+            return _movingVolaMetaInfos.TryGetLastItem(currentDate, out vola);
         }
 
         public IEnumerable<Tuple<DateTime, LowMetaInfo>> EnumLows()
@@ -287,6 +366,56 @@ namespace HelperLibrary.Calculations
             {
                 yield return new Tuple<DateTime, LowMetaInfo>(kvp.Key, kvp.Value);
             }
+        }
+
+
+    }
+
+    public class MovingVolaMetaInfo
+    {
+        private readonly IPriceHistoryCollectionSettings _settings;
+        private readonly int _count;
+
+        public MovingVolaMetaInfo(decimal averageReturn, decimal variance, IPriceHistoryCollectionSettings settings, int count)
+        {
+            _settings = settings;
+            _count = count;
+            AverageReturn = averageReturn;
+            Variance = variance;
+            //Wurzel aus varianz/ N-1 und auf 250 Tage bringen
+            DailyVolatility = (decimal)(Math.Sqrt((double)variance / (count - 1)) * Math.Sqrt(settings.MovingDaysVolatility));
+        }
+        /// <summary>
+        /// die tägliche Volatilität
+        /// </summary>
+        public decimal DailyVolatility { get; }
+
+        /// <summary>
+        /// das arithmetrische MIttel der daily Returns
+        /// </summary>
+        public decimal AverageReturn { get; }
+
+        /// <summary>
+        /// die Varianz => Achtung ist schon durch N-1 bereiningt
+        /// </summary>
+        public decimal Variance { get; }
+
+
+        public static MovingVolaMetaInfo Create(MovingVolaMetaInfo lastMetaInfo, ITradingRecord item, decimal firstDailyReturn, decimal lastDailyReturn, int count)
+        {
+            //ändere hier nur den letzen und ersten Value
+            var currentAverage = lastMetaInfo.AverageReturn;
+            currentAverage += lastDailyReturn * 1 / (count - 1);
+            currentAverage -= firstDailyReturn * 1 / (count - 1);
+
+            //auch bei der Varianz
+            var currentVariance = lastMetaInfo.Variance;
+            currentVariance += (decimal)Math.Pow(((double)currentAverage - (double)lastDailyReturn), 2);
+            currentVariance -= (decimal)Math.Pow(((double)lastMetaInfo.AverageReturn - (double)firstDailyReturn), 2);
+
+            //Trace.TraceInformation($"aktuelle Varianz: {currentVariance:N6}, aktueller Average: {currentAverage:N6}, aktuelles Datum {item.Asof}");
+            //gebe dann die aktualisierte Info zurück
+            return new MovingVolaMetaInfo(currentAverage, currentVariance, lastMetaInfo._settings, count);
         }
     }
 }

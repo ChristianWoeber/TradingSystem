@@ -46,6 +46,7 @@ namespace TradingSystemTests.TestCases
         public decimal MaximumAllocationToRisk { get; set; } = 1;
         public decimal MinimumAllocationToRisk { get; set; } /*= new decimal(0.20)*/
         public string IndicesDirectory { get; set; }
+        public DayOfWeek TradingDay { get; set; }
         public DateTime Asof { get; set; }
         public decimal SimulationNav { get; set; }
         public decimal IndexLevel { get; set; }

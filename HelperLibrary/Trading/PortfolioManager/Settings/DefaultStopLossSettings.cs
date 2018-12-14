@@ -16,6 +16,8 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
             PortfolioAsof = asof;
         }
     }
+
+    //TODO: Refactoring StopLossService der die Settings injected bekommt
     public class DefaultStopLossSettings : IStopLossSettings
     {
         private readonly Dictionary<int, StopLossMeta> _limitDictionary = new Dictionary<int, StopLossMeta>();
@@ -57,7 +59,9 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
             var volatility = candidate.ScoringResult.Volatility;
 
             //der Rückgabewert
-            var hasStop = currentPrice <= stopLossMeta.High * (1 - volatility) || currentPrice <= candidate.AveragePrice * (1 - volatility);
+            //wenn der aktuelle Preis <= ist dem letzten High abzüglich der Vola stopp ich
+            //wenn der aktuelle Preis kleiner als der average Preis ist sprich ich im minus bin mit der Position abzüglichn der Volatilität
+            var hasStop = currentPrice <= stopLossMeta.High * (1 - 2 * volatility) || currentPrice <= candidate.AveragePrice * (1 - volatility);
 
             //sollte es einen Stop geben die lastStops updaten
             UpdateLastStops(hasStop, candidate);

@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="Trading.UI.Wpf.Controls.CandidatesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Trading.UI.Wpf.Controls"
+             xmlns:viewModels="clr-namespace:Trading.UI.Wpf.ViewModels"
+             xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:TradingViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <arts:SmartDataGrid ItemsSource="{Binding Candidates}" AutoGenerateColumns="False" HeaderFontSize="4" SelectedItem="{Binding SelectedCandidate}">
+            <arts:SmartDataGrid.Columns >
+                
+                <arts:SmartDataGridColumn Binding="{Binding Record.SecurityId, Mode=OneWay}" 
+                                          ColumnEditingItemsSource="{Binding Source={x:Static viewModels:TradingViewModel.NameCatalog}}"
+                                          Header="Name"  />
+                <arts:SmartDataGridColumn Binding="{Binding Record.SecurityId, Mode=OneWay}" 
+                                          Header="Id" 
+                                          Visibility="Visible"/>
+                <arts:SmartDataGridColumn Binding="{Binding Record.Asof, StringFormat=d, Mode=OneWay}" 
+                                          Header="Datum"/>
+                <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Score, StringFormat=N, Mode=OneWay}" 
+                                          Header="Score"
+                                          SortDirection="Descending"/>
+                <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Performance30, StringFormat=P, Mode=OneWay}" 
+                                          Header="Performance 30"/>
+                <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Performance90, Mode=OneWay,StringFormat=P}" 
+                                          Header="Performance 90"/>
+                <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Performance250,Mode=OneWay, StringFormat=P}" 
+                                          Header="Performance 250"
+                                          SortDirection="Descending"/>
+                <arts:SmartDataGridColumn Binding="{Binding ScoringResult.IsValid,Mode=OneWay, StringFormat=N}" 
+                                          Header="Is Valid"
+                                          />
+            </arts:SmartDataGrid.Columns>
+            <arts:SmartDataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Show Position in Chart"
+                              Command="{Binding ShowSelectedCandidateCommand}" />
+
+                </ContextMenu>
+            </arts:SmartDataGrid.ContextMenu>
+        </arts:SmartDataGrid>
+    </Grid>
+</UserControl>

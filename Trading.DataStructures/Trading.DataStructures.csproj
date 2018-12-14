@@ -52,6 +52,7 @@
     <Compile Include="Interfaces\ICalculationContext.cs" />
     <Compile Include="Interfaces\ICashManager.cs" />
     <Compile Include="Interfaces\IExposureReceiver.cs" />
+    <Compile Include="Interfaces\IMovingCaclulationsSettings.cs" />
     <Compile Include="Interfaces\IPortfolioValuation.cs" />
     <Compile Include="Interfaces\IPriceHistoryCollection.cs" />
     <Compile Include="Interfaces\IPriceHistoryStorageProvider.cs" />

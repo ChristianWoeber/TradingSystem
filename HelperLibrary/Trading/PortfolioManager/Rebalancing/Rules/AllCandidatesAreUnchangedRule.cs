@@ -9,10 +9,19 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
     {
         public bool Apply(IEnumerable<ITradingCandidate> candidates)
         {
-            return candidates.All(x => x.TransactionType != TransactionType.Unchanged);
+            var allAreUnchanged = candidates.All(x => x.TransactionType == TransactionType.Unchanged);
+            //Wenn alle nicht unchanged sind muss ich rebalancen
+            if (!allAreUnchanged)
+                return true;
+
+            //ssont breche ich ab
+            CanMoveNext = false;
+            return false;
         }
 
         public int SortIndex { get; set; } = 2;
+
+        public bool CanMoveNext { get; set; }
 
         public IRebalanceContext Context { get; set; }
     }

@@ -13,7 +13,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         #region Private Members
 
         private readonly Dictionary<string, ITransaction> _uniqueTransactions = new Dictionary<string, ITransaction>();
-        private readonly List<ITransaction> _items = new List<ITransaction>();
+        private readonly List<ITransaction> _temporaryTransactions = new List<ITransaction>();
         private readonly ISaveProvider _saveProvider;
         private readonly IAdjustmentProvider _adjustmentProvider;
 
@@ -33,22 +33,13 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #endregion
 
-        //#region TryHasCash
-
-
-        //public bool TryHasCash(out decimal remainingCash)
-        //{
-        //    return _cashManager.TryHasCash(out remainingCash);
-        //}
-
-        //#endregion
 
         #region Count
 
         /// <summary>
         /// Der Count
         /// </summary>
-        public int Count => _items.Count;
+        public int Count => _temporaryTransactions.Count;
 
         #endregion
 
@@ -65,7 +56,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public bool IsTemporary(int secId)
         {
-            var transaction = _items.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault(x => x.SecurityId == secId);
+            var transaction = _temporaryTransactions.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault(x => x.SecurityId == secId);
             return transaction != null && transaction.IsTemporary;
         }
 
@@ -85,17 +76,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         }
 
         #endregion
-
-        /// <summary>
-        /// die Aktuelle Auslastung
-        /// </summary>
-        public decimal CurrentSumInvestedTargetWeight
-        {
-            get
-            {
-                return _items.Sum(t => t.EffectiveWeight);
-            }
-        }
 
        
         public void CancelCandidate(ITradingCandidate candidate)
@@ -135,7 +115,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             item.CancelledEvent += OnTransactionCancelled;
             //hinzufügen
-            _items.Add(item);
+            _temporaryTransactions.Add(item);
         }
 
         private void OnTransactionCancelled(object sender, EventArgs e)
@@ -192,12 +172,12 @@ namespace HelperLibrary.Trading.PortfolioManager
             //Has Changes false setzen
             HasChanges = false;
             _uniqueTransactions.Clear();
-            _items.Clear();
+            _temporaryTransactions.Clear();
         }
 
         public ITransaction Get(int candidateSecurityId)
         {
-            var item = _items.Where(x => x.SecurityId == candidateSecurityId).OrderByDescending(x => x.TransactionDateTime).FirstOrDefault();
+            var item = _temporaryTransactions.Where(x => x.SecurityId == candidateSecurityId).OrderByDescending(x => x.TransactionDateTime).FirstOrDefault();
             if (item == null)
                 throw new NullReferenceException($"mit der {candidateSecurityId} konnte kein temporäres item gefunden werden");
             return item;
@@ -207,7 +187,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             return exact
                 ? _uniqueTransactions.TryGetValue(UniqueKeyProvider.CreateUniqueKey(temporaryCandidate), out var _)
-                : _items.FirstOrDefault(x => x.SecurityId == temporaryCandidate.Record.SecurityId) != null;
+                : _temporaryTransactions.FirstOrDefault(x => x.SecurityId == temporaryCandidate.Record.SecurityId) != null;
         }
 
         #endregion
@@ -217,7 +197,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public IEnumerator<ITransaction> GetEnumerator()
         {
-            return _items.GetEnumerator();
+            return _temporaryTransactions.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -74,12 +74,7 @@ namespace Trading.DataStructures.Interfaces
         /// <summary>
         /// verringert den CashWert
         /// </summary>
-        void DecrementCash(ITransaction transactionToAdjust);
-
-        /// <summary>
-        /// die Aktuelle Auslastung
-        /// </summary>
-        decimal CurrentSumInvestedTargetWeight { get;  }
+        void DecrementCash(ITransaction transactionToAdjust);    
 
         /// <summary>
         /// Löscht den Kandidaten aus den temporären Kandidaten und bucht das Cash retour

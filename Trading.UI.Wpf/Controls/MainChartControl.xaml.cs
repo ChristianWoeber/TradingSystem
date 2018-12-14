@@ -6,6 +6,7 @@ using Arts.Financial;
 using Arts.WCharting;
 using Trading.UI.Wpf.Utils;
 using Trading.UI.Wpf.ViewModels;
+using Trading.UI.Wpf.ViewModels.EventArgs;
 
 namespace Trading.UI.Wpf.Controls
 {
@@ -36,8 +37,20 @@ namespace Trading.UI.Wpf.Controls
             _model.BacktestCompletedEvent += OnBacktestCompleted;
             _model.IndexBacktestCompletedEvent += OnIndexBacktestCompleted;
             _model.MoveCursorToNextTradingDayEvent += OnMoveCursorToNextTradingDay;
+            _model.MoveCursorToNextStoppDayEvent += OnMoveCursorToNextStoppDayEvent;
         }
 
+        private void OnMoveCursorToNextStoppDayEvent(object sender, EventArgs e)
+        {
+            if (ChartControl.Cursors[1]?.IsSet == false)
+                return;
+
+            var date = ChartControl.Cursors[1]?.CursorDate;
+            if (date == null || date.Value <= DateTime.MinValue)
+                return;
+
+            _model.UpdateHoldings(date.Value.ToDateTime());
+        }
 
         private void OnMoveCursorToNextTradingDay(object sender, DayOfWeek tradingDay)
         {
@@ -63,7 +76,7 @@ namespace Trading.UI.Wpf.Controls
         private void OnIndexBacktestCompleted(object sender, IndexBacktestResultEventArgs e)
         {
             ChartControl.Data.Clear();
-            
+
             var indexFints = FINTS.Create(e.Results.Select(x => new Quote<double>(new SDate(x.Asof), (double)x.IndexLevel)), "Index");
             var simulationFints = FINTS.Create(e.Results.Select(x => new Quote<double>(new SDate(x.Asof), (double)x.SimulationNav)), "Simulation");
             var allocationFints = FINTS.Create(e.Results.Select(x => new Quote<double>(new SDate(x.Asof), (double)x.MaximumAllocationToRisk)), "Aktienquote");
@@ -109,7 +122,7 @@ namespace Trading.UI.Wpf.Controls
 
         private void OnChartControlClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if(!_model.HasPortfolioManager)
+            if (!_model.HasPortfolioManager)
                 return;
 
             if (ChartControl.Cursors[0]?.IsSet == false)
@@ -118,7 +131,7 @@ namespace Trading.UI.Wpf.Controls
             var date = ChartControl.Cursors[0]?.CursorDate;
             if (date == null || date.Value <= DateTime.MinValue)
                 return;
-
+            _model.ChartDate = date.Value;
             _model.UpdateHoldings(date.Value.ToDateTime());
             _model.UpdateCash(date.Value.ToDateTime());
         }

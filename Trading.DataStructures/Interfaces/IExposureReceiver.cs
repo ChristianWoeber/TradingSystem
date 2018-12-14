@@ -1,4 +1,6 @@
-﻿namespace Trading.DataStructures.Interfaces
+﻿using System;
+
+namespace Trading.DataStructures.Interfaces
 {
     public interface IExposureSettings
     {
@@ -16,5 +18,10 @@
         /// Der Pfad von dem aus der ExposureProvider die IndexDaten bekommt
         /// </summary>
         string IndicesDirectory { get; set; }
+
+        /// <summary>
+        /// der Handelstag, an dem das Portfolio immer neu allokiert wird
+        /// </summary>
+        DayOfWeek TradingDay { get; set; }
     }
 }

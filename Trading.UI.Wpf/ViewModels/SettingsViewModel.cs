@@ -16,6 +16,8 @@ namespace Trading.UI.Wpf.ViewModels
     {
         private TradingDay _selectedTradingDay;
         private TradingIntervalUtil _selectedTradingInterval;
+        private decimal _minimumPositionSizePercent;
+        private decimal _allocationToRiskBuffer;
 
         public SettingsViewModel(IPortfolioSettings defaultSettings)
         {
@@ -87,14 +89,14 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
-        public decimal CashPufferSize
+        public decimal CashPufferSizePercent
         {
-            get => PortfolioSettings.CashPufferSize;
+            get => PortfolioSettings.CashPufferSizePercent;
             set
             {
-                if (value == PortfolioSettings.CashPufferSize)
+                if (value == PortfolioSettings.CashPufferSizePercent)
                     return;
-                PortfolioSettings.CashPufferSize = value;
+                PortfolioSettings.CashPufferSizePercent = value;
                 OnPropertyChanged();
             }
         }
@@ -211,7 +213,29 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
-        public decimal AllocationToRiskBuffer { get; set; }
+        public decimal AllocationToRiskBuffer
+        {
+            get => PortfolioSettings.AllocationToRiskBuffer;
+            set
+            {
+                if (value == PortfolioSettings.AllocationToRiskBuffer)
+                    return;
+                PortfolioSettings.AllocationToRiskBuffer = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public decimal MinimumPositionSizePercent
+        {
+            get => PortfolioSettings.MinimumPositionSizePercent;
+            set
+            {
+                if (value == PortfolioSettings.MinimumPositionSizePercent)
+                    return;
+                PortfolioSettings.MinimumPositionSizePercent = value;
+                OnPropertyChanged();
+            }
+        }
 
         public decimal MaximumAllocationToRisk
         {

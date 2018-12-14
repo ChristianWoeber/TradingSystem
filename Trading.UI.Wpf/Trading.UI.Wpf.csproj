@@ -129,6 +129,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\CandidatesControl.xaml.cs">
+      <DependentUpon>CandidatesControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\IndexSettingsControl.xaml.cs">
       <DependentUpon>IndexSettingsControl.xaml</DependentUpon>
     </Compile>
@@ -144,12 +147,22 @@
     <Compile Include="Models\BacktestTransactionsCacheProvider.cs" />
     <Compile Include="Utils\FileHelper.cs" />
     <Compile Include="Utils\FintsSecuritiesRepo.cs" />
+    <Compile Include="ViewModels\CashInfoCollection.cs" />
+    <Compile Include="ViewModels\EventArgs\BacktestResultEventArgs.cs" />
     <Compile Include="ViewModels\IIndexBacktestSettings.cs" />
+    <Compile Include="ViewModels\EventArgs\IndexBacktestResultEventArgs.cs" />
     <Compile Include="ViewModels\IndexBacktestSettings.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\TradingViewModel.cs" />
-    <Compile Include="Utils\Initialization.cs" />
+    <Compile Include="Utils\Factory.cs" />
     <Compile Include="ViewModels\TransactionViewModel.cs" />
+    <Compile Include="Windows\ChartWindow.xaml.cs">
+      <DependentUpon>ChartWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Controls\CandidatesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\CurrentHoldingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -195,6 +208,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\ChartWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

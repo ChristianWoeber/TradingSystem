@@ -1,0 +1,4 @@
+{
+  "$type": "System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib",
+  "$values": []
+}

@@ -127,6 +127,12 @@
   <data name="AllCandidates_02_02_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AllCandidates_02.02.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="AllCandidates_08_03_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AllCandidates_08.03.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="AllCandidates_11_10_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AllCandidates_11.10.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="AllCandidates_16_02_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AllCandidates_16.02.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -135,6 +141,12 @@
   </data>
   <data name="BestCandidates_02_02_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\BestCandidates_02.02.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="BestCandidates_08_03_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\BestCandidates_08.03.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="BestCandidates_11_10_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\BestCandidates_11.10.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="BestCandidates_16_02_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\BestCandidates_16.02.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>

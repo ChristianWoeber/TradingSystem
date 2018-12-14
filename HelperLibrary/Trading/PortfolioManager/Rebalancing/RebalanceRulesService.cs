@@ -75,7 +75,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
             //returne hier bei der ersten Rule die mir true zurückgibt und erstelle daraufhin eien
             foreach (var rule in _needRebalanceRules.OrderBy(x => x.SortIndex))
             {
-                if (rule.Apply(tradingCandidates))
+                if (rule.Apply(tradingCandidates.OrderByDescending(x=>x.RebalanceScore.Score)))
                 {
                     RebalanceCollection = new RebalanceCollection(tradingCandidates, Settings) { NeedsRebalancing = true };
                     return;

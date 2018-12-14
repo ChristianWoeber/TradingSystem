@@ -17,7 +17,7 @@ namespace TradingSystemTests.TestCases
         [SetUp]
         public void InitTestCollection()
         {
-            _priceHistory = new PriceHistoryCollection(TestHelper.CreateTestCollection("AdidasHistory.txt", 1));
+            _priceHistory = (PriceHistoryCollection)PriceHistoryCollection.Create(TestHelper.CreateTestCollection("AdidasHistory.txt", 1));
             _priceHistoryCollection = new Dictionary<int, IPriceHistoryCollection>
             {
                 {_priceHistory.SecurityId, _priceHistory}

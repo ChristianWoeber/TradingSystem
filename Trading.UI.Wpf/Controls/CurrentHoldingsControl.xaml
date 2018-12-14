@@ -14,14 +14,22 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <arts:SmartDataGrid AutoGenerateColumns="False" ItemsSource="{Binding Holdings, Mode=OneWay}" HeaderFontSize="4" Grid.Row="0" Margin="10">
+        <arts:SmartDataGrid AutoGenerateColumns="False" ItemsSource="{Binding Holdings, Mode=OneWay}" 
+                            SelectedItem="{Binding SelectedPosition}"
+                            x:Name="SmartDataGridHoldings"
+                            HeaderFontSize="4" Grid.Row="0" Margin="10">
             <arts:SmartDataGrid.Columns >
+                <arts:SmartDataGridColumn Binding="{Binding IsStop}" 
+                                          ColumnType="Image" 
+                                          FalseIcon="None"  
+                                          x:Name="StoppLossColumn"/>
                 <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
                                           ColumnEditingItemsSource="{Binding Source={x:Static viewModels:TradingViewModel.NameCatalog}}"
                                           Header="Name"  />
                 <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
-                                          Header="SecurityId" 
+                                          Header="Id" 
                                           Visibility="Visible"/>
                 <arts:SmartDataGridColumn Binding="{Binding TransactionDateTime, StringFormat=d, Mode=OneWay}" 
                                           Header="TransaktionsDatum"/>
@@ -52,18 +60,58 @@
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Background" Value="#50ff6961"/>
                         </MultiDataTrigger>
+                       
                     </Style.Triggers>
                 </Style>
             </arts:SmartDataGrid.RowStyle>
+            <arts:SmartDataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Show Position in Chart"
+                              Command="{Binding ShowSelectedPositionCommand}" />
+
+                </ContextMenu>
+            </arts:SmartDataGrid.ContextMenu>
         </arts:SmartDataGrid>
 
-        <arts:SmartDataGrid ItemsSource="{Binding Cash}" AutoGenerateColumns="False" Grid.Row="1"  Margin="10">
-            <arts:SmartDataGrid.Columns >
-                <arts:SmartDataGridColumn Binding="{Binding Asof, Mode=OneWay, StringFormat=d}" 
+        <StackPanel Grid.Row="1">
+            <arts:SmartTextBlock Text="Cash-Entwicklung" FontWeight="DemiBold" Appearance="Header2" Margin="10 10 5 0"/>
+            <Expander Header="Cash Werte aufklappen" Margin="7.5 2">
+            <arts:SmartDataGrid ItemsSource="{Binding Cash}" AutoGenerateColumns="False" Margin="10" MaxHeight="500">
+                <arts:SmartDataGrid.Columns >
+                    <arts:SmartDataGridColumn Binding="{Binding Asof, Mode=OneWay, StringFormat=d}" 
                                           Header="Datum"  />
-                <arts:SmartDataGridColumn Binding="{Binding Cash, Mode=OneWay, StringFormat=C}" 
+                    <arts:SmartDataGridColumn Binding="{Binding Cash, Mode=OneWay, StringFormat=C}" 
                                           Header="Cash-Wert"  />
-            </arts:SmartDataGrid.Columns>
-        </arts:SmartDataGrid>
+                </arts:SmartDataGrid.Columns>
+            </arts:SmartDataGrid>
+                
+            </Expander>
+        </StackPanel>
+
+        <StackPanel  Grid.Row="2"  >
+            <arts:SmartTextBlock Text="Bislang ausgeführte Stops" FontWeight="DemiBold" Appearance="Header2" Margin="10 10 5 0" MaxHeight="500"/>
+
+            <arts:SmartDataGrid ItemsSource="{Binding Stopps}" AutoGenerateColumns="False" Margin="10">
+                <arts:SmartDataGrid.Columns >
+                    <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
+                                          ColumnEditingItemsSource="{Binding Source={x:Static viewModels:TradingViewModel.NameCatalog}}"
+                                          Header="Name"  />
+                    <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
+                                          Header="SecurityId" 
+                                          Visibility="Visible"/>
+                    <arts:SmartDataGridColumn Binding="{Binding TransactionDateTime, StringFormat=d, Mode=OneWay}" 
+                                          Header="TransaktionsDatum" 
+                                          SortDirection="Descending"/>
+                    <arts:SmartDataGridColumn Binding="{Binding TargetWeight, StringFormat=P, Mode=OneWay}" 
+                                          Header="Ziel-Gewicht"/>
+                    <arts:SmartDataGridColumn Binding="{Binding EffectiveAmountEur, StringFormat=C, Mode=OneWay}" 
+                                          Header="Ziel-Amount-Eff"/>
+                    <arts:SmartDataGridColumn Binding="{Binding Type, Mode=OneWay}" 
+                                          Header="Typ"/>
+                    <arts:SmartDataGridColumn Binding="{Binding Score,Mode=OneWay, StringFormat=N}" 
+                                          Header="Score" />
+                </arts:SmartDataGrid.Columns>
+            </arts:SmartDataGrid>
+        </StackPanel>
     </Grid>
 </UserControl>

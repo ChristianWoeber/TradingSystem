@@ -38,8 +38,6 @@ namespace HelperLibrary.Trading
             ScoringResult = tradingCandidateBase.ScoringResult;
             AveragePrice = transactionsHandler.GetAveragePrice(SecurityId, PortfolioAsof) ?? Record.AdjustedPrice;
             LastTransaction = transactionsHandler.GetSingle(SecurityId, null);
-
-            //TODO: Das Current Weight auf Basis der Shares im CurrentPortfolio * dem aktuellen Preis berechnen
             CurrentWeight = GetCurrentWeight();
 
             //Das Target Weight wird auch mit dem current initialisiert
@@ -70,7 +68,7 @@ namespace HelperLibrary.Trading
         /// <summary>
         /// Die Security Id des Candidaten
         /// </summary>
-        public int SecurityId => _tradingCandidateBase.Record.SecurityId;
+        public int SecurityId => _tradingCandidateBase.Record?.SecurityId ?? 0;
 
         /// <summary>
         /// Das Portfolio-Datum
@@ -133,8 +131,9 @@ namespace HelperLibrary.Trading
         public decimal Performance => 1 - AveragePrice / Record.AdjustedPrice;
 
         //gibt an ob der aktuelle Score höher ist als der letzte
-        // muss mindestens 25% besser sein
-        public bool HasBetterScoring => ScoringResult.Score * new decimal(1.25) > LastScoringResult?.Score;
+        // muss mindestens 25% besser sein und es darf aktuell kein Stop ausgelöst worden sein
+        //TODO: Regeln für has better Scoring
+        public bool HasBetterScoring => ScoringResult.Score * new decimal(1.25) > LastScoringResult?.Score && !IsBelowStopp;
 
 
         /// <summary>

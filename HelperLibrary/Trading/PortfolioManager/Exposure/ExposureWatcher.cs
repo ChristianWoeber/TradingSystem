@@ -19,6 +19,30 @@ namespace HelperLibrary.Trading.PortfolioManager.Exposure
         SandP500
     }
 
+    public class PriceHistoryCollectionSettings : IPriceHistoryCollectionSettings
+    {
+        public PriceHistoryCollectionSettings(int movingAverageLengthInDays = 150, int movingDaysVolatility = 250)
+        {
+            MovingAverageLengthInDays = movingAverageLengthInDays;
+            MovingDaysVolatility = movingDaysVolatility;
+        }
+
+        /// <summary>
+        /// die Länge des Moving Averages in Tagen
+        /// </summary>
+        public int MovingAverageLengthInDays { get; set; }
+
+        /// <summary>
+        /// der Betrachtungszeitraum der Vola in Tagen
+        /// </summary>
+        public int MovingDaysVolatility { get; set; }
+
+        /// <summary>
+        /// Der Name des Wertpapiers
+        /// </summary>
+        public string Name { get; set; }
+    }
+
     public class ExposureWatcher : IExposureProvider
     {
         private readonly IExposureSettings _receiver;
@@ -39,7 +63,8 @@ namespace HelperLibrary.Trading.PortfolioManager.Exposure
             var tradingRecords = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(
                 files.FirstOrDefault(x => x.ContainsIc(type.ToString())));
 
-            _benchmark = new PriceHistoryCollection(tradingRecords, true);
+            var calculationSettings = new PriceHistoryCollectionSettings(150, 0);
+            _benchmark = new PriceHistoryCollection(tradingRecords, calculationSettings);
         }
 
         private decimal? _lastSimulationNav;
@@ -74,6 +99,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Exposure
                 //hier erhöhe ich die Aktienquote
                 if (_currentStep <= 0)
                     return;
+
+                //ich erhöhe nur an Trading Tagen
+                //if (asof.DayOfWeek != _receiver.TradingDay)
+                //    return;
+
                 if (_currentStep >= 1)
                     _currentStep--;
                 UpdateMaximumRisk();

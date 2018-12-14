@@ -23,6 +23,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
             MinimumAllocationToRisk = new decimal(0.2);
             //2% Toleranz
             AllocationToRiskBuffer = new decimal(0.02);
+            MinimumPositionSizePercent = new decimal(0.02);
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         /// <summary>
         /// Cash Puffer Größe 50 Bps
         /// </summary>
-        public decimal CashPufferSize { get; set; } = new decimal(0.005);
+        public decimal CashPufferSizePercent { get; set; } = new decimal(0.005);
 
         /// <summary>
         /// The Trading Interval of The Portfolio
@@ -53,7 +54,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         /// <summary>
         /// der totale Investitionsgrad
         /// </summary>
-        public decimal MaxTotaInvestmentLevel => (1 - (decimal)CashPufferSize);
+        public decimal MaxTotaInvestmentLevel => (1 - (decimal)CashPufferSizePercent);
 
         /// <summary>
         /// Der Initiale Portfolio Wert
@@ -80,6 +81,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
 
         public string LoggingPath { get; set; }
         public decimal AllocationToRiskBuffer { get; set; }
+        public decimal MinimumPositionSizePercent { get; set; }
         public string IndicesDirectory { get; set; }
 
         /// <summary>
@@ -93,14 +95,15 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         public decimal MinimumAllocationToRisk { get; set; }
     }
 
-    public class DefaultPortfolioSettings : IPortfolioSettings, IExposureSettings
+    public class DefaultPortfolioSettings : IPortfolioSettings
     {
         public DefaultPortfolioSettings()
         {
             InitialCashValue = HelperLibrary.Settings.Default.PortfolioValueInitial;
             MaximumAllocationToRisk = 1;
             AllocationToRiskBuffer = new decimal(0.02);
-            
+            MinimumPositionSizePercent = (decimal)2 / 100;
+
         }
 
         /// <summary>
@@ -118,7 +121,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         /// <summary>
         /// Cash Puffer Größe 50 Bps
         /// </summary>
-        public decimal CashPufferSize { get; set; } = new decimal(0.005);
+        public decimal CashPufferSizePercent { get; set; } = new decimal(0.005);
 
         /// <summary>
         /// The Trading Interval of The Portfolio
@@ -133,7 +136,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         /// <summary>
         /// der totale Investitionsgrad
         /// </summary>
-        public decimal MaxTotaInvestmentLevel => (1 - (decimal)CashPufferSize);
+        public decimal MaxTotaInvestmentLevel => (1 - (decimal)CashPufferSizePercent);
 
         /// <summary>
         /// Der Initiale Portfolio Wert
@@ -163,7 +166,15 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         /// </summary>
         public string LoggingPath { get; set; }
 
+        /// <summary>
+        /// die Puffergröße für das hin-Allokieren zur maximalen bzw. minimalen Aktienquote
+        /// </summary>
         public decimal AllocationToRiskBuffer { get; set; }
+
+        /// <summary>
+        /// die Minimale Positionsgröße in % 
+        /// </summary>
+        public decimal MinimumPositionSizePercent { get; set; }
 
         /// <summary>
         /// der Pfad in dem die Daten zu den Indices liegen
@@ -174,7 +185,6 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         /// das Maximum der Aktienquote
         /// </summary>
         public decimal MaximumAllocationToRisk { get; set; }
-
 
         /// <summary>
         /// das Minimum der Aktienquote

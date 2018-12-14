@@ -147,22 +147,42 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
 
             //einfachster Fall es gibt nur eine Transaktion (ein opening dann erhöhe ich die
             //summe um Shares * aktueller Preis
-            if (pastTransactions.Count == 1 || pastTransactions[0].Shares < 0)
+            if (pastTransactions.Count == 1 /*|| pastTransactions[0].Shares < 0*/)
                 return pastTransactions[0].EffectiveAmountEur / pastTransactions[0].Shares;
 
-            decimal averagePrice = 0;
-            //sonst muss ich den mittleren Preis zurückgeben, da die Position ja aufgebaut / nachgekauft wurde
-            foreach (var transaction in pastTransactions)
-            {
-                var price = _scoringProvider
-                    .GetTradingRecord(transaction.SecurityId, transaction.TransactionDateTime)
-                    .AdjustedPrice;
+        
+            //var currentRecord = _scoringProvider.GetTradingRecord(secid, asof);
+            return Math.Round(Math.Abs(CurrentPortfolio[secid].EffectiveAmountEur) / CurrentPortfolio[secid].Shares, 4);
 
-                averagePrice += (decimal)transaction.Shares / CurrentPortfolio[secid].Shares * price;
+            //var pastTransactionsOrdered = pastTransactions.OrderBy(x => x.TransactionDateTime).ToList();
+            //decimal averagePrice = CurrentPortfolio[secid].EffectiveAmountEur / CurrentPortfolio[secid].Shares;
+
+            //for (var i = 1; i < pastTransactionsOrdered.Count; i++)
+            //{
+            //    var runningShares = pastTransactions.GetRange(0, i + 1).Sum(x => x.Shares);
+            //    averagePrice += CalcWeightedAverage(pastTransactions.GetRange(0, i + 1), CurrentPortfolio[secid].Shares);
+            //}
+
+            //return Math.Round(averagePrice, 4);
+        }
+
+        private decimal CalcWeightedAverage(List<ITransaction> range, decimal runningShares)
+        {
+            decimal average = 0;
+
+            foreach (var transaction in range)
+            {
+                average += GetWeightedShares(transaction) * GetPrice(transaction);
             }
 
-            return averagePrice;
+            return average;
+
+            decimal GetWeightedShares(ITransaction transaction) => transaction.Shares / runningShares;
+
+            decimal GetPrice(ITransaction transaction) => transaction.EffectiveAmountEur / transaction.Shares;
         }
+
+
 
         public ITransaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
         {
@@ -234,7 +254,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
 
         private IPortfolio GetCurrentPortfolio(IEnumerable<List<ITransaction>> cacheItems)
         {
-            
+
             if (cacheItems == null)
                 return null;
 
@@ -248,12 +268,6 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
 
             //sonst muss ich es neu rechnen
             _lastAsOf = currentAsof;
-
-            if (_lastAsOf >= new DateTime(2001, 01, 17))
-            {
-
-            }
-
 
             return GetCurrentPortfolio(items);
         }
@@ -329,7 +343,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
                         //sobald ich auf das letzte opening gestoßen bin remove ich alle alten aus der Liste und summiere nur die verbleibenden items
                         if (currentTransaction.TransactionType == TransactionType.Open)
                         {
-                            transactions.RemoveRange(0,i);
+                            transactions.RemoveRange(0, i);
                             break;
                         }
                     }

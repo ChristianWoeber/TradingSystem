@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using HelperLibrary.Database.Models;
 using JetBrains.Annotations;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -23,6 +22,13 @@ namespace Trading.UI.Wpf.ViewModels
         {
             _transaction = transaction;
             ScoringResult = scoringResult;
+        }
+
+        public TransactionViewModel(ITransaction transaction, IScoringResult scoringResult, bool isStop)
+        {
+            _transaction = transaction;
+            ScoringResult = scoringResult;
+            IsStop = isStop;
         }
 
 
@@ -58,6 +64,8 @@ namespace Trading.UI.Wpf.ViewModels
         }
 
         public bool IsBuy => _transaction.Shares > 0;
+
+        public  bool IsStop { get;  }
     
         public decimal? Score => ScoringResult?.Score;
 

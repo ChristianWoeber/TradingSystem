@@ -19,5 +19,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
         /// der Context der noch settings enthält
         /// </summary>
         IRebalanceContext Context { get; set; }
+
+        /// <summary>
+        /// Gibt an ob ich zum nächsten Regel weitergerhen kann
+        /// default = treu
+        /// </summary>
+        bool CanMoveNext { get; set; }
     }
 }

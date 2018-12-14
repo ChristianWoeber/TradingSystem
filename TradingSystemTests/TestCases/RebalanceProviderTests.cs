@@ -41,7 +41,9 @@ namespace TradingSystemTests.TestCases
                 GetHandler(candidate));
             _portfolioManager.TemporaryPortfolio.AddRange(_portfolioManager.CurrentPortfolio);
 
-            _scoringProvider = new ScoringProvider(TestHelper.CreateTestDictionary("EuroStoxx50Member.xlsx", startDate, endDate));
+            //TODO Refactoren!
+
+            _scoringProvider = new ScoringProvider(TestHelper.CreateTestDictionary("EuroStoxx50Member.xlsx", startDate, endDate.AddDays(15)));
             _portfolioManager.RegisterScoringProvider(_scoringProvider);
 
             var portfolioValuation = typeof(TradingCandidate).GetField("_valuation", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -106,9 +108,8 @@ namespace TradingSystemTests.TestCases
         }
 
 
-       
+
         [TestCase("BestCandidates_16.02.2000.txt", "AllCandidates_16.02.2000.txt")]
-       
         public void RebalanceTemporaryPortfolioTest(string bestCandidatesfileName, string candidatesFileName)
         {
             var bestCandidates = TestHelper.CreateTestCollectionFromJson<List<ITradingCandidate>>(bestCandidatesfileName) ?? new List<ITradingCandidate>();
@@ -130,41 +131,42 @@ namespace TradingSystemTests.TestCases
                 }
             }
 
-            var maxBoundary = _portfolioManager.PortfolioSettings.MaximumAllocationToRisk *
-                              (1 - _portfolioManager.PortfolioSettings.AllocationToRiskBuffer);
+            var maxBoundary = _portfolioManager.MaximumBoundary;
 
-            var minBoundryMinimum = _portfolioManager.PortfolioSettings.MinimumAllocationToRisk *
-                                    (1 - _portfolioManager.PortfolioSettings.AllocationToRiskBuffer);
+            var minBoundryMinimum = _portfolioManager.MinimumBoundary;
+
             var minBoundryMaximum = _portfolioManager.PortfolioSettings.MinimumAllocationToRisk *
                                     (1 + _portfolioManager.PortfolioSettings.AllocationToRiskBuffer);
 
 
             Assert.IsTrue(_portfolioManager.CashHandler.Cash > 0, "Achtung beim Rebalancing ist etwas schief gegangen");
 
-            Assert.IsTrue(_portfolioManager.CurrentAllocationToRisk.IsBetween(maxBoundary, _portfolioManager.PortfolioSettings.MaximumAllocationToRisk), "Achtung die Aktienquote ist nicht in Range");
+            Assert.IsTrue(_portfolioManager.CurrentAllocationToRisk >= minBoundryMinimum, "Achtung die Aktienquote ist nicht in Range");
             if (_portfolioManager.PortfolioSettings.MaximumAllocationToRisk <= _portfolioManager.PortfolioSettings.MinimumAllocationToRisk)
                 Assert.IsTrue(_portfolioManager.CurrentAllocationToRisk.IsBetween(minBoundryMinimum, minBoundryMaximum), "Achtung die Aktienquote ist nicht in Range");
 
         }
 
-        [TestCase("BestCandidates_25.10.2000.txt", "AllCandidates_25.10.2000.txt", 0.0, 0.2)]
-        [TestCase("BestCandidates_25.10.2000.txt", "AllCandidates_25.10.2000.txt", 0.0)]
-        [TestCase("BestCandidates_25.10.2000.txt", "AllCandidates_25.10.2000.txt", 0.2)]
+
+        [TestCase("BestCandidates_11.10.2000.txt", "AllCandidates_11.10.2000.txt", 0.6, 0.2)]
+        [TestCase("BestCandidates_08.03.2000.txt", "AllCandidates_08.03.2000.txt", 1, 0.2)]
+        //[TestCase("BestCandidates_25.10.2000.txt", "AllCandidates_25.10.2000.txt", 0.0)]
+        //[TestCase("BestCandidates_25.10.2000.txt", "AllCandidates_25.10.2000.txt", 0.2)]
         public void RebalanceTemporaryPortfolioTestAllocationToRisk(string bestCandidatesfileName, string candidatesFileName, double maxAllocationToRisk, double? minimumAllocationToRisk = null)
         {
-            var bestCandidates = TestHelper.CreateTestCollectionFromJson<List<TradingCandidate>>(bestCandidatesfileName) ?? new List<TradingCandidate>();
-            var candidates = TestHelper.CreateTestCollectionFromJson<List<TradingCandidate>>(candidatesFileName) ?? new List<TradingCandidate>();
+            var bestCandidates = TestHelper.CreateTestCollectionFromJson<List<ITradingCandidate>>(bestCandidatesfileName) ?? new List<ITradingCandidate>();
+            var candidates = TestHelper.CreateTestCollectionFromJson<List<ITradingCandidate>>(candidatesFileName) ?? new List<ITradingCandidate>();
             var file = bestCandidatesfileName ?? candidatesFileName;
             var date = file.Substring(file.IndexOf("_", StringComparison.Ordinal), 11).Replace("_", "");
 
             Init(candidates[0], null, DateTime.Parse(date));
 
             //die settings überschreiben
-            _portfolioManager.PortfolioSettings.MaximumAllocationToRisk =new decimal(maxAllocationToRisk);
+            _portfolioManager.PortfolioSettings.MaximumAllocationToRisk = new decimal(maxAllocationToRisk);
             _portfolioManager.PortfolioSettings.MinimumAllocationToRisk = new decimal(minimumAllocationToRisk ?? 0);
 
             //TestMethode
-            _rebalanceProvider.RebalanceTemporaryPortfolio(bestCandidates.Select(c => (ITradingCandidate)c).ToList(), candidates.Select(c => (ITradingCandidate)c).ToList());
+            _rebalanceProvider.RebalanceTemporaryPortfolio(bestCandidates, candidates);
 
             var dateTimeGroup = _portfolioManager.TemporaryPortfolio.GroupBy(x => x.TransactionDateTime);
 

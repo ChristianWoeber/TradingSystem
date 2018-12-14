@@ -9,6 +9,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
     /// </summary>
     public class FirstCandidateIsNotInvesterdInRule : INeeedRebalanceRule
     {
+        /// <summary>
+        /// Achtung Sortierreihenfolge beachten
+        /// </summary>
+        /// <param name="candidates"></param>
+        /// <returns></returns>
         public bool Apply(IEnumerable<ITradingCandidate> candidates)
         {
             return candidates.FirstOrDefault()?.IsInvested != true;
@@ -17,5 +22,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
         public int SortIndex { get; set; } = 1;
 
         public IRebalanceContext Context { get; set; }
+
+        /// <summary>
+        /// Gibt an ob ich zum nächsten Regel weitergerhen kann
+        /// default = treu
+        /// </summary>
+        public bool CanMoveNext { get; set; } = true;
     }
 }

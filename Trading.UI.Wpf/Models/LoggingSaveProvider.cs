@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Common.Lib.Extensions;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Parsing;
 using HelperLibrary.Trading.PortfolioManager;
 using HelperLibrary.Trading.PortfolioManager.Cash;
-using HelperLibrary.Util.Atrributes;
-using NLog;
 using Trading.DataStructures.Interfaces;
 
 namespace Trading.UI.Wpf.Models

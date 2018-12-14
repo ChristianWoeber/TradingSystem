@@ -70,10 +70,12 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
 
             //der gesamt ziel Betrag in EuR
             var completeTargetAmount = Math.Round(PortfolioValue * candidate.TargetWeight, 4);
+
+            //das darf ich nur machen wenn ich Positionen aufstocke
             if (candidate.IsInvested)
             {
                 //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
-                return completeTargetAmount - (candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice);
+                return Math.Round(completeTargetAmount - (candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice));
             }
             return completeTargetAmount;
         }

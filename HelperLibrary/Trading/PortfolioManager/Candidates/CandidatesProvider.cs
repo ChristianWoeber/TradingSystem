@@ -25,13 +25,16 @@ namespace HelperLibrary.Trading
             //ich itereriere die Collection von priceHistory
             foreach (var priceHistory in _scoringProvider.PriceHistoryStorage.Values)
             {
+                //den Score rechnen
                 var score = _scoringProvider.GetScore(priceHistory.SecurityId, startDateInput);
 
                 if (!score.IsValid)
                     continue;
 
-                //add candidate
-                listWithCandidates.Add(new Candidate(priceHistory.Get(startDateInput, option), score));
+                //add candidate und Namen setzen
+                var record = priceHistory.Get(startDateInput, option);
+                record.Name = priceHistory.Settings.Name;
+                listWithCandidates.Add(new Candidate(record, score));
             }
 
             return listWithCandidates.Count == 0

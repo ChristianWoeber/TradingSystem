@@ -23,15 +23,11 @@ namespace Trading.DataStructures.Interfaces
         /// <summary>
         /// die Puffergröße die verbleiben soll (nach maximalen investitionsgrad
         /// </summary>
-        decimal CashPufferSize { get; set; }
+        decimal CashPufferSizePercent { get; set; }
 
+  
         /// <summary>
-        /// der Handelstag, an dem das Portfolio immer neu allokiert wird
-        /// </summary>
-        DayOfWeek TradingDay { get; set; }
-
-        /// <summary>
-        /// das Trading Interval wie of gehandelt wird
+        /// das Trading Interval wie oft gehandelt wird
         /// </summary>
         TradingInterval Interval { get; set; }
 
@@ -68,5 +64,10 @@ namespace Trading.DataStructures.Interfaces
         /// die Puffergröße für das hin-Allokieren zur maximalen bzw. minimalen Aktienquote
         /// </summary>
         decimal AllocationToRiskBuffer { get; set; }
+
+        /// <summary>
+        /// die Minimale Positionsgröße in % 
+        /// </summary>
+        decimal MinimumPositionSizePercent { get; set; }
     }
 }

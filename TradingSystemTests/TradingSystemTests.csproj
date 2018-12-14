@@ -158,7 +158,11 @@
     <None Include="Resources\BestCandidates_19.01.2000.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\AllCandidates_11.10.2000.txt" />
+    <None Include="Resources\AllCandidates_08.03.2000.txt" />
     <Content Include="Resources\AllCandidates_16.02.2000.txt" />
+    <None Include="Resources\BestCandidates_11.10.2000.txt" />
+    <None Include="Resources\BestCandidates_08.03.2000.txt" />
     <Content Include="Resources\BestCandidates_16.02.2000.txt" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

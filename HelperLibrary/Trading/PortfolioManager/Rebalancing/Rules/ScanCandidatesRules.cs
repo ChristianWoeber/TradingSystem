@@ -21,13 +21,13 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
 
                 if (currentSum.IsBetween(Context.MinimumBoundary, Context.MaximumBoundary) || currentSum >= Context.MaximumBoundary)
                 {
-                    if (candidatesList.GetRange(0, i).All(x => x.TransactionType == TransactionType.Unchanged))
+                    if (candidatesList.GetRange(0, i+1).All(x => x.TransactionType == TransactionType.Unchanged))
                         return false;
                 }
 
                 if (!currentCandidate.IsInvested)
                 {
-                    if (candidatesList.GetRange(0, i).All(x => x.TransactionType == TransactionType.Unchanged))
+                    if (candidatesList.GetRange(0, i+1).All(x => x.TransactionType == TransactionType.Unchanged))
                         return false;
                     break;
                 }
@@ -38,5 +38,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
 
         public int SortIndex { get; set; } = 3;
         public IRebalanceContext Context { get; set; }
+
+        /// <summary>
+        /// Gibt an ob ich zum nächsten Regel weitergerhen kann
+        /// default = treu
+        /// </summary>
+        public bool CanMoveNext { get; set; } = true;
     }
 }

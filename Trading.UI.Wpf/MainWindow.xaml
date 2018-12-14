@@ -17,13 +17,20 @@
             <arts:SmartFlyout.Items>
                 <arts:SmartFlyoutItem HeaderText="Einstellungen" TextAppearance="Header2"  HeaderTextForeground="White" Width="500" >
                     <arts:SmartFlyoutItem.FlyoutContent>
-                    <controls:SettingsControl/>
+                        <controls:SettingsControl/>
                     </arts:SmartFlyoutItem.FlyoutContent>
                 </arts:SmartFlyoutItem>
 
                 <arts:SmartFlyoutItem HeaderText="Holdings" TextAppearance="Header2"  HeaderTextForeground="White" Width="870">
                     <arts:SmartFlyoutItem.FlyoutContent>
                         <controls:CurrentHoldingsControl />
+                    </arts:SmartFlyoutItem.FlyoutContent>
+                </arts:SmartFlyoutItem>
+
+
+                <arts:SmartFlyoutItem HeaderText="Candidates" Icon="UwpList" TextAppearance="Header2"  HeaderTextForeground="White" Width="870">
+                    <arts:SmartFlyoutItem.FlyoutContent>
+                        <controls:CandidatesControl />
                     </arts:SmartFlyoutItem.FlyoutContent>
                 </arts:SmartFlyoutItem>
 
@@ -38,7 +45,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
- 
+
                     <StackPanel Orientation="Horizontal" >
                         <arts:SmartIconButton Icon="UwpOpenFile"                                             
                                               Description="Backtesteinstellungen laden" 
@@ -47,16 +54,30 @@
                                               Margin="5" 
                                               VerticalContentAlignment="Center" 
                                               HorizontalContentAlignment="Center"/>
-
-                        <arts:SmartIconButton Icon="UwpNext"                                           
+                        <StackPanel>
+                            <arts:SmartIconButton Icon="UwpNext"                                           
                                               Description="Next Trading Day" 
+                                              DescriptionAlignment="Right"
                                               Command="{Binding MoveCursorToNextTradingDayCommand}" 
                                               Width="auto" 
-                                              Margin="5" 
+                                              IconBrush="LightSeaGreen"
+                                              Margin="5 5 5 0" 
                                               VerticalContentAlignment="Center" 
                                               HorizontalContentAlignment="Center"/>
-                        
-                          <arts:SmartIconButton Icon="FaPlay"                                           
+
+                            <arts:SmartIconButton Icon="UwpNext"                                           
+                                                  Description="Next Stopp Day" 
+                                                  IconBrush="Red"
+                                                  DescriptionAlignment="Right"
+                                                  Command="{Binding MoveCursorToNextStoppDayCommand}" 
+                                                  Width="auto" 
+                                                  Margin="5 0 5 0" 
+                                                  VerticalContentAlignment="Center" 
+                                                  HorizontalContentAlignment="Center"/>
+
+                        </StackPanel>
+
+                        <arts:SmartIconButton Icon="FaPlay"                                           
                                               Description="Neuen Backtest starten" 
                                               Command="{Binding RunNewBacktestCommand}" 
                                               Width="auto" 
@@ -75,12 +96,12 @@
                                               HorizontalContentAlignment="Center"/>
 
                     </StackPanel>
-                    
+
                     <arts:SmartBusyOverlay Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                            BusyText="Erstelle Backtest"
                                            BusyAppearance="{Binding IsBusy, Converter={x:Static converter:SmartBusyRegionToBusyAppearanceConverter.Inst}}"></arts:SmartBusyOverlay>
                     <controls:MainChartControl Grid.Column="0" Grid.Row="1" />
-                 
+
                 </Grid>
             </arts:SmartFlyout.Content>
         </arts:SmartFlyout>

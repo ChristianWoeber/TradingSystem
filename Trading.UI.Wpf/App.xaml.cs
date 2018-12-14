@@ -1,13 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Reflection;
 using System.Windows;
-using Common.Lib.Extensions;
 using Common.Lib.UI.WPF.Core.Styling;
-using HelperLibrary.Database.Models;
 using HelperLibrary.Trading;
-using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Utils;
 using Trading.UI.Wpf.ViewModels;
 
@@ -24,10 +19,11 @@ namespace Trading.UI.Wpf
             //base Path from eecuting assembly
             Globals.BasePath = Path.GetFullPath(Path.Combine(Assembly.GetExecutingAssembly().Location, @"../../../"));
             Globals.PriceHistoryFilePath = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/PriceHistory/EuroStoxx50Member.xlsx"));
-            Globals.IndicesBasePath= Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/Indices"));
+            Globals.IndicesBasePath = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/Indices"));
+            Globals.PriceHistoryDirectory = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/PriceHistory"));
 
             //scoring provider erstellen
-            var scoringProvider = new ScoringProvider(Factory.CreatePriceHistoryFromFile(Globals.PriceHistoryFilePath, new DateTime(1999, 01, 01), new DateTime(2005, 01, 01)));
+            var scoringProvider = new ScoringProvider(BootStrapperFactory.CreatePriceHistoryFromSingleFiles(Globals.PriceHistoryDirectory));
 
             //main window erstellen
             var mainwindow = new MainWindow { DataContext = new TradingViewModel(scoringProvider) };

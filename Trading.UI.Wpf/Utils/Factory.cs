@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using HelperLibrary.Collections;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Parsing;
@@ -11,7 +13,7 @@ using Trading.UI.Wpf.Models;
 namespace Trading.UI.Wpf.Utils
 {
 
-    public static class Factory
+    public static class BootStrapperFactory
     {
         public static IEnumerable<T> CreateCollectionFromFile<T>(string path)
         {
@@ -20,11 +22,11 @@ namespace Trading.UI.Wpf.Utils
                 : null;
         }
 
-      
+
 
         private static readonly Dictionary<int, string> _idToNameCatalog = new Dictionary<int, string>();
 
-        public static Dictionary<int, IPriceHistoryCollection> CreatePriceHistoryFromFile(string path, DateTime? start, DateTime? end)
+        public static Dictionary<int, IPriceHistoryCollection> CreatePriceHistoryFromFile(string path, DateTime? start, DateTime? end = null)
         {
             if (start == null)
                 start = new DateTime(2004, 01, 01);
@@ -60,7 +62,7 @@ namespace Trading.UI.Wpf.Utils
                         if (date > end)
                             break;
 
-                        var quote = new TradingRecord()
+                        var quote = new TradingRecord
                         {
                             Asof = date,
                             Price = price,
@@ -72,7 +74,7 @@ namespace Trading.UI.Wpf.Utils
                         quotes.Add(quote);
                     }
                     _idToNameCatalog.Add(sheet.Index, secName);
-                    dic.Add(sheet.Index, new PriceHistoryCollection(quotes));
+                    dic.Add(sheet.Index, PriceHistoryCollection.Create(quotes));
                 }
             }
             return dic;
@@ -82,6 +84,59 @@ namespace Trading.UI.Wpf.Utils
         {
             return _idToNameCatalog;
         }
+
+        public static Dictionary<int, IPriceHistoryCollection> CreatePriceHistoryFromSingleFiles(string path)
+        {
+            //der Return Value
+            var dic = new Dictionary<int, IPriceHistoryCollection>();
+
+            if (!Directory.Exists(path))
+                throw new ArgumentException(@"Am angegeben Pfad exisitert keine Datei !", path);
+
+            //Parallel For Each ist in diesem Fall um den Faktor der kerne schneller
+            Parallel.ForEach(Directory.GetFiles(path, "*.csv"), file =>
+            {
+                if (string.IsNullOrWhiteSpace(file))
+                    return;
+                //Id und Name parsen aus dem File
+                var split = Path.GetFileNameWithoutExtension(file).Split('_');
+                var name = split[0];
+                var id = Convert.ToInt32(split[1]);
+                //die TradingRecords auslesen
+                var data = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(file);
+                //settings erstellen
+                var settings = new PriceHistorySettings { Name = name };
+                //im dictionary merken
+                dic.Add(id, PriceHistoryCollection.Create(data, settings));
+            });
+
+            return dic;
+        }
+
+    }
+
+    public class PriceHistorySettings : IPriceHistoryCollectionSettings
+    {
+        public PriceHistorySettings(int movingAverageLengthInDays = 150, int movingDaysVolatility = 250)
+        {
+            MovingAverageLengthInDays = movingAverageLengthInDays;
+            MovingDaysVolatility = movingDaysVolatility;
+        }
+
+        /// <summary>
+        /// die Länge des Moving Averages
+        /// </summary>
+        public int MovingAverageLengthInDays { get; set; }
+
+        /// <summary>
+        /// die "Länge" der Volatilität
+        /// </summary>
+        public int MovingDaysVolatility { get; set; }
+
+        /// <summary>
+        /// Der Name des Wertpapiers
+        /// </summary>
+        public string Name { get; set; }
     }
 }
 

@@ -26,12 +26,14 @@ namespace HelperLibrary.Trading.PortfolioManager
             Asof = ((IIndexBackTestResult) receiver).Asof;
             SimulationNav = ((IIndexBackTestResult)receiver).SimulationNav;
             IndexLevel = ((IIndexBackTestResult)receiver).IndexLevel;
+            TradingDay = receiver.TradingDay;
 
         }
 
         public decimal MaximumAllocationToRisk { get; set; }
         public decimal MinimumAllocationToRisk { get; set; }
         public string IndicesDirectory { get; set; }
+        public DayOfWeek TradingDay { get; set; }
 
         public DateTime Asof { get; set; }
 

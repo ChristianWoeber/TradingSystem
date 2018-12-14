@@ -17,12 +17,19 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
 
         public RebalanceCollection(IEnumerable<ITradingCandidate> candidates, IPortfolioSettings settings) : this(settings)
         {
+            decimal sum = 0;
             foreach (var candidate in candidates.OrderByDescending(x => x.RebalanceScore.Score))
             {
+                sum += candidate.TargetWeight;
+                if (!candidate.IsInvested && sum <= 1)
+                    RebalanceTargetWeight += candidate.TargetWeight;
+
                 Add(candidate);
             }
         }
-        
+
+        public decimal RebalanceTargetWeight { get; set; }
+
         /// <summary>
         /// Der Count der Collection
         /// </summary>
@@ -32,7 +39,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
         /// Gibt mir an ob ich überhaupt etwas unternehemen muss
         /// </summary>     
         public bool NeedsRebalancing { get; set; }
-      
+
         /// <summary>
         /// Gibt mir an ob es einen besseren Kandidaten ausserhalb des Portfolios gibt
         /// </summary>

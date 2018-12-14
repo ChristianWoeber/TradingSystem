@@ -11,5 +11,6 @@ namespace Trading.UI.Wpf
         public static string PriceHistoryFilePath { get; set; }
         public static string BasePath { get; set; }
         public static string IndicesBasePath { get; set; }
+        public static string PriceHistoryDirectory { get; internal set; }
     }
 }

@@ -23,8 +23,7 @@ namespace Trading.DataStructures.Interfaces
         /// <summary>
         /// Methode um das Cash zu bereiningen
         /// </summary>
-        /// <param name="tradingCandidates"></param>
-        /// <param name="bestNotInvestedCandidates"></param>
-        void CleanUpCash(List<ITradingCandidate> tradingCandidates, List<ITradingCandidate> bestNotInvestedCandidates);
+        /// <param name="availableCandidates"></param>
+        void CleanUpCash(List<ITradingCandidate> availableCandidates);
     }
 }

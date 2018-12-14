@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using HelperLibrary.Collections;
 using HelperLibrary.Extensions;
+using HelperLibrary.Trading.PortfolioManager.Exposure;
 using NUnit.Framework;
 using Trading.DataStructures.Enums;
+using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Models;
 
 namespace TradingSystemTests.TestCases
@@ -20,7 +22,7 @@ namespace TradingSystemTests.TestCases
         public void CreatePriceHistoryTest(string fileName)
         {
             var data = CreateTestCollecton(fileName);
-            _history = new PriceHistoryCollection(data);
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data);
 
             Assert.IsTrue(_history != null, "Achtung die Collection ist null");
             Assert.IsTrue(_history.Count > 100, "Achtung es konnten nicht alle daten geladen werden");
@@ -136,18 +138,22 @@ namespace TradingSystemTests.TestCases
                 Assert.IsTrue(itm.Asof.IsBusinessDayUltimo() || itm.Asof.IsUltimo());
         }
 
-        [TestCase("AdidasHistory.txt", "01.09.2008")]
-        public void CreatePriceHistoryWithLowCalculationTest(string fileName, string dateString)
+
+        [TestCase("AdidasHistory.txt", "21.11.2008")]
+        public void CreatePriceHistoryWithCalculationSettingsTest(string fileName, string dateString)
         {
             var data = CreateTestCollecton(fileName);
-            _history = new PriceHistoryCollection(data, true);
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
 
             Assert.IsTrue(_history != null, "Achtung die Collection ist null");
             Assert.IsTrue(_history.Count > 100, "Achtung es konnten nicht alle daten geladen werden");
 
             var date = DateTime.Parse(dateString);
             Assert.IsTrue(_history.TryGetLowMetaInfo(date, out var lowMetaInfo));
+            Assert.IsTrue(_history.TryGetVolatilityInfo(date, out var volaMetaInfo));
             Assert.IsTrue(lowMetaInfo != null && lowMetaInfo.HasNewLow);
+            Assert.IsTrue(volaMetaInfo != null && volaMetaInfo.DailyVolatility > 0);
+            Assert.IsTrue(volaMetaInfo != null && volaMetaInfo.DailyVolatility > new decimal(0.49d));
         }
 
 
@@ -177,5 +183,24 @@ namespace TradingSystemTests.TestCases
                 };
             }
         }
+
+        //public class PriceHistoryCalculationSettings : IPriceHistoryCollectionSettings
+        //{
+        //    public PriceHistoryCalculationSettings(int movingdays = 150, int volaLength = 250)
+        //    {
+        //        MovingAverageLengthInDays = movingdays;
+        //        MovingDaysVolatility = volaLength;
+        //    }
+
+        //    /// <summary>
+        //    /// die Länge des Moving Averages
+        //    /// </summary>
+        //    public int MovingAverageLengthInDays { get; set; }
+
+        //    /// <summary>
+        //    /// die "Länge" der Volatilität
+        //    /// </summary>
+        //    public int MovingDaysVolatility { get; set; }
+        //}
     }
 }

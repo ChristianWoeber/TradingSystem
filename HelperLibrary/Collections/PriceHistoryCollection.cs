@@ -12,6 +12,7 @@ using HelperLibrary.Extensions;
 
 namespace HelperLibrary.Collections
 {
+
     /// <summary>
     /// Hilfsklasse die den YahooDataRecord beliebig erweitert
     /// </summary>
@@ -42,12 +43,10 @@ namespace HelperLibrary.Collections
     /// <summary>
     /// Price History Collection - Enthält Berechnungen zur PriceHistory und gibt die Items zurück
     /// </summary>
-    public class PriceHistoryCollection : IEnumerable<ITradingRecord>, IPriceHistoryCollection
+    public class PriceHistoryCollection : IPriceHistoryCollection
     {
-        private readonly bool _calcMovingLows;
 
-
-        #region Items and LookUp
+        #region private Collections and LookUp
 
         /// <summary>
         /// der Backing Storage für die Items die im Enumerator zrückgegeben werden
@@ -62,104 +61,32 @@ namespace HelperLibrary.Collections
         private ITradingRecord _first => _items != null && _items.Count > 0 ? _items?[0] : null;
         private ITradingRecord _last => _items != null && _items.Count > 0 ? _items?[Count - 1] : null;
 
-        private CalculationContext _calculationContext;
-
-        #endregion
-
-        #region Public Members
-        /// <summary>
-        /// Return the First Item in the Enumeration
-        /// </summary>
-        public ITradingRecord FirstItem => _first;
-
-        /// <summary>
-        /// Return the Last Item in the Enumeration
-        /// </summary>
-        public ITradingRecord LastItem => _last;
-
-
-        /// <summary>
-        /// Zugriff auf den Calculation Context
-        /// </summary>
-        public ICalculationContext Calc => (ICalculationContext)_calculationContext;
-
-
-
-        internal void Clear()
-        {
-            _items.Clear();
-
-        }
-
-        internal void Add(ITradingRecord item)
-        {
-            if (item != null && item.Asof > DateTime.MinValue)
-            {
-                if (item.AdjustedPrice == decimal.Zero || item.Price == decimal.Zero)
-                    return;
-
-                //add the item to the history collection
-                _items.Add(item);
-
-                if (_items.Count == 1)
-                    return;
-
-                //ich füge immer das vorherige und das aktuelle item ein, davon rechne ich den return
-                _calculationContext.AddDailyReturn(_items[_items.Count - 2], _items[_items.Count - 1]);
-
-                //das arithmetische Mittel bereits beim Einfügern mit berechnen
-                _calculationContext.CalcArithmeticMean(item, _items.Count);
-
-                if (_calcMovingLows)
-                    _calculationContext.CalcMovingLows(item, _items.Count);
-            }
-        }
-
-        internal void AddRange(IEnumerable<ITradingRecord> data)
-        {
-            foreach (var item in data)
-                Add(item);
-        }
-
-
-        public decimal GetDailyReturn(ITradingRecord record)
-        {
-            if(record==null)
-                return decimal.MinusOne;
-            return _calculationContext.TryGetDailyReturn(record.Asof, out var dailyReturn) ? dailyReturn : decimal.MinusOne;
-        }
-
-        /// <summary>
-        /// Returns the Count of the items Collection
-        /// </summary>
-        public int Count => _items.Count;
-
-        /// <summary>
-        /// Returns the SecurityId of the underlying Security
-        /// </summary>
-        public int SecurityId => FirstItem?.SecurityId ?? -1;
-
+        private readonly CalculationContext _calculationContext;
 
         #endregion
 
         #region Constructor
 
-        public PriceHistoryCollection(IEnumerable<ITradingRecord> tradingRecords, bool calcMovingLows = false, int movingLowsPeriode = 150)
+        internal PriceHistoryCollection(IEnumerable<ITradingRecord> tradingRecords, IPriceHistoryCollectionSettings settings = null)
         {
-            _calcMovingLows = calcMovingLows;
-            MovingDays = movingLowsPeriode;
+            Settings = settings;
             _calculationContext = new CalculationContext(this);
             //add the items to the Observable Collection this can be bound to the UI
             AddRange(tradingRecords);
         }
-
-        internal int MovingDays;
 
         public void Delete(ITradingRecord selectedRecord)
         {
             if (_items.Contains(selectedRecord))
                 _items.Remove(selectedRecord);
         }
+
+        public static IPriceHistoryCollection Create(IEnumerable<ITradingRecord> tradingRecords,
+            IPriceHistoryCollectionSettings settings = null)
+        {
+            return new PriceHistoryCollection(tradingRecords, settings);
+        }
+
 
         /// <summary>
         /// Clears the old items and loads the complete collecton anew
@@ -176,6 +103,101 @@ namespace HelperLibrary.Collections
 
 
         #endregion
+
+
+
+        #region Public Members
+        /// <summary>
+        /// Return the First Item in the Enumeration
+        /// </summary>
+        public ITradingRecord FirstItem => _first;
+
+        /// <summary>
+        /// Return the Last Item in the Enumeration
+        /// </summary>
+        public ITradingRecord LastItem => _last;
+
+
+        /// <summary>
+        /// Zugriff auf den Calculation Context
+        /// </summary>
+        public ICalculationContext Calc => _calculationContext;
+
+
+        internal void Clear()
+        {
+            _items.Clear();
+
+        }
+
+        internal void Add(ITradingRecord item)
+        {
+            if (item == null || item.Asof <= DateTime.MinValue)
+                return;
+
+            if (item.AdjustedPrice == decimal.Zero || item.Price == decimal.Zero)
+                return;
+
+            //add the item to the history collection
+            _items.Add(item);
+
+            //beim ersten eintrag kann ich noch nichts berechnen
+            if (_items.Count == 1)
+                return;
+
+            //ich füge immer das vorherige und das aktuelle item ein, davon rechne ich den return
+            _calculationContext.AddDailyReturn(_items[_items.Count - 2], _items[_items.Count - 1]);
+
+            //das arithmetische Mittel bereits beim Einfügern mit berechnen
+            _calculationContext.CalcArithmeticMean(item, _items.Count);
+
+            //überprüfen ob der Collection settings mitgegeben wurden und danach die berechnnugen ausführen
+            if (Settings?.MovingAverageLengthInDays > 0)
+            {
+                _calculationContext.CalcMovingLows(item, _items.Count);
+
+            }
+            if (Settings?.MovingDaysVolatility > 0)
+            {
+                if (item.Asof >= FirstItem.Asof.AddDays(Settings.MovingDaysVolatility))
+                    _calculationContext.CalcMovingVola(item, _items.Count);
+            }
+
+
+        }
+
+        internal void AddRange(IEnumerable<ITradingRecord> data)
+        {
+            foreach (var item in data)
+                Add(item);
+        }
+
+
+        public decimal GetDailyReturn(ITradingRecord record)
+        {
+            if (record == null)
+                return decimal.MinusOne;
+            return _calculationContext.TryGetDailyReturn(record.Asof, out var dailyReturn) ? dailyReturn : decimal.MinusOne;
+        }
+
+        /// <summary>
+        /// Returns the Count of the items Collection
+        /// </summary>
+        public int Count => _items.Count;
+
+        /// <summary>
+        /// Returns the SecurityId of the underlying Security
+        /// </summary>
+        public int SecurityId => FirstItem?.SecurityId ?? -1;
+
+        /// <summary>
+        /// die Settings für die Berechnung der Moving Averages bzw. der Vola
+        /// </summary>
+        public IPriceHistoryCollectionSettings Settings { get; }
+
+        #endregion
+
+
 
         #region Methods
 
@@ -222,8 +244,13 @@ namespace HelperLibrary.Collections
             return _calculationContext.TryGetLastLowItem(currentDate, out info);
         }
 
+        public bool TryGetVolatilityInfo(DateTime currentDate, out MovingVolaMetaInfo info)
+        {
+            return _calculationContext.TryGetLastVolatilityInfo(currentDate, out info);
+        }
 
-        private const int CANCELLATION_COUNT = 15;
+
+        private const int CANCELLATION_COUNT = 30;
         private int _count;
 
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
-{  
+{
     /// <summary>
     /// Abstrakte BasisKlasse des PortfolioManagers die, die Kandidaten als auch die TransactionItems führt
     /// </summary>
@@ -38,7 +38,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Der Scorping Provider - gibt das Scoring zu jeder security zu einem bestimmten Zeitpunkt zurück
         /// </summary>
-        protected IScoringProvider ScoringProvider;
+        public IScoringProvider ScoringProvider { get; set; }
 
         private DateTime _portfolioAsof;
 

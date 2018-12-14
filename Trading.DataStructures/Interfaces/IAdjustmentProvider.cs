@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 
 namespace Trading.DataStructures.Interfaces
@@ -45,6 +46,18 @@ namespace Trading.DataStructures.Interfaces
         decimal PortfolioValue { get; }
 
         /// <summary>
+        /// Das aktuelle Asof Datum des Portfoliomanagers
+        /// </summary>
+        DateTime PortfolioAsof { get; set; }
+
+
+        /// <summary>
+        /// die Aktuelle Auslastung
+        /// </summary>
+        decimal CurrentSumInvestedEffectiveWeight { get; }
+
+
+        /// <summary>
         /// Die Temporären Kandiaten
         /// </summary>
         /// <returns></returns>
@@ -64,6 +77,11 @@ namespace Trading.DataStructures.Interfaces
         /// die maximale Riskogrenze inklusive Puffer
         /// </summary>
         decimal MaximumBoundary { get; }
+
+        /// <summary>
+        /// Der Scoring Provider
+        /// </summary>
+        IScoringProvider ScoringProvider { get; }
 
     }
 }

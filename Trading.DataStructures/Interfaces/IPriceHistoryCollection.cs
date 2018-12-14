@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Trading.DataStructures.Enums;
 
 namespace Trading.DataStructures.Interfaces
@@ -6,7 +7,7 @@ namespace Trading.DataStructures.Interfaces
     /// <summary>
     /// PriceHistroyCollection Interface
     /// </summary>
-    public interface IPriceHistoryCollection
+    public interface IPriceHistoryCollection : IEnumerable<ITradingRecord>
     {
         /// <summary>
         /// the Calculation Context, which holds all calculation logic
@@ -33,5 +34,10 @@ namespace Trading.DataStructures.Interfaces
         /// The Unterlying Security Id
         /// </summary>
         int SecurityId { get; }
+
+        /// <summary>
+        /// die Settings zur PriceHistoryCollection falls vorhanden
+        /// </summary>
+        IPriceHistoryCollectionSettings Settings { get; }
     }
 }

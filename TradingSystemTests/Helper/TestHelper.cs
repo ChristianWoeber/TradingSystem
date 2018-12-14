@@ -138,7 +138,7 @@ namespace TradingSystemTests.Helper
 
                         quotes.Add(quote);
                     }
-                    dic.Add(sheet.Index, new PriceHistoryCollection(quotes));
+                    dic.Add(sheet.Index, PriceHistoryCollection.Create(quotes));
                 }
             }
             //stopwatch.Stop();
