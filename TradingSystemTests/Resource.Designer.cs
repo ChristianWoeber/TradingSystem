@@ -468,6 +468,28 @@ namespace TradingSystemTests {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Asof;Price;SecurityId;AdjustedPrice
+        ///03.01.1995 00:00:00;7.7;404131;7.7
+        ///04.01.1995 00:00:00;7.66;404131;7.66
+        ///05.01.1995 00:00:00;7.66;404131;7.66
+        ///06.01.1995 00:00:00;7.64;404131;7.64
+        ///09.01.1995 00:00:00;7.6;404131;7.6
+        ///10.01.1995 00:00:00;7.56;404131;7.56
+        ///11.01.1995 00:00:00;7.55;404131;7.55
+        ///12.01.1995 00:00:00;7.55;404131;7.55
+        ///13.01.1995 00:00:00;7.52;404131;7.52
+        ///16.01.1995 00:00:00;7.52;404131;7.52
+        ///17.01.1995 00:00:00;7.52;404131;7.52
+        ///18.01.1995 00:00:00;7.52;404131;7.52
+        ///19.01.1995 00:00:00;7.5 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string SAFRAN {
+            get {
+                return ResourceManager.GetString("SAFRAN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die TransactionDateTime;SecurityId;Shares;AmountEur;TransactionType;Cancelled;TargetWeight;EffectiveWeight
         ///11.10.2016 00:00:00;8;125;10000.0;1;0;0.1;0.0995
         ///11.10.2016 00:00:00;16;487;10000.0;1;0;0.1;0.0999

@@ -73,7 +73,9 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
 
             //das darf ich nur machen wenn ich Positionen aufstocke
             if (candidate.IsInvested)
-            {
+            {              
+                //if(candidate.TargetWeight < candidate.CurrentWeight && candidate.TransactionType== TransactionType.Changed)
+                //    return completeTargetAmount;
                 //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
                 return Math.Round(completeTargetAmount - (candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice));
             }

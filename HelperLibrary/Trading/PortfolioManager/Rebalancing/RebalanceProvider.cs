@@ -36,7 +36,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
 
         public void RebalanceTemporaryPortfolio(List<ITradingCandidate> bestCandidates, List<ITradingCandidate> allCandidates)
         {
-            if (allCandidates.Count > 0 && allCandidates[0].PortfolioAsof >= new DateTime(2000, 03, 08))
+            if (allCandidates.Count > 0 && allCandidates[0].PortfolioAsof >= new DateTime(2001, 04, 26))
             {
                 //var date = allCandidates[0].PortfolioAsof;
                 //JsonUtils.SerializeToFile(bestCandidates, $"BestCandidates_{date.ToShortDateString()}.txt");
@@ -86,8 +86,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
                 if (_temporaryPortfolio.ContainsCandidate(candidate))
                     continue;
 
-                if (candidate.TransactionType == TransactionType.Unchanged ||
-                    candidate.TransactionType == TransactionType.Unknown)
+                if (candidate.TransactionType == TransactionType.Unchanged || candidate.TransactionType == TransactionType.Unknown)
                 {
                     if (candidate.IsInvested)
                         targetSum += candidate.TargetWeight;

@@ -39,5 +39,15 @@ namespace Trading.DataStructures.Interfaces
         /// die Settings zur PriceHistoryCollection falls vorhanden
         /// </summary>
         IPriceHistoryCollectionSettings Settings { get; }
+
+
+        /// <summary>
+        /// Gibt die Range des Angegebenen Zeitraums zurück
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        IEnumerable<ITradingRecord> Range(DateTime? from, DateTime? to, PriceHistoryOption option = PriceHistoryOption.PreviousItem);
     }
 }

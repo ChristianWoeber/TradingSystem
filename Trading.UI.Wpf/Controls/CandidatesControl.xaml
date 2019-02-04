@@ -8,7 +8,7 @@
              xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:TradingViewModel}"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="900">
     <Grid>
         <arts:SmartDataGrid ItemsSource="{Binding Candidates}" AutoGenerateColumns="False" HeaderFontSize="4" SelectedItem="{Binding SelectedCandidate}">
             <arts:SmartDataGrid.Columns >
@@ -24,15 +24,17 @@
                 <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Score, StringFormat=N, Mode=OneWay}" 
                                           Header="Score"
                                           SortDirection="Descending"/>
+                <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Performance10, StringFormat=P, Mode=OneWay}" 
+                                          Header="Perf 10"/>
                 <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Performance30, StringFormat=P, Mode=OneWay}" 
-                                          Header="Performance 30"/>
+                                          Header="Perf 30"/>
                 <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Performance90, Mode=OneWay,StringFormat=P}" 
-                                          Header="Performance 90"/>
+                                          Header="Perf 90"/>
                 <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Performance250,Mode=OneWay, StringFormat=P}" 
-                                          Header="Performance 250"
+                                          Header="Perf 250"
                                           SortDirection="Descending"/>
                 <arts:SmartDataGridColumn Binding="{Binding ScoringResult.IsValid,Mode=OneWay, StringFormat=N}" 
-                                          Header="Is Valid"
+                                          Header="Valid" ColumnType="Image"
                                           />
             </arts:SmartDataGrid.Columns>
             <arts:SmartDataGrid.ContextMenu>

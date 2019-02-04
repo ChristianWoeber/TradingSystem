@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Trading.UI.Wpf.Windows"
         xmlns:wCharting="http://arts.co.at/wchart"
         mc:Ignorable="d"
-        Title="Chart" Height="800" Width="1000">
+        Title="Chart" Height="1000" Width="1400">
     <Grid>
         <wCharting:WLineChartControl x:Name="ChartControl"   />
     </Grid>

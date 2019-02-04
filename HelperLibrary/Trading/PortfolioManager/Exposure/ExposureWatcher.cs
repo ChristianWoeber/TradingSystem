@@ -59,9 +59,10 @@ namespace HelperLibrary.Trading.PortfolioManager.Exposure
         {
             _receiver = settings;
             var files = Directory.GetFiles(settings.IndicesDirectory);
-
-            var tradingRecords = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(
-                files.FirstOrDefault(x => x.ContainsIc(type.ToString())));
+        
+            var tradingRecords = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(type == IndexType.SandP500 
+                ? files.FirstOrDefault(x => x.ContainsIc("S&P")) 
+                : files.FirstOrDefault(x => x.ContainsIc(type.ToString())));
 
             var calculationSettings = new PriceHistoryCollectionSettings(150, 0);
             _benchmark = new PriceHistoryCollection(tradingRecords, calculationSettings);
@@ -77,6 +78,10 @@ namespace HelperLibrary.Trading.PortfolioManager.Exposure
 
             //berechne hier gleich den NAV der simulation
             var indexLevel = _benchmark.Get(asof);
+
+            if(indexLevel==null)
+                return;
+
             //wenn das  indexLevel.Asof < ist als das aktuelle muss ich 0 nehmen, (feiertage etc. da hat es keien veränderung gegeben)
             var dailyReturn = indexLevel.Asof < asof ? 0 : _benchmark.GetDailyReturn(indexLevel);
             ((IIndexBackTestResult)_receiver).Asof = asof;

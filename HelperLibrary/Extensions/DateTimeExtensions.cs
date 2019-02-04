@@ -16,6 +16,14 @@ namespace HelperLibrary.Extensions
             return false;
         }
 
+        public static bool IsOlderThanDays(this DateTime dt, int days)
+        {
+            if (dt.AddDays(days) < DateTime.Now)
+                return true;
+
+            return false;
+        }
+
         public static double ToUnixSeconds(this DateTime dt)
         {
             if (dt <= DateTime.MinValue)

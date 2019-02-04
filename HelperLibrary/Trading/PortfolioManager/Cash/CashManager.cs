@@ -105,7 +105,6 @@ namespace HelperLibrary.Trading.PortfolioManager.Cash
             ////das relative gewicht
             var relativeWeight = remainingCash / _portfolioManager.PortfolioValue;
 
-
             //return HasCash
             return relativeWeight - _settings.MaximumInitialPositionSize >= 0;
         }

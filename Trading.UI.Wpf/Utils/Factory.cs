@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using HelperLibrary.Collections;
 using HelperLibrary.Database.Models;
@@ -98,10 +99,20 @@ namespace Trading.UI.Wpf.Utils
             {
                 if (string.IsNullOrWhiteSpace(file))
                     return;
+
+                var fileName = Path.GetFileNameWithoutExtension(file);
                 //Id und Name parsen aus dem File
-                var split = Path.GetFileNameWithoutExtension(file).Split('_');
-                var name = split[0];
-                var id = Convert.ToInt32(split[1]);
+                //var split = Path.GetFileNameWithoutExtension(file).Split('_');
+
+                //der Idx des letzten underscores
+                var idx = Path.GetFileNameWithoutExtension(file).LastIndexOf('_');
+
+                //Wenn keine Id gefunden wurde die Security ignorieren
+                if (idx == -1)
+                    return;
+
+                var name = fileName.Substring(0, idx).Trim('_');
+                var id = Convert.ToInt32(fileName.Substring(idx, fileName.Length - idx).Trim('_'));
                 //die TradingRecords auslesen
                 var data = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(file);
                 //settings erstellen
@@ -117,7 +128,7 @@ namespace Trading.UI.Wpf.Utils
 
     public class PriceHistorySettings : IPriceHistoryCollectionSettings
     {
-        public PriceHistorySettings(int movingAverageLengthInDays = 150, int movingDaysVolatility = 250)
+        public PriceHistorySettings(int movingAverageLengthInDays = 0, int movingDaysVolatility = 250)
         {
             MovingAverageLengthInDays = movingAverageLengthInDays;
             MovingDaysVolatility = movingDaysVolatility;

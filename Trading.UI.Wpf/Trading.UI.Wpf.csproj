@@ -256,6 +256,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CreateTestDataConsole\CreateTestDataConsole.csproj">
+      <Project>{b32cf838-beff-4b20-9473-0d206e29a156}</Project>
+      <Name>CreateTestDataConsole</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj">
       <Project>{3696bc6c-2421-4eaf-b7d8-a26a74ac7656}</Project>
       <Name>HelperLibrary</Name>

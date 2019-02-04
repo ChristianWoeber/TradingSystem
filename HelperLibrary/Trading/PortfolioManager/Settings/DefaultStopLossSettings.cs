@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HelperLibrary.Extensions;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
@@ -7,13 +8,73 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
 {
     internal class StopLossMeta
     {
-        public readonly decimal High;
-        public readonly DateTime PortfolioAsof;
-
         public StopLossMeta(decimal price, DateTime asof)
         {
-            High = price;
-            PortfolioAsof = asof;
+            Opening = new Record(price, asof);
+            PreviousLow = new Record(price, asof);
+            LocalLow = new Record(price, asof);
+            High = new Record(price, asof);
+        }
+
+        /// <summary>
+        /// Der Preis der eröffnung
+        /// </summary>
+        internal Record Opening { get; set; }
+
+        /// <summary>
+        /// Das niedrigste Low
+        /// </summary>
+        internal Record PreviousLow { get; private set; }
+
+        /// <summary>
+        /// Das aktuell höchste Low
+        /// </summary>
+        internal Record LocalLow { get; private set; }
+
+        /// <summary>
+        /// Das High seit Eröffnung
+        /// </summary>
+        internal Record High { get; private set; }
+
+
+        public void UpdateHigh(decimal? price, DateTime asof)
+        {
+            High = new Record(price.Value, asof);
+        }
+
+        public void UpdateLocalLow(decimal? price, DateTime asof)
+        {
+            LocalLow = new Record(price.Value, asof);
+        }
+
+        public void UpdatePreviousLow(decimal? price, DateTime asof)
+        {
+            PreviousLow = new Record(price.Value, asof);
+        }
+
+        public void UpdatePreviousLow(Record rec)
+        {
+            PreviousLow = new Record(rec.Price, rec.Asof);
+        }
+
+
+        internal class Record
+        {
+            public decimal Price { get; }
+            public DateTime Asof { get; }
+
+            public Record(decimal price, DateTime asof)
+            {
+                Price = price;
+                Asof = asof;
+            }
+
+            /// <summary>Gibt eine Zeichenfolge zurück, die das aktuelle Objekt darstellt.</summary>
+            /// <returns>Eine Zeichenfolge, die das aktuelle Objekt darstellt.</returns>
+            public override string ToString()
+            {
+                return $"Price: {Price} | Asof: {Asof}";
+            }
         }
     }
 
@@ -35,7 +96,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         public decimal LossLimit { get; set; }
 
         /// <summary>
-        /// die mindesthaltedauer nachdem ein Stop ausgelöst wurde (soll gleich am nächsten Tag wieeder ein Stop ausgelöst werden? )
+        /// die mindesthaltedauer nachdem ein Stop ausgelöst wurde (soll gleich am nächsten Tag wieder ein Stop ausgelöst werden? )
         /// </summary>
         public int MinimumStopHoldingPeriodeInDays { get; set; } = 7;
 
@@ -55,13 +116,49 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
             //akuteller Preis
             var currentPrice = candidate.Record.AdjustedPrice;
 
-            //vola
+            //wenn das high kleiner gleich dem aktuellen Preis ist, kann es keinen Stopp geben
+            if (stopLossMeta.High.Price <= currentPrice)
+                return false;
+
+            if (candidate.LastTransaction?.Shares < 0 &&
+                candidate.LastTransaction?.TransactionDateTime.AddDays(MinimumStopHoldingPeriodeInDays) < candidate.PortfolioAsof)
+            {
+                return false;
+            }
+
+            //die Jahres vola
             var volatility = candidate.ScoringResult.Volatility;
+
+            //1 Sigma
+            var sigma = volatility / (decimal)Math.Sqrt(250d);
+
+            var hasStop = false;
+
+            ////der aktuelle drawdown
+            //var drawdown = (1 - stopLossMeta.High / currentPrice);
+
+
+            //var hasStop = buffer - Math.Abs(drawdown) <= 0 && stopLossMeta.LowDateTime == candidate.PortfolioAsof;
 
             //der Rückgabewert
             //wenn der aktuelle Preis <= ist dem letzten High abzüglich der Vola stopp ich
             //wenn der aktuelle Preis kleiner als der average Preis ist sprich ich im minus bin mit der Position abzüglichn der Volatilität
-            var hasStop = currentPrice <= stopLossMeta.High * (1 - 2 * volatility) || currentPrice <= candidate.AveragePrice * (1 - volatility);
+            if (currentPrice < stopLossMeta.Opening.Price * (1 - 4 * sigma) && currentPrice < candidate.AveragePrice)
+            {
+                hasStop = true;
+            }
+            else if (currentPrice <= stopLossMeta.High.Price * (1 - 4 * sigma) && currentPrice < candidate.AveragePrice)
+            {
+                hasStop = true;
+            }
+            else if (currentPrice * (1 + sigma) < stopLossMeta.PreviousLow.Price && stopLossMeta.Opening.Asof != stopLossMeta.PreviousLow.Asof)
+            {
+                hasStop = true;
+            }
+
+            //var hasStop = currentPrice <= stopLossMeta.High.Price * (1 - (3 * sigma))
+            //    && currentPrice < candidate.AveragePrice
+            //    || currentPrice * (1 + sigma) < stopLossMeta.PreviousLow.Price;
 
             //sollte es einen Stop geben die lastStops updaten
             UpdateLastStops(hasStop, candidate);
@@ -81,11 +178,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
             else
                 _lastStopsDictionary.Add(candidate.Record.SecurityId, candidate.Record.Asof);
 
-            if (_limitDictionary.TryGetValue(candidate.Record.SecurityId, out _))
-            {
-                //dann ziehe ich das high nach, sprich aktualisere es um den aktuellen Preis zu dem ich ausgestoppt wurde
-                _limitDictionary[candidate.Record.SecurityId] = new StopLossMeta(candidate.Record.AdjustedPrice, candidate.PortfolioAsof);
-            }
+            //if (_limitDictionary.TryGetValue(candidate.Record.SecurityId, out _))
+            //{
+            //    //dann ziehe ich das high nach, sprich aktualisere es um den aktuellen Preis zu dem ich ausgestoppt wurde
+            //    _limitDictionary[candidate.Record.SecurityId] = new StopLossMeta(candidate.Record.AdjustedPrice, candidate.PortfolioAsof);
+            //}
 
         }
 
@@ -135,10 +232,29 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
                 _limitDictionary.Add(transactionItem.SecurityId, new StopLossMeta(price.Value, asof));
             else
             {
-                if (price > stopLossMeta.High)
+                //dann gibt es ein neues High von dem aus ich die Stop Loss Grenze berechne
+                if (price > stopLossMeta.High.Price)
                 {
-                    //dann gibt es ein neues High von dem aus ich die Stop Loss Grenze berechne
-                    _limitDictionary[transactionItem.SecurityId] = new StopLossMeta(price.Value, asof);
+                    //Dieser Punkt ist entscheidend, hier kann ich einmalig mein prevoius low nachziehen
+                    //Komm hier nur einmal in der Phase des Highs hin
+                    if (stopLossMeta.LocalLow.Asof != stopLossMeta.High.Asof)
+                    {
+                        _limitDictionary[transactionItem.SecurityId].UpdatePreviousLow(stopLossMeta.LocalLow);
+                    }
+
+                    //ich ziehe an dieser Stelle immer die das local high und das High nach
+                    _limitDictionary[transactionItem.SecurityId].UpdateHigh(price, asof);
+                    _limitDictionary[transactionItem.SecurityId].UpdateLocalLow(price, asof);
+                }
+                else
+                {
+                    //hier komm ich hin wenn es kein neues High gibt
+                    //Wenn das lowestHigh  kleiner ist als das lowest low
+                    if (price < stopLossMeta.LocalLow.Price)
+                    {
+                        //ziehe immer das lowest High nach
+                        _limitDictionary[transactionItem.SecurityId].UpdateLocalLow(price, asof);
+                    }
                 }
             }
         }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Forms;
 using HelperLibrary.Collections;
+using HelperLibrary.Database.Models;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
@@ -123,6 +125,15 @@ namespace HelperLibrary.Calculations
                 _dailyReturns.Add(to.Asof, _handler.CalcAbsoluteReturn(from, to));
         }
 
+        private readonly List<Tuple<DateTime, decimal>> _monthlyReturns = new List<Tuple<DateTime, decimal>>();
+        internal ITradingRecord LastUltimoRecord;
+
+        public void AddMonthlyUltimoReturn(ITradingRecord ultimoRecord)
+        {
+            _monthlyReturns.Add(new Tuple<DateTime, decimal>(ultimoRecord.Asof, _handler.CalcAbsoluteReturn(LastUltimoRecord, ultimoRecord)));
+            LastUltimoRecord = ultimoRecord;
+        }
+
         public bool ScanRange(DateTime backtestDateTime, DateTime startDateInput)
         {
             return _handler.ScanRange(_priceHistory.Range(backtestDateTime, startDateInput));
@@ -139,7 +150,7 @@ namespace HelperLibrary.Calculations
             var start = from ?? FirstRecord.Asof;
             var end = to ?? LastRecord.Asof;
 
-            return _handler.CalcVolatility(GetAverageReturn(start), EnumMonthlyReturns(), opt ?? CaclulationOption.Adjusted);
+            return _handler.CalcVolatility(EnumMonthlyReturns(), opt ?? CaclulationOption.Adjusted);
         }
 
         public IEnumerable<decimal> EnumDailyReturns()
@@ -190,14 +201,39 @@ namespace HelperLibrary.Calculations
         {
             private const int MAX_TRIES = 30;
 
+            private KeyValuePair<DateTime, TValue> _lastKeyValuePair;
+
+            /// <summary>
+            /// überschreibe hier die add methode
+            /// und merke mir den zuletzt eingefügten wert
+            /// </summary>
+            /// <param name="key"></param>
+            /// <param name="value"></param>
+            public new void Add(DateTime key, TValue value)
+            {
+                _lastKeyValuePair = new KeyValuePair<DateTime, TValue>(key, value);
+                base.Add(key, value);
+            }
+
             public bool TryGetLastItem(DateTime key, out TValue lastMetaInfo)
             {
+                lastMetaInfo = null;
                 if (Count == 0)
                 {
-                    lastMetaInfo = null;
                     return false;
                 }
 
+                if (_lastKeyValuePair.Key <= DateTime.MinValue)
+                    return false;
+
+                //Dadurch erspare ich mir beim einfüllen der Daten unnötige Rekursionen
+                if (_lastKeyValuePair.Key <= key)
+                {
+                    lastMetaInfo = _lastKeyValuePair.Value;
+                    return true;
+                }
+
+                //Normaler Modus (HINT: eventuell auch hier binarySearch verwenden?)
                 var idx = 0;
 
                 while (idx < MAX_TRIES)
@@ -241,7 +277,7 @@ namespace HelperLibrary.Calculations
                 if (_movingVolaMetaInfos.Count > 0)
                 {
                     if (!_movingVolaMetaInfos.TryGetLastItem(item.Asof, out var lastMetaInfo))
-                        throw new ArgumentException("Achtung keine MetaInfo gefunden bei"+_priceHistory.Settings?.Name);
+                        throw new ArgumentException("Achtung keine MetaInfo gefunden bei" + _priceHistory.Settings?.Name);
 
                     var firstItem = _priceHistory.Get(_movingVolaMetaInfos.Count);
                     var daysCount = _priceHistory.Count - _movingVolaMetaInfos.Count;
@@ -310,7 +346,7 @@ namespace HelperLibrary.Calculations
                     }
 
                     //wenn das letze Low tiefer liegt, und das datum des Lows noch in der Range ist brauche ich die 150 Tage nur um eines weiterschieben
-                    if (lastLowMetaInfo.Low.AdjustedPrice < item.AdjustedPrice && lastLowMetaInfo.Low.Asof >= newFirst.Asof)
+                    if (lastLowMetaInfo.Low.AdjustedPrice < item.AdjustedPrice && lastLowMetaInfo.Low.Asof >= newFirst?.Asof)
                     {
                         //merke mir das item mit hasNewlow=false
                         _lowMetaInfos.Add(item.Asof, new LowMetaInfo(newFirst, lastLowMetaInfo.Low, item, lastLowMetaInfo, false));
@@ -350,10 +386,16 @@ namespace HelperLibrary.Calculations
             }
         }
 
-        public bool TryGetLastLowItem(DateTime currentDate, out LowMetaInfo info)
+        public bool TryGetLastLowInfo(DateTime currentDate, out LowMetaInfo info)
         {
             return _lowMetaInfos.TryGetLastItem(currentDate, out info);
         }
+
+        public bool DateIsNewLow(DateTime currentDate)
+        {
+            return _lowMetaInfos.TryGetLastItem(currentDate, out var info) && info.HasNewLow;
+        }
+
 
         public bool TryGetLastVolatilityInfo(DateTime currentDate, out MovingVolaMetaInfo vola)
         {

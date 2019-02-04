@@ -13,6 +13,10 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
             //versuche hier die Liste so weit zu scannen => ich gehe vom 2ten bis zum ersten nicht investierten Kandidaten
             //bzw bis ich nahe der maximalen investment quote bin
             var candidatesList = candidates.ToList();
+
+            if (candidatesList.Count == 1)
+                return false;
+
             var currentSum = candidatesList[0].TargetWeight;
             for (var i = 1; i < candidatesList.Count; i++)
             {

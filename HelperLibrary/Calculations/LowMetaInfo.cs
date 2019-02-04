@@ -54,15 +54,17 @@ namespace HelperLibrary.Calculations
 
         private LowMetaInfo()
         {
-            
+
         }
 
         //glätte hier die kurve
         //TODO: eigentlich gehört hier auch ein movingaverage genommen 15 Tage => brauche für die pricehistory ein setting dass ich im konstruktor mit üergebe
         private void CalcPerformance()
         {
-            var first = PeriodeRecords[PeriodeRecords.Count - 16];
-            CanMoveToNextStep = 1-(first.AdjustedPrice/ Last.AdjustedPrice) > 0;
+            var first = PeriodeRecords.Count < 16 
+                ? PeriodeRecords[0] 
+                : PeriodeRecords[PeriodeRecords.Count - 16];
+            CanMoveToNextStep = 1 - (first.AdjustedPrice / Last.AdjustedPrice) > 0;
         }
 
         public LowMetaInfo(ITradingRecord first, ITradingRecord low, ITradingRecord last, List<ITradingRecord> periodeRecords, bool hasNewLow = true) : this()

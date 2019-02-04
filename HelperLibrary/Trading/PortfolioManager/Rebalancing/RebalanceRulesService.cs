@@ -17,7 +17,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
         {
             _adjustmentProvider = adjustmentProvider;
             Settings = settings;
-            Delta = new decimal(0.15);
+            Delta = new decimal(0.10);
             LoadRebalanceRules();
         }
 

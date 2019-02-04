@@ -20,21 +20,20 @@ namespace HelperLibrary.Trading
         public decimal Performance90 { get; set; }
         public decimal Performance30 { get; set; }
         public decimal Performance10 { get; set; }
-        //public decimal MaxDrawdown { get; set; }
         public decimal Volatility { get; set; }
 
         public decimal Score
         {
             get
             {
-                // Ich gewichte die performance,
+                // Ich gewichte die Performance,
                 // die aktuellsten Daten haben die größten Gewichte
                 //ich ziehe auch noch den maxdrawdown in der Periode ab
-                var avgPerf = Performance10 * (decimal) 0.20
-                              + Performance30 * (decimal) 0.30
-                              + Performance90 * (decimal) 0.40
-                              + Performance250 * (decimal) 0.10;
-                              //+ MaxDrawdown * (decimal)0.1;
+                var avgPerf = Performance10 * (decimal)0.20
+                              + Performance30 * (decimal)0.30
+                              + Performance90 * (decimal)0.40
+                              + Performance250 * (decimal)0.10;
+                //+ MaxDrawdown * (decimal)0.1;
 
                 return Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
 
@@ -61,7 +60,7 @@ namespace HelperLibrary.Trading
         public DateTime Asof { get; set; }
 
         /// <summary>
-        /// Der Score ist nur dann valide wenn er größer als 1 ist
+        /// Der Score ist nur dann valide wenn er größer als 1 ist und die Performance der letzten 10 Tage positiv ist
         /// </summary>
         public bool IsValid => Score > 1;
         public decimal Performance250 { get; set; }
@@ -75,18 +74,21 @@ namespace HelperLibrary.Trading
         {
             get
             {
-                // Ich gewichte die performance,
-                // die mittelfirstige, bis langfristige Daten haben die größten Gewichte
-                var avgPerf = Performance10 * (decimal) 0.20
-                              + Performance30 * (decimal) 0.20
-                              + Performance90 * (decimal) 0.40
-                              + Performance250 * (decimal) 0.20;
-                              //+ MaxDrawdown * (decimal)0.2;
+                // Ich gewichte die performance
+                // die mittelfirstigen "performances", haben die größten Gewichte
+                var avgPerf = Performance10 * (decimal)0.10
+                              + Performance30 * (decimal)0.30
+                              + Performance90 * (decimal)0.40
+                              + Performance250 * (decimal)0.20;
 
-                return Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
+                var score = Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
+                return IsNewLow ? score / 2 : score;
 
+                //return Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
             }
         }
+
+        public bool IsNewLow { get; set; }
 
         public int CompareTo(object obj)
         {

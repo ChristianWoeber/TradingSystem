@@ -43,37 +43,38 @@
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Max InitialPositionSize" Style="{StaticResource LabelStyle}"/>
                 <arts:SmartNumberUpDown Value="{Binding MaximumInitialPositionSize,StringFormat=P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                    SmallStep="1" 
-                                    DisplayMode="Decimal" />
+                                        SmallStep="0.01" 
+                                        
+                                        DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="MaximumPositionSize" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MaximumPositionSize, StringFormat=P}" 
-                                    SmallStep="1" 
+                <arts:SmartNumberUpDown Value="{Binding MaximumPositionSize, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                    SmallStep="0.01" 
                                     DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="MinimumHoldingPeriodeInDays" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MinimumHoldingPeriodeInDays, StringFormat={} Tage}" 
+                <arts:SmartNumberUpDown Value="{Binding MinimumHoldingPeriodeInDays, StringFormat={} Tage,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                     SmallStep="1" 
                                     DisplayMode="Integer" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="MaximumPositionSizeBuffer" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MaximumPositionSizeBuffer, StringFormat=P}" 
-                                    SmallStep="1" 
+                <arts:SmartNumberUpDown Value="{Binding MaximumPositionSizeBuffer, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                        SmallStep="0.01" 
                                     DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Maximaler Investitionsgrad" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MaxTotaInvestmentLevel, StringFormat=P}" 
-                                        SmallStep="1" 
+                <arts:SmartNumberUpDown Value="{Binding MaxTotaInvestmentLevel, StringFormat=P,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                                        SmallStep="0.01" 
                                         DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
-                <arts:SmartTextBlock Text="Cash Buffer_Size" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding CashPufferSize, StringFormat=P}" 
-                                        SmallStep="1" 
+                <arts:SmartTextBlock Text="Cash Buffer Size" Style="{StaticResource LabelStyle}"/>
+                <arts:SmartNumberUpDown Value="{Binding CashPufferSizePercent, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                        SmallStep="0.01" 
                                         DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
@@ -91,20 +92,20 @@
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Replace-Buffer Size" Style="{StaticResource LabelStyle}"/>
                 <arts:SmartNumberUpDown Value="{Binding ReplaceBufferPct, StringFormat=P}" 
-                                        SmallStep="1" 
+                                        SmallStep="0.01" 
                                         DisplayMode="Decimal" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="MaximumAllocation To Risk" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MaximumAllocationToRisk, StringFormat=P}" 
+                <arts:SmartNumberUpDown Value="{Binding MaximumAllocationToRisk, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                         SmallStep="0.1" 
                                         DisplayMode="Decimal" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Minimum Allocation To Risk" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MinimumAllocationToRisk, StringFormat=P}" 
+                <arts:SmartNumberUpDown Value="{Binding MinimumAllocationToRisk, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                         SmallStep="0.1" 
                                         DisplayMode="Decimal" />
             </StackPanel>

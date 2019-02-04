@@ -77,7 +77,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #endregion
 
-       
+
         public void CancelCandidate(ITradingCandidate candidate)
         {
             if (candidate.IsInvested && !candidate.IsTemporary)
@@ -148,12 +148,29 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public void DecrementCash(ITransaction item)
         {
-            _cashManager.Cash -= Math.Abs(item.EffectiveAmountEur);
+            if (item.TransactionDateTime != _adjustmentProvider.PortfolioAsof)
+            {
+                var record = _adjustmentProvider.ScoringProvider.GetTradingRecord(item.SecurityId, _adjustmentProvider.PortfolioAsof);
+                var currentValue = item.Shares * record.AdjustedPrice;
+                _cashManager.Cash -= Math.Abs(currentValue);
+            }
+            else
+                _cashManager.Cash -= Math.Abs(item.EffectiveAmountEur);
         }
 
         public void IncrementCash(ITransaction item)
         {
-            _cashManager.Cash += Math.Abs(item.EffectiveAmountEur);
+            //TODO: alle aufrufe nach dem aktuellen score und aktuellem Record nur einmal machen => eventuell ein Repo mit Singelton ??
+            if (item.TransactionDateTime != _adjustmentProvider.PortfolioAsof)
+            {
+                var record =
+                    _adjustmentProvider.ScoringProvider.GetTradingRecord(item.SecurityId,
+                        _adjustmentProvider.PortfolioAsof);
+                var currentValue = item.Shares * record.AdjustedPrice;
+                _cashManager.Cash += Math.Abs(currentValue);
+            }
+            else
+                _cashManager.Cash += Math.Abs(item.EffectiveAmountEur);
         }
 
         public void AddRange(IEnumerable<ITransaction> items, bool isTemporary = true)

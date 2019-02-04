@@ -90,5 +90,10 @@ namespace Trading.DataStructures.Interfaces
         /// Gibt an ob es sich um einen temporären Verkauf handelt, sprich der Candidate schon im temporären Portfolio ist und beretis abgeschichtet wurde
         /// </summary>
         bool IsTemporarySell { get;  }
+
+        /// <summary>
+        /// die aktuelle Wertentwicklung der Position
+        /// </summary>
+        decimal Performance { get; }
     }
 }

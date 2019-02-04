@@ -16,5 +16,8 @@ namespace Trading.DataStructures.Interfaces
         IEnumerable<decimal> EnumMonthlyReturns();
         IEnumerable<Tuple<DateTime, decimal>> EnumDailyReturnsTuple();
         bool TryGetLastVolatility(DateTime asof, out decimal volatility);
+        bool DateIsNewLow(DateTime currentDate);
+
+
     }
 }

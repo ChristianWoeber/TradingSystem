@@ -7,6 +7,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
     /// </summary>
     public class IncreasedPositionsRule : IRebalanceRule
     {
+        //TODO: dynamisieren!
         public void Apply(ITradingCandidate candidate)
         {
             if (candidate.CurrentWeight > new decimal(0.1))

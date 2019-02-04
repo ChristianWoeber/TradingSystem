@@ -11,6 +11,7 @@ using Common.Lib.Extensions;
 using Common.Lib.UI.WPF.Core.Controls.Core;
 using Common.Lib.UI.WPF.Core.Input;
 using Common.Lib.UI.WPF.Core.Primitives;
+using CreateTestDataConsole;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Extensions;
 using HelperLibrary.Parsing;
@@ -54,7 +55,7 @@ namespace Trading.UI.Wpf.ViewModels
                 throw new ArgumentException("Es wurden keine Transacktionen gefunden!");
 
 
-            return transactions.Where(t => t.TransactionDateTime <= asof).OrderBy(x => x.TransactionDateTime);
+            return transactions/*.Where(t => t.TransactionDateTime <= asof)*/.OrderBy(x => x.TransactionDateTime);
 
             //sortiere die Transactionen hier mit dem frühesten DateTime bgeinnend
             var orderdReversed = transactions.Where(t => t.TransactionDateTime <= asof).OrderBy(x => x.TransactionDateTime).ToList();
@@ -204,7 +205,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         public ICommand ShowSelectedPositionCommand { get; }
 
-        public ICommand ShowSelectedCandidateCommand { get;  }
+        public ICommand ShowSelectedCandidateCommand { get; }
 
 
 
@@ -317,8 +318,21 @@ namespace Trading.UI.Wpf.ViewModels
 
         #region Helpers
 
-        public static Dictionary<int, string> NameCatalog => BootStrapperFactory.GetIdToNameDictionary();
+        public static Dictionary<int, string> NameCatalog => _nameCatalog ?? CreateCatalog();
 
+        private static Dictionary<int, string> CreateCatalog()
+        {
+            var dic = new Dictionary<int, string>();
+            var unionedTuples = IndexMember.EuroStoxx50IdNameTuples.Union(IndexMember.SandP500IdNameTuples).Union(IndexMember.Nasdaq100IdNameTuples).Union(IndexMember.StoxxEurope600IdNameTuples);
+            foreach (var (securityId, name) in unionedTuples)
+            {
+                if (dic.ContainsKey(securityId))
+                    continue;
+                dic.Add(securityId, name);
+            }
+
+            return dic;
+        }
 
         private IEnumerable<CashMetaInfo> _cash;
         private IEnumerable<TransactionViewModel> _stopps;
@@ -327,6 +341,7 @@ namespace Trading.UI.Wpf.ViewModels
         private List<Transaction> _transactions;
         private TransactionViewModel _selectedPosition;
         private ITradingCandidateBase _selectedCandidate;
+        private static Dictionary<int, string> _nameCatalog;
 
         public void UpdateCash(DateTime toDateTime)
         {

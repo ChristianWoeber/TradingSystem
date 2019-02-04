@@ -158,18 +158,24 @@ namespace HelperLibrary.Calculations
             return (decimal)Math.Sqrt(variance / (items.Count - 1));
         }
 
-        public decimal CalcVolatility(decimal averageReturn, IEnumerable<decimal> returns, CaclulationOption opt)
+        public decimal CalcVolatility(IEnumerable<decimal> returns, CaclulationOption opt)
         {
             var variance = 0d;
-            var count = 0;
+            decimal averageReturn = 0;
 
-            foreach (var ret in returns)
+            var monthlyReturns = returns.ToList();
+            for (var i = 0; i < monthlyReturns.Count - 1; i++)
             {
-                variance += Math.Pow((double)averageReturn - (double)ret, 2);
-                count++;
+                var ret = monthlyReturns[i];
+                averageReturn = ret / (i + 1);
             }
 
-            return (decimal)Math.Sqrt(variance / count);
+            foreach (var ret in monthlyReturns)
+            {
+                variance += Math.Pow((double)averageReturn - (double)ret, 2);
+            }
+
+            return (decimal)Math.Sqrt(variance / (monthlyReturns.Count-1)) * (decimal)Math.Sqrt(20);
         }
     }
 }

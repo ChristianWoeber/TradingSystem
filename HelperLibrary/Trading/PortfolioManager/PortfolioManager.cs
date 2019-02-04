@@ -18,6 +18,53 @@ using Transaction = HelperLibrary.Database.Models.Transaction;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
+    //public class CurrentPositionRepository
+    //{
+    //    /// <summary>
+    //    /// das Dictionary mit den mEtadaten zu den aktuellen Positionen
+    //    /// </summary>
+    //    private readonly Dictionary<int, PositionMetaInfo> _positionMetaInfos;
+
+    //    public CurrentPositionRepository()
+    //    {
+    //        _positionMetaInfos = new Dictionary<int, PositionMetaInfo>();
+    //    }
+
+    //    /// <summary>
+    //    /// Singelton Instanz
+    //    /// </summary>
+    //    public static CurrentPositionRepository Inst { get; } = new CurrentPositionRepository();
+
+    //    /// <summary>
+    //    /// Mir der Methode kann ein Candidat hinzugefügt, bzw. wenn schon vorhanden upgedated werden
+    //    /// </summary>
+    //    /// <param name="candidate"></param>
+    //    public void InsertOrUpdate(ITradingCandidate candidate)
+    //    {
+
+    //    }
+
+    //    /// <summary>
+    //    /// Mit der Methode können Candidaten removed werden
+    //    /// </summary>
+    //    /// <param name="candidate"></param>
+    //    public void Remove(ITradingCandidate candidate)
+    //    {
+
+    //    }
+
+
+    //    public PositionMetaInfo GetMetaInfo(ITradingCandidate candidate)
+    //    {
+            
+    //    }
+
+    //}
+
+    public class PositionMetaInfo
+    {
+    }
+
     public class PortfolioManager : PortfolioManagerBase, IAdjustmentProvider
     {
         /// <summary>
@@ -308,9 +355,8 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             //meta Info setzen
             candidate.TransactionType = TransactionType.Changed;
-            //candidate.IsTemporary = true;
 
-            if (currentWeight.IsBetween(decimal.Zero, new decimal(0.08)))
+            if (currentWeight.IsBetween(decimal.Zero, PortfolioSettings.MaximumInitialPositionSize - PortfolioSettings.MinimumPositionSizePercent))
             {
                 //wird auf die initial größe zurück aufgestockt
                 candidate.TargetWeight = PortfolioSettings.MaximumInitialPositionSize;
@@ -318,14 +364,14 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
 
             //Position wurde bereits einmal mit Target 10% eröffnet
-            else if (currentWeight.IsBetween(new decimal(0.08), new decimal(0.18)))
+            else if (currentWeight.IsBetween(PortfolioSettings.MaximumInitialPositionSize - PortfolioSettings.MinimumPositionSizePercent, PortfolioSettings.MaximumInitialPositionSize * 2 - PortfolioSettings.MinimumPositionSizePercent))
             {
                 //wird nun auf 20% aufgestockt
                 candidate.TargetWeight = PortfolioSettings.MaximumInitialPositionSize * 2;
             }
 
             //schon einaml aufgestockt
-            else if (currentWeight.IsBetween(new decimal(0.18), new decimal(0.28)))
+            else
             {
                 //wird auf den maximal Wert aufgestockt
                 candidate.TargetWeight = PortfolioSettings.MaximumPositionSize;
@@ -470,7 +516,11 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             //sonst die Anpassung übernehmen
             candidate.TransactionType = TransactionType.Changed;
-            AdjustTemoraryPosition(candidate);
+            //wenn es sich um eine bestehende Postion handelt dann einen neuen Verkauf planen sonst bestehnden Position manipulieren
+            if (!candidate.IsTemporary)
+                AddToTemporaryPortfolio(candidate);
+            else
+                AdjustTemoraryPosition(candidate);
             return true;
         }
 
@@ -658,6 +708,12 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <returns></returns>
         protected override void CalculateCurrentPortfolioValue()
         {
+
+            //if (PortfolioAsof >= new DateTime(2001, 04, 26))
+            //{
+
+            //}
+
             //deklaration der Summe der investierten Positionen, bewertet mit dem aktuellen Preis
             decimal sumInvested = 0;
 
