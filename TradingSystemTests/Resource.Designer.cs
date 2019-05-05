@@ -432,6 +432,23 @@ namespace TradingSystemTests {
         
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Asof;Price;SecurityId;AdjustedPrice
+        ///03.01.1995 00:00:00;4.13097318191529;401666;4.13097318191529
+        ///04.01.1995 00:00:00;4.03873032407761;401666;4.03873032407761
+        ///05.01.1995 00:00:00;3.88080866374969;401666;3.88080866374969
+        ///06.01.1995 00:00:00;4.10966706781387;401666;4.10966706781387
+        ///09.01.1995 00:00:00;4.28755638728142;401666;4.28755638728142
+        ///10.01.1995 00:00:00;4.50882382135392;401666;4.50882382135392
+        ///11.01.1995 00:00:00;4.4380602370739;401666;4.4380602370739
+        ///12.01.1995 00:00:00;4.35534625244141;401666 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string MICROCHIP_TECHNOLOGY {
+            get {
+                return ResourceManager.GetString("MICROCHIP_TECHNOLOGY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Asof;Price;SecurityId;AdjustedPrice
         ///02.01.1990 00:00:00;48.3109;703;48.3109
         ///03.01.1990 00:00:00;48.9337;703;48.9337
         ///04.01.1990 00:00:00;48.9236;703;48.9236
@@ -448,6 +465,25 @@ namespace TradingSystemTests {
         internal static string MSCIWorldEur {
             get {
                 return ResourceManager.GetString("MSCIWorldEur", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Asof;Price;SecurityId;AdjustedPrice
+        ///21.01.1999 00:00:00;0.8639;417857;0.8639
+        ///22.01.1999 00:00:00;1.41386908;417857;1.41386908
+        ///25.01.1999 00:00:00;1.5641875;417857;1.5641875
+        ///26.01.1999 00:00:00;1.44502317;417857;1.44502317
+        ///27.01.1999 00:00:00;1.44736228;417857;1.44736228
+        ///28.01.1999 00:00:00;1.45597245;417857;1.45597245
+        ///29.01.1999 00:00:00;1.39061239;417857;1.39061239
+        ///01.02.1999 00:00:00;1.42310844;417857;1.42310844
+        ///02.02.1999 00:00:00;1.31591264;417857;1.31591264
+        ///03.02.1999 00:00:00;1.34164976;4178 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string NVIDIA {
+            get {
+                return ResourceManager.GetString("NVIDIA", resourceCulture);
             }
         }
         

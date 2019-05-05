@@ -7,15 +7,22 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
     /// </summary>
     public class IncreasedPositionsRule : IRebalanceRule
     {
-        //TODO: dynamisieren!
         public void Apply(ITradingCandidate candidate)
         {
-            if (candidate.CurrentWeight > new decimal(0.1))
-                candidate.RebalanceScore.Update(Context.Delta/2);
-            if (candidate.CurrentWeight > new decimal(0.2))
+            if (!candidate.IsInvested)
+                return;
+
+            if (candidate.Performance <= 0)
+                return;
+            //Will hier nur investierte Positionen mit positiver Performance stärken
+            var span = (Context.Settings.MaximumPositionSize - Context.Settings.MaximumInitialPositionSize) / 3 - 0.01M;
+
+            if (candidate.CurrentWeight > span)
                 candidate.RebalanceScore.Update(Context.Delta);
-            if (candidate.CurrentWeight > new decimal(0.3))
+            if (candidate.CurrentWeight > span * 2)
                 candidate.RebalanceScore.Update(Context.Delta * 2);
+            if (candidate.CurrentWeight > span * 3)
+                candidate.RebalanceScore.Update(Context.Delta * 3);
         }
 
         public IRebalanceContext Context { get; set; }

@@ -47,5 +47,10 @@ namespace TradingSystemTests.TestCases
         public bool IsTemporarySell => throw new NotImplementedException();
 
         public decimal Performance => throw new NotImplementedException();
+
+        /// <summary>
+        /// die StopLossMetainfo zum Kandiodaten
+        /// </summary>
+        public IStopLossMeta StopLossMeta { get; }
     }
 }

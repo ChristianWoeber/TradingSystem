@@ -7,24 +7,18 @@ using HelperLibrary.Collections;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Extensions;
 using HelperLibrary.Parsing;
+using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager.Exposure
 {
-    public enum IndexType
-    {
-        Dax,
-        EuroStoxx50,
-        MsciWorldEur,
-        SandP500
-    }
-
     public class PriceHistoryCollectionSettings : IPriceHistoryCollectionSettings
     {
-        public PriceHistoryCollectionSettings(int movingAverageLengthInDays = 150, int movingDaysVolatility = 250)
+        public PriceHistoryCollectionSettings(int movingAverageLengthInDays = 150, int movingDaysVolatility = 250, int movingDaysAbsoluteLosses = 60)
         {
             MovingAverageLengthInDays = movingAverageLengthInDays;
             MovingDaysVolatility = movingDaysVolatility;
+            MovingDaysAbsoluteLossesGains = movingDaysAbsoluteLosses;
         }
 
         /// <summary>
@@ -41,6 +35,12 @@ namespace HelperLibrary.Trading.PortfolioManager.Exposure
         /// Der Name des Wertpapiers
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// die "Länge" der Periode für die Betrachtung der kumulierten Losses und Gains
+        /// versuche mit diesem Parameter die Stablilität des Trends zu bewerten
+        /// </summary>
+        public int MovingDaysAbsoluteLossesGains { get; set; }
     }
 
     public class ExposureWatcher : IExposureProvider
@@ -55,14 +55,14 @@ namespace HelperLibrary.Trading.PortfolioManager.Exposure
             return _receiver;
         }
 
-        public ExposureWatcher(IExposureSettings settings, IndexType type)
+        public ExposureWatcher(IExposureSettings settings)
         {
             _receiver = settings;
             var files = Directory.GetFiles(settings.IndicesDirectory);
         
-            var tradingRecords = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(type == IndexType.SandP500 
+            var tradingRecords = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(settings.IndexType == IndexType.SandP500 
                 ? files.FirstOrDefault(x => x.ContainsIc("S&P")) 
-                : files.FirstOrDefault(x => x.ContainsIc(type.ToString())));
+                : files.FirstOrDefault(x => x.ContainsIc(settings.IndexType.ToString())));
 
             var calculationSettings = new PriceHistoryCollectionSettings(150, 0);
             _benchmark = new PriceHistoryCollection(tradingRecords, calculationSettings);

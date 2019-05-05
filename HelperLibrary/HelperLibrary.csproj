@@ -59,10 +59,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Calculations\AbsoluteLossesAndGainsMetaInfo.cs" />
     <Compile Include="Calculations\CalculationContext.cs" />
+    <Compile Include="Calculations\CalculationContext.LastItemDictionaryBase.cs" />
     <Compile Include="Calculations\DrawdownItem.cs" />
     <Compile Include="Calculations\LowMetaInfo.cs" />
     <Compile Include="Calculations\MaxDrawdown.cs" />
+    <Compile Include="Calculations\MovingVolaMetaInfo.cs" />
     <Compile Include="Collections\PriceHistoryCollection.cs" />
     <Compile Include="Database\CallCmd.cs" />
     <Compile Include="Database\Models\PortfolioValue.cs" />
@@ -113,6 +116,7 @@
     <Compile Include="Interfaces\IQuote.cs" />
     <Compile Include="Trading\PortfolioManager\Candidates\Candidate.cs" />
     <Compile Include="Trading\PortfolioManager\BacktestHandler.cs" />
+    <Compile Include="Trading\PortfolioManager\PositionWatchService.cs" />
     <Compile Include="Trading\PortfolioManager\Rebalancing\INeeedRebalancingRule.cs" />
     <Compile Include="Trading\PortfolioManager\Rebalancing\IRebalanceContext.cs" />
     <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceCollection.cs" />
@@ -134,6 +138,7 @@
     <Compile Include="Trading\PortfolioManager\Exposure\IExposureReceiver.cs" />
     <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceProvider.cs" />
     <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceRulesService.cs" />
+    <Compile Include="Trading\PortfolioManager\Settings\Record.cs" />
     <Compile Include="Trading\PortfolioManager\Transactions\TransactionCalculationHandler.cs" />
     <Compile Include="Trading\PortfolioManager\Transactions\TransactionsHandler.cs" />
     <Compile Include="Trading\Scoring\ScoringResult.cs" />

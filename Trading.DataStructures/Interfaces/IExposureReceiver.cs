@@ -1,4 +1,5 @@
 ﻿using System;
+using Trading.DataStructures.Enums;
 
 namespace Trading.DataStructures.Interfaces
 {
@@ -23,5 +24,10 @@ namespace Trading.DataStructures.Interfaces
         /// der Handelstag, an dem das Portfolio immer neu allokiert wird
         /// </summary>
         DayOfWeek TradingDay { get; set; }
+
+        /// <summary>
+        /// Der Index der für die Steuerung der Aktienquote verwender werden soll
+        /// </summary>
+        IndexType IndexType { get; set; }
     }
 }

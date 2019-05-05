@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using HelperLibrary.Trading.PortfolioManager;
 using HelperLibrary.Trading.PortfolioManager.Exposure;
 using JetBrains.Annotations;
+using Trading.DataStructures.Enums;
 
 namespace Trading.UI.Wpf.ViewModels
 {

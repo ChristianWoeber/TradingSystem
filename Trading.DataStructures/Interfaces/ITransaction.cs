@@ -65,5 +65,11 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
 
         event EventHandler CancelledEvent;
+
+        /// <summary>
+        /// die Ticket Fee pro Trade
+        /// </summary>
+        decimal TicketFee { get; set; }
+
     }
 }

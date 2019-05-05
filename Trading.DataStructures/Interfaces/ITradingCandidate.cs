@@ -75,11 +75,11 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
         bool IsBelowStopp { get; set; }
 
-        /// <summary>
-        /// gibt an ob der aktuelle Candidate ein besser Scoring im vergleich zu letzten hatte
-        ///  gibt an ob der aktuelle Score höher ist als der letzte
-        /// </summary>
-        bool HasBetterScoring { get; }
+        ///// <summary>
+        ///// gibt an ob der aktuelle Candidate ein besser Scoring im vergleich zu letzten hatte
+        /////  gibt an ob der aktuelle Score höher ist als der letzte
+        ///// </summary>
+        //bool HasBetterScoring { get; }
 
         /// <summary>
         /// Das Result des Calculated Scores für das Rebalancing
@@ -95,5 +95,10 @@ namespace Trading.DataStructures.Interfaces
         /// die aktuelle Wertentwicklung der Position
         /// </summary>
         decimal Performance { get; }
+
+        /// <summary>
+        /// die StopLossMetainfo zum Kandiodaten
+        /// </summary>
+        IStopLossMeta StopLossMeta { get; }
     }
 }

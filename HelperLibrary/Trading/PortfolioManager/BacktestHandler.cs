@@ -12,18 +12,23 @@ using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
+    //TODO: Regeln für das Aufstocken von Positionen implementieren
+    //frühestens nach x Tagen im Portfolio
+    //scoring muss besser sein um x%
+    //und es darf kein trendbruch vorliegen
+
     public class IndexResult : IIndexBackTestResult
     {
         public IndexResult()
         {
-            
+
         }
 
         public IndexResult(IExposureSettings receiver)
         {
             MaximumAllocationToRisk = receiver.MaximumAllocationToRisk;
             MinimumAllocationToRisk = receiver.MinimumAllocationToRisk;
-            Asof = ((IIndexBackTestResult) receiver).Asof;
+            Asof = ((IIndexBackTestResult)receiver).Asof;
             SimulationNav = ((IIndexBackTestResult)receiver).SimulationNav;
             IndexLevel = ((IIndexBackTestResult)receiver).IndexLevel;
             TradingDay = receiver.TradingDay;
@@ -34,6 +39,11 @@ namespace HelperLibrary.Trading.PortfolioManager
         public decimal MinimumAllocationToRisk { get; set; }
         public string IndicesDirectory { get; set; }
         public DayOfWeek TradingDay { get; set; }
+
+        /// <summary>
+        /// Der Index der für die Steuerung der Aktienquote verwender werden soll
+        /// </summary>
+        public IndexType IndexType { get; set; }
 
         public DateTime Asof { get; set; }
 
@@ -124,7 +134,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 if (date >= endDateTime || date >= DateTime.Today.GetBusinessDay(false))
                     return;
 
-                var candidates = _candidatesProvider.GetCandidates(date, PriceHistoryOption.NextItem)?.ToList();
+                var candidates = _candidatesProvider.GetCandidates(date, PriceHistoryOption.PreviousItem)?.ToList();
                 var asof = candidates?.OrderByDescending(x => x.Record.Asof).FirstOrDefault()?.Record.Asof;
 
                 if (asof == null)

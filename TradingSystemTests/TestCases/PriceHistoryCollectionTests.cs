@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using HelperLibrary.Collections;
 using HelperLibrary.Extensions;
+using HelperLibrary.Parsing;
 using HelperLibrary.Trading.PortfolioManager.Exposure;
 using NUnit.Framework;
 using Trading.DataStructures.Enums;
@@ -138,11 +139,12 @@ namespace TradingSystemTests.TestCases
                 Assert.IsTrue(itm.Asof.IsBusinessDayUltimo() || itm.Asof.IsUltimo());
         }
 
-
+        [TestCase("MICROCHIP_TECHNOLOGY.csv","01.10.2001")]
+        [TestCase("NVIDIA.csv", "01.10.2001")]
         [TestCase("AdidasHistory.txt", "21.11.2008")]
         public void CreatePriceHistoryWithCalculationSettingsTest(string fileName, string dateString)
         {
-            var data = CreateTestCollecton(fileName);
+            var data = fileName.ContainsIc("Adidas") ? CreateTestCollecton(fileName) : CreateTestCollectonFromParser(fileName);
             _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
 
             Assert.IsTrue(_history != null, "Achtung die Collection ist null");
@@ -151,10 +153,15 @@ namespace TradingSystemTests.TestCases
             var date = DateTime.Parse(dateString);
             Assert.IsTrue(_history.TryGetLowMetaInfo(date, out var lowMetaInfo));
             Assert.IsTrue(_history.TryGetVolatilityInfo(date, out var volaMetaInfo));
+            Assert.IsTrue(_history.TryGetAbsoluteLossesAndGains(date, out var absoluteLossesAndGainsMetaInfo));
             Assert.IsTrue(lowMetaInfo != null && lowMetaInfo.HasNewLow);
             Assert.IsTrue(volaMetaInfo != null && volaMetaInfo.DailyVolatility > 0);
+            if (fileName.ContainsIc("Adidas"))
+                Assert.IsTrue(absoluteLossesAndGainsMetaInfo != null && absoluteLossesAndGainsMetaInfo.AbsoluteSum < 0 && absoluteLossesAndGainsMetaInfo.AbsoluteLoss > -1);
             Assert.IsTrue(volaMetaInfo != null && volaMetaInfo.DailyVolatility > new decimal(0.49d));
         }
+
+
 
 
         public static IEnumerable<TestQuote> CreateTestCollecton(string fileName)
@@ -164,7 +171,7 @@ namespace TradingSystemTests.TestCases
             if (data == null)
                 throw new MissingMemberException("Die Datei konnte nicht gefunden werden " + fileName);
 
-            var split = data.Split(Environment.NewLine.ToCharArray());
+            var split = data.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var line in split)
             {
@@ -172,7 +179,11 @@ namespace TradingSystemTests.TestCases
                     continue;
 
                 var item = line.Split(';');
-                var date = DateTime.Parse(item[0]);
+
+                if (!DateTime.TryParse(item[0], out var date))
+                    continue;
+
+                var parsedDate = date;
                 var price = Convert.ToDecimal(item[1]);
 
                 yield return new TestQuote
@@ -183,6 +194,18 @@ namespace TradingSystemTests.TestCases
                 };
             }
         }
+
+
+        public static IEnumerable<TestQuote> CreateTestCollectonFromParser(string fileName)
+        {
+            var data = (string)Resource.ResourceManager.GetObject(Path.GetFileNameWithoutExtension(fileName) ?? throw new InvalidOperationException("Achtung kein File gefunden !! -- FileName:" + fileName));
+
+            if (data == null)
+                throw new MissingMemberException("Die Datei konnte nicht gefunden werden " + fileName);
+
+            return SimpleTextParser.GetListOfType<TestQuote>(data);
+        }
+
 
         //public class PriceHistoryCalculationSettings : IPriceHistoryCollectionSettings
         //{

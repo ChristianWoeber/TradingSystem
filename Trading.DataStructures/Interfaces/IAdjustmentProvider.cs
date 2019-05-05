@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Trading.DataStructures.Interfaces
 {
-    public interface IAdjustmentProvider
+    public interface IAdjustmentProvider : IPortfolioValuation
     {
         /// <summary>
         /// Methode um anpassen des temporären portfolios
@@ -40,15 +40,15 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="currentWorstInvestedCandidate"></param>
         void AdjustTradingCandidateSell(decimal currentWeight, ITradingCandidate currentWorstInvestedCandidate);
 
-        /// <summary>
-        /// der Aktuelle Wert des Portfolios
-        /// </summary>
-        decimal PortfolioValue { get; }
+        ///// <summary>
+        ///// der Aktuelle Wert des Portfolios
+        ///// </summary>
+        //decimal PortfolioValue { get; }
 
-        /// <summary>
-        /// Das aktuelle Asof Datum des Portfoliomanagers
-        /// </summary>
-        DateTime PortfolioAsof { get; set; }
+        ///// <summary>
+        ///// Das aktuelle Asof Datum des Portfoliomanagers
+        ///// </summary>
+        //DateTime PortfolioAsof { get; set; }
 
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Trading.DataStructures.Interfaces
         /// Die Temporären Kandiaten
         /// </summary>
         /// <returns></returns>
-        Dictionary<int,ITradingCandidate> TemporaryCandidates { get; }
+        Dictionary<int, ITradingCandidate> TemporaryCandidates { get; }
 
         /// <summary>
         /// Das Temporäre Portfolio
@@ -82,6 +82,11 @@ namespace Trading.DataStructures.Interfaces
         /// Der Scoring Provider
         /// </summary>
         IScoringProvider ScoringProvider { get; }
+
+        /// <summary>
+        /// Der Position Watcher
+        /// </summary>
+        IPositionWatchService PositionWatcher { get; }
 
     }
 }

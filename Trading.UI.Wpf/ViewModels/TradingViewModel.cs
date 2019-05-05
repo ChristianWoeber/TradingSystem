@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Arts.Financial;
 using Common.Lib.Extensions;
@@ -77,6 +78,11 @@ namespace Trading.UI.Wpf.ViewModels
         {
             return _transactions;
         }
+
+        public static int GetAllTransactionsCount()
+        {
+            return _transactions.Count();
+        }
     }
 
 
@@ -100,7 +106,7 @@ namespace Trading.UI.Wpf.ViewModels
         }
     }
 
-    public class TradingViewModel : INotifyPropertyChanged, ISmartBusyRegion
+    public class TradingViewModel : INotifyPropertyChanged, ISmartProgessRegion
     {
         #region Private Members
 
@@ -225,7 +231,7 @@ namespace Trading.UI.Wpf.ViewModels
 
             //BacktestCompleted Event feuern
             var portfolioValuation = SimpleTextParser.GetListOfType<PortfolioValuation>(Path.Combine(_portfolioManager.PortfolioSettings.LoggingPath, "PortfolioValue"));
-            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(portfolioValuation, null));
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(portfolioValuation, null, Settings));
         }
 
 
@@ -238,7 +244,7 @@ namespace Trading.UI.Wpf.ViewModels
             using (SmartBusyRegion.Start(this))
             {
                 var indexOutput = new IndexResult { IndicesDirectory = Globals.IndicesBasePath };
-                var exposureWatcher = new ExposureWatcher(indexOutput, IndexSettings.TypeOfIndex);
+                var exposureWatcher = new ExposureWatcher(indexOutput);
                 var backtestHandler = new BacktestHandler(exposureWatcher);
                 _cancellationSource = new CancellationTokenSource();
                 await backtestHandler.RunIndexBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
@@ -249,6 +255,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         private async void OnRunBacktest()
         {
+
             //Pm erstellen für den Backtest
             using (SmartBusyRegion.Start(this))
             {
@@ -277,6 +284,8 @@ namespace Trading.UI.Wpf.ViewModels
                 _cancellationSource = new CancellationTokenSource();
                 await backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
                 _portfolioManager = pm;
+
+
             }
 
             //create output
@@ -291,10 +300,36 @@ namespace Trading.UI.Wpf.ViewModels
                 _cashInfosDictionary.Clear();
             //CashInfos updaten
             _cashInfosDictionary = new CashInfoCollection(cashMovements);
-            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(valuations, TransactionsRepo.GetAllTransactions()));
+
+            TransactionsCountTotal = TransactionsRepo.GetAllTransactionsCount();
+
+            AveragePortfolioSize = await CalculateAveragePortfolioHoldings();
+
+            PortfolioTurnOver = TransactionsCountPerWeek / AveragePortfolioSize;
+
+            var resultWindow = new ResultWindow { DataContext = this };
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(valuations, TransactionsRepo.GetAllTransactions(), Settings));
+            resultWindow.Show();
         }
 
 
+
+        private Task<decimal> CalculateAveragePortfolioHoldings()
+        {
+            return Task.Run(() =>
+            {
+                var count = 0;
+                var sum = 1M;
+                foreach (var dateGrp in TransactionsRepo.GetAllTransactions().GroupBy(x => x.TransactionDateTime))
+                {
+                    var holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(dateGrp.Key);
+                    count++;
+                    sum += holdings.Count();
+                }
+
+                return sum/count;
+            });
+        }
 
         private void OnCancel()
         {
@@ -311,7 +346,7 @@ namespace Trading.UI.Wpf.ViewModels
         {
             var filePath = _portfolioManager.PortfolioSettings.LoggingPath;
             var values = SimpleTextParser.GetListOfType<PortfolioValuation>(File.ReadAllText(filePath));
-            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(values, null));
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(values, null, Settings));
         }
 
         #endregion
@@ -341,6 +376,11 @@ namespace Trading.UI.Wpf.ViewModels
         private List<Transaction> _transactions;
         private TransactionViewModel _selectedPosition;
         private ITradingCandidateBase _selectedCandidate;
+        private double _value;
+        private double _maximum;
+        private int _transactionsCountTotal;
+        private decimal _portfolioTurnOver;
+        private decimal _averagePortfolioSize;
         private static Dictionary<int, string> _nameCatalog;
 
         public void UpdateCash(DateTime toDateTime)
@@ -537,6 +577,77 @@ namespace Trading.UI.Wpf.ViewModels
 
         #endregion
 
+        public double Value
+        {
+            get => _value;
+            set
+            {
+                if (value.Equals(_value))
+                    return;
+                _value = value;
+                OnPropertyChanged();
+                ProgressValueChanged?.Invoke(this, Value);
+            }
+        }
 
+        public double Maximum
+        {
+            get => _maximum;
+            set
+            {
+                if (value.Equals(_maximum))
+                    return;
+                _maximum = value;
+                OnPropertyChanged();
+                MaximumValueChanged?.Invoke(this, Maximum);
+            }
+        }
+
+        public int TransactionsCountTotal
+        {
+            get => _transactionsCountTotal;
+            set
+            {
+                if (value == _transactionsCountTotal)
+                    return;
+                _transactionsCountTotal = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(TransactionsCountPerYear));
+                OnPropertyChanged(nameof(TransactionsCountPerMonth));
+                OnPropertyChanged(nameof(TransactionsCountPerWeek));
+
+            }
+        }
+
+        public decimal TransactionsCountPerYear => TransactionsCountTotal / ((EndDateTime - StartDateTime).Days / (decimal)250);
+        public decimal TransactionsCountPerMonth => TransactionsCountPerYear / 12;
+        public decimal TransactionsCountPerWeek => TransactionsCountPerYear / 50;
+
+        public decimal AveragePortfolioSize
+        {
+            get => _averagePortfolioSize;
+            set
+            {
+                if (value == _averagePortfolioSize)
+                    return;
+                _averagePortfolioSize = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public decimal PortfolioTurnOver
+        {
+            get => _portfolioTurnOver;
+            set
+            {
+                if (value == _portfolioTurnOver)
+                    return;
+                _portfolioTurnOver = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event EventHandler<double> ProgressValueChanged;
+        public event EventHandler<double> MaximumValueChanged;
     }
 }

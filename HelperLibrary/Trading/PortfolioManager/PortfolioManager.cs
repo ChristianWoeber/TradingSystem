@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows.Forms.VisualStyles;
 using HelperLibrary.Extensions;
 using HelperLibrary.Trading.PortfolioManager.Cash;
 using HelperLibrary.Trading.PortfolioManager.Exposure;
 using HelperLibrary.Trading.PortfolioManager.Rebalancing;
 using HelperLibrary.Trading.PortfolioManager.Settings;
 using HelperLibrary.Trading.PortfolioManager.Transactions;
-using HelperLibrary.Util.Converter;
 using JetBrains.Annotations;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -18,53 +14,6 @@ using Transaction = HelperLibrary.Database.Models.Transaction;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
-    //public class CurrentPositionRepository
-    //{
-    //    /// <summary>
-    //    /// das Dictionary mit den mEtadaten zu den aktuellen Positionen
-    //    /// </summary>
-    //    private readonly Dictionary<int, PositionMetaInfo> _positionMetaInfos;
-
-    //    public CurrentPositionRepository()
-    //    {
-    //        _positionMetaInfos = new Dictionary<int, PositionMetaInfo>();
-    //    }
-
-    //    /// <summary>
-    //    /// Singelton Instanz
-    //    /// </summary>
-    //    public static CurrentPositionRepository Inst { get; } = new CurrentPositionRepository();
-
-    //    /// <summary>
-    //    /// Mir der Methode kann ein Candidat hinzugefügt, bzw. wenn schon vorhanden upgedated werden
-    //    /// </summary>
-    //    /// <param name="candidate"></param>
-    //    public void InsertOrUpdate(ITradingCandidate candidate)
-    //    {
-
-    //    }
-
-    //    /// <summary>
-    //    /// Mit der Methode können Candidaten removed werden
-    //    /// </summary>
-    //    /// <param name="candidate"></param>
-    //    public void Remove(ITradingCandidate candidate)
-    //    {
-
-    //    }
-
-
-    //    public PositionMetaInfo GetMetaInfo(ITradingCandidate candidate)
-    //    {
-            
-    //    }
-
-    //}
-
-    public class PositionMetaInfo
-    {
-    }
-
     public class PortfolioManager : PortfolioManagerBase, IAdjustmentProvider
     {
         /// <summary>
@@ -75,17 +24,23 @@ namespace HelperLibrary.Trading.PortfolioManager
         {
             //Initialisierungen
             CashHandler = new CashManager(this);
-            TransactionCaclulationProvider = new TransactionCalculationHandler(this);
+            TransactionCaclulationProvider = new TransactionCalculationHandler(this, PortfolioSettings);
             TemporaryPortfolio = new TemporaryPortfolio(this);
             CashHandler.Cash = PortfolioSettings.InitialCashValue;
-            AllocationToRiskWatcher = new ExposureWatcher(PortfolioSettings, IndexType.EuroStoxx50);
+            AllocationToRiskWatcher = new ExposureWatcher(PortfolioSettings);
             RebalanceProvider = new RebalanceProvider(TemporaryPortfolio, this, PortfolioSettings);
+            PositionWatcher = new PositionWatchService(StopLossSettings);
 
             //Register Events
             PortfolioAsofChangedEvent += OnPortfolioAsOfChanged;
             PositionChangedEvent += OnPositionChanged;
             CashHandler.CashChangedEvent += OnCashChanged;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IPositionWatchService PositionWatcher { get; set; }
 
         /// <summary>
         /// der Risk Watcher - kümmert sich um die Berechnung der maximalen Aktienquote
@@ -174,8 +129,6 @@ namespace HelperLibrary.Trading.PortfolioManager
                 }
 
                 return sum / PortfolioValue;
-                //return TemporaryPortfolio.Sum(temporaryTransaction =>
-                //temporaryTransaction.Shares * ScoringProvider.GetTradingRecord(temporaryTransaction.SecurityId, PortfolioAsof).AdjustedPrice) / PortfolioValue;
             }
         }
 
@@ -268,6 +221,11 @@ namespace HelperLibrary.Trading.PortfolioManager
             if (PortfolioSettings.MaximumAllocationToRisk == 0)
                 return;
 
+            if (PortfolioAsof >= new DateTime(2000, 01, 25))
+            {
+
+            }
+
             //liste mit den besten Kandiaten die, aktuelle verdrängen werden
             var bestCandidatesNotInvestedIn = new List<TradingCandidate>();
 
@@ -292,7 +250,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                     }
                     //dann ist der aktuelle Score gefallen
                     //hier die Stops checken
-                    else if (StopLossSettings.HasStopLoss(candidate))
+                    else if (PositionWatcher.HasStopLoss(candidate))
                     {
                         //wenn die aktuelle Haltedauer kürzer ist als das minimum der Strategie, dann probier ich gegen den nächsten zu tauschen                     
                         if (IsBelowMinimumHoldingPeriode(candidate))
@@ -465,6 +423,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 {
                     case TransactionType.Close:
                     case TransactionType.Open:
+                        break;
                     case TransactionType.Unknown:
                         lastTransaction = TransactionsHandler.GetSingle(candidate.Record.SecurityId, TransactionType.Open);
                         break;
@@ -708,12 +667,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <returns></returns>
         protected override void CalculateCurrentPortfolioValue()
         {
-
-            //if (PortfolioAsof >= new DateTime(2001, 04, 26))
-            //{
-
-            //}
-
             //deklaration der Summe der investierten Positionen, bewertet mit dem aktuellen Preis
             decimal sumInvested = 0;
 
@@ -726,7 +679,8 @@ namespace HelperLibrary.Trading.PortfolioManager
                     throw new NullReferenceException($"Achtung GetTradingRecord hat zum dem Datum {PortfolioAsof} null zurückgegeben für die SecId {currentPosition.SecurityId}");
 
                 //updaten der Stop Loss Limits
-                StopLossSettings.UpdateDailyLimits(currentPosition, price, PortfolioAsof);
+                //StopLossSettings.UpdateDailyLimits(currentPosition, price, PortfolioAsof);
+                PositionWatcher.UpdateDailyLimits(currentPosition,price, PortfolioAsof);
                 //summe erhöhen
                 sumInvested += currentPosition.Shares * price.Value;
             }

@@ -125,29 +125,5 @@ namespace Trading.UI.Wpf.Utils
         }
 
     }
-
-    public class PriceHistorySettings : IPriceHistoryCollectionSettings
-    {
-        public PriceHistorySettings(int movingAverageLengthInDays = 0, int movingDaysVolatility = 250)
-        {
-            MovingAverageLengthInDays = movingAverageLengthInDays;
-            MovingDaysVolatility = movingDaysVolatility;
-        }
-
-        /// <summary>
-        /// die Länge des Moving Averages
-        /// </summary>
-        public int MovingAverageLengthInDays { get; set; }
-
-        /// <summary>
-        /// die "Länge" der Volatilität
-        /// </summary>
-        public int MovingDaysVolatility { get; set; }
-
-        /// <summary>
-        /// Der Name des Wertpapiers
-        /// </summary>
-        public string Name { get; set; }
-    }
 }
 

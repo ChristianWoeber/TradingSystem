@@ -14,7 +14,7 @@ namespace HelperLibrary.Calculations
     /// <summary>
     /// Der Calculation Context, wird nur einmal pro Price History Collection erstellt wird
     /// </summary>
-    public class CalculationContext : ICalculationContext
+    public partial class CalculationContext : ICalculationContext
     {
         #region Private Member
 
@@ -30,9 +30,38 @@ namespace HelperLibrary.Calculations
         /// <summary>
         /// the Daily Returns
         /// </summary>
-        private readonly Dictionary<DateTime, decimal> _dailyReturns = new Dictionary<DateTime, decimal>();
+        private readonly DailyReturnCollection _dailyReturns = new DailyReturnCollection();
+        private readonly LowMetaInfoCollection _lowMetaInfos = new LowMetaInfoCollection();
+        private readonly MovingVolatilityCollection _movingVolaMetaInfos = new MovingVolatilityCollection();
+        private readonly AbsoluteLossAndGainCollection _absoluteLossAndGainInfos = new AbsoluteLossAndGainCollection();
 
-        //private decimal _arithmeticMonthlyMean;
+        private readonly List<Tuple<DateTime, decimal>> _monthlyReturns = new List<Tuple<DateTime, decimal>>();
+
+        /// <summary>
+        /// die Collection für die Moving Vola
+        /// </summary>
+        public class MovingVolatilityCollection : LastItemDictionaryBase<MovingVolaMetaInfo> { }
+
+        /// <summary>
+        /// Die Collection für die LowMetaInfos
+        /// </summary>
+        public class LowMetaInfoCollection : LastItemDictionaryBase<LowMetaInfo> { }
+
+
+        /// <summary>
+        /// Die Collection für die AbsoluteLossesAndGainsMetaInfo
+        /// </summary>
+        public class AbsoluteLossAndGainCollection : LastItemDictionaryBase<AbsoluteLossesAndGainsMetaInfo> { }
+
+        /// <summary>
+        /// die Collection für die Dailly Returns
+        /// </summary>
+        public class DailyReturnCollection : LastItemDictionaryBase<DailyReturnMetaInfo>
+        {
+
+        }
+
+
 
         #endregion
 
@@ -46,6 +75,8 @@ namespace HelperLibrary.Calculations
 
         #endregion
 
+        internal ITradingRecord LastUltimoRecord;
+
         public ITradingRecord LastRecord => _priceHistory.LastItem;
 
         public ITradingRecord FirstRecord => _priceHistory.FirstItem;
@@ -58,30 +89,17 @@ namespace HelperLibrary.Calculations
             return _handler.CalcAbsoluteReturn(_priceHistory.Get(from, priceHistoryOption), isLast ? _priceHistory.LastItem : _priceHistory.Get(to.Value, priceHistoryOption), opt);
         }
 
-        public bool TryGetDailyReturn(DateTime asof, out decimal dailyReturn)
+        public bool TryGetDailyReturn(DateTime asof, out IDailyReturnMetaInfo dailyReturnMetaInfo)
         {
-            if (_dailyReturns.Count == 0)
+            dailyReturnMetaInfo = null;
+            if (_dailyReturns.TryGetLastItem(asof, out var info))
             {
-                dailyReturn = decimal.MinusOne;
-                return false;
+                dailyReturnMetaInfo = info;
+                return true;
             }
 
-            var idx = 0;
-
-            while (idx < MAX_TRIES)
-            {
-                if (_dailyReturns.TryGetValue(asof.AddDays(-idx), out var lastDailyReturn))
-                {
-                    dailyReturn = lastDailyReturn;
-                    return true;
-                }
-
-                idx++;
-            }
-            dailyReturn = decimal.MinusOne;
             return false;
         }
-
 
 
         public decimal GetAverageReturn(DateTime from, DateTime? to = null, CaclulationOption? option = null)
@@ -121,12 +139,13 @@ namespace HelperLibrary.Calculations
 
         internal void AddDailyReturn(ITradingRecord from, ITradingRecord to)
         {
-            if (!_dailyReturns.ContainsKey(to.Asof))
-                _dailyReturns.Add(to.Asof, _handler.CalcAbsoluteReturn(from, to));
+            if (_dailyReturns.LastItem == null || _dailyReturns.LastItem?.Key < to.Asof)
+            {
+                var metaInfo = new DailyReturnMetaInfo(from, to, _handler.CalcAbsoluteReturn(from, to));
+                _dailyReturns.Add(to.Asof, metaInfo);
+            }
         }
 
-        private readonly List<Tuple<DateTime, decimal>> _monthlyReturns = new List<Tuple<DateTime, decimal>>();
-        internal ITradingRecord LastUltimoRecord;
 
         public void AddMonthlyUltimoReturn(ITradingRecord ultimoRecord)
         {
@@ -155,21 +174,27 @@ namespace HelperLibrary.Calculations
 
         public IEnumerable<decimal> EnumDailyReturns()
         {
-            foreach (var item in _dailyReturns.Values)
-                yield return item;
+            foreach (var item in _dailyReturns)
+                yield return item.Value.AbsoluteReturn;
+        }
+
+        public IEnumerable<IDailyReturnMetaInfo> EnumDailyReturnMetaInfos()
+        {
+            foreach (var item in _dailyReturns)
+                yield return item.Value;
         }
 
         public IEnumerable<decimal> EnumMonthlyReturns()
         {
             //damit kann gleich nach MOnaten gruppiert werden mit dem Key "{MMYY}"
             foreach (var grp in _dailyReturns.GroupBy(x => new { x.Key.Month, x.Key.Year }))
-                yield return grp.Sum(y => y.Value);
+                yield return grp.Sum(y => y.Value.AbsoluteReturn);
         }
 
         public IEnumerable<Tuple<DateTime, decimal>> EnumDailyReturnsTuple()
         {
             foreach (var item in _dailyReturns)
-                yield return Tuple.Create(item.Key, item.Value);
+                yield return Tuple.Create(item.Key, item.Value.AbsoluteReturn);
         }
 
         public void CalcArithmeticMean(ITradingRecord item, int count)
@@ -180,83 +205,6 @@ namespace HelperLibrary.Calculations
                 _arithmeticMean = (item.AdjustedPrice + _arithmeticMean) / count;
         }
 
-        public void CalcArithmeticMeanDailyReturns()
-        {
-            _arithmeticMeanDailyReturns = _dailyReturns.Values.Sum() / _priceHistory.Count;
-        }
-
-
-        private readonly LowMetaInfoCollection _lowMetaInfos = new LowMetaInfoCollection();
-
-
-        internal class MovingVolatilityCollection : LastItemDictionaryBase<MovingVolaMetaInfo>
-        {
-        }
-
-        public class LowMetaInfoCollection : LastItemDictionaryBase<LowMetaInfo>
-        {
-        }
-
-        public abstract class LastItemDictionaryBase<TValue> : Dictionary<DateTime, TValue> where TValue : class
-        {
-            private const int MAX_TRIES = 30;
-
-            private KeyValuePair<DateTime, TValue> _lastKeyValuePair;
-
-            /// <summary>
-            /// überschreibe hier die add methode
-            /// und merke mir den zuletzt eingefügten wert
-            /// </summary>
-            /// <param name="key"></param>
-            /// <param name="value"></param>
-            public new void Add(DateTime key, TValue value)
-            {
-                _lastKeyValuePair = new KeyValuePair<DateTime, TValue>(key, value);
-                base.Add(key, value);
-            }
-
-            public bool TryGetLastItem(DateTime key, out TValue lastMetaInfo)
-            {
-                lastMetaInfo = null;
-                if (Count == 0)
-                {
-                    return false;
-                }
-
-                if (_lastKeyValuePair.Key <= DateTime.MinValue)
-                    return false;
-
-                //Dadurch erspare ich mir beim einfüllen der Daten unnötige Rekursionen
-                if (_lastKeyValuePair.Key <= key)
-                {
-                    lastMetaInfo = _lastKeyValuePair.Value;
-                    return true;
-                }
-
-                //Normaler Modus (HINT: eventuell auch hier binarySearch verwenden?)
-                var idx = 0;
-
-                while (idx < MAX_TRIES)
-                {
-                    var newDate = key.AddDays(-idx);
-                    if (TryGetValue(newDate, out var lastInfo))
-                    {
-                        var currentlastMetaInfo = lastInfo;
-                        if (currentlastMetaInfo != null)
-                        {
-                            lastMetaInfo = currentlastMetaInfo;
-                            return true;
-                        }
-                    }
-
-                    if (lastInfo == null)
-                        idx++;
-                }
-
-                lastMetaInfo = null;
-                return false;
-            }
-        }
 
         public bool TryGetLastVolatility(DateTime asof, out decimal volatility)
         {
@@ -268,7 +216,6 @@ namespace HelperLibrary.Calculations
             return true;
         }
 
-        private readonly MovingVolatilityCollection _movingVolaMetaInfos = new MovingVolatilityCollection();
 
         public void CalcMovingVola(ITradingRecord item, int count)
         {
@@ -287,7 +234,7 @@ namespace HelperLibrary.Calculations
                     if (!TryGetDailyReturn(item.Asof, out var lastDailyReturn) || !TryGetDailyReturn(firstItem.Asof, out var firstDailyReturn))
                         throw new ArgumentException("Achtung es konnten keine DailyReturns gefunden werden");
 
-                    _movingVolaMetaInfos.Add(item.Asof, MovingVolaMetaInfo.Create(lastMetaInfo, item, firstDailyReturn, lastDailyReturn, daysCount));
+                    _movingVolaMetaInfos.Add(item.Asof, MovingVolaMetaInfo.Create(lastMetaInfo, item, firstDailyReturn.AbsoluteReturn, lastDailyReturn.AbsoluteReturn, daysCount));
                     return;
                 }
 
@@ -309,12 +256,62 @@ namespace HelperLibrary.Calculations
             }
             catch (Exception e)
             {
-
                 Console.WriteLine(e);
                 throw;
             }
         }
 
+        public void CalcAbsoluteLossesAndGains(ITradingRecord item, int count)
+        {
+            try
+            {
+                if (!TryGetLastAbsoluteLossAndGain(item.Asof, out var absoluteLossesAndGainsMetaInfo))
+                {
+                    var metaInfo = GetLastAbsoluteLossAndGainMetaInfo();
+                    _absoluteLossAndGainInfos.Add(item.Asof, metaInfo);
+                }
+                else
+                {
+                    if (!TryGetDailyReturn(item.Asof, out var dailyReturn))
+                        throw new ArgumentException($"Achtung zu diesem zeitpunkt konnte kein daily Return gefunden werden {item.Asof}");
+
+                    var metaInfo = new AbsoluteLossesAndGainsMetaInfo(absoluteLossesAndGainsMetaInfo);
+                    metaInfo.Update(dailyReturn);
+                    _absoluteLossAndGainInfos.Add(item.Asof, metaInfo);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+        }
+
+        public bool TryGetLastAbsoluteLossAndGain(DateTime itemAsof, out IAbsoluteLossesAndGainsMetaInfo info)
+        {
+            info = _absoluteLossAndGainInfos.Get(itemAsof, BinarySearchOption.GetLastIfNotFound)?.Value;
+            return info != null;
+        }
+
+        private AbsoluteLossesAndGainsMetaInfo GetLastAbsoluteLossAndGainMetaInfo()
+        {
+            decimal absoluteLoss = 0;
+            decimal absoluteGain = 0;
+
+            foreach (var dailyReturn in _dailyReturns)
+            {
+                if (dailyReturn.Value.AbsoluteReturn > 0)
+                    absoluteGain += dailyReturn.Value.AbsoluteReturn;
+                else
+                {
+                    absoluteLoss += dailyReturn.Value.AbsoluteReturn;
+                }
+            }
+
+            return new AbsoluteLossesAndGainsMetaInfo(absoluteLoss, absoluteGain, _priceHistory.Settings, _dailyReturns.Select(x => (IDailyReturnMetaInfo)x.Value).ToList());
+        }
 
         public void CalcMovingLows(ITradingRecord item, int count)
         {
@@ -324,15 +321,21 @@ namespace HelperLibrary.Calculations
 
             try
             {
-
+                ITradingRecord high = null;
                 ITradingRecord low = null;
                 ITradingRecord first = null;
                 ITradingRecord last = null;
                 var records = new List<ITradingRecord>();
 
-                //hol mir das letzt Item
+                //hol mir das letzte Item
                 if (_lowMetaInfos.TryGetLastItem(item.Asof.AddDays(-1), out var lastLowMetaInfo))
                 {
+
+                    //TODO: fix
+                    //das High aktualisieren
+                    if (item.AdjustedPrice > lastLowMetaInfo.High?.AdjustedPrice)
+                        lastLowMetaInfo.UpdateHigh(item);
+
                     //das Item von vor 150 Tagen
                     var newFirst = _priceHistory.Get(item.Asof.AddDays(-_priceHistory.Settings.MovingAverageLengthInDays));
                     lastLowMetaInfo.UpdatePeriodeRecords(item);
@@ -362,21 +365,28 @@ namespace HelperLibrary.Calculations
                     if (low == null)
                     {
                         //merke mir hier den ersten
-                        low = record;
-                        first = low;
+                        low = new TradingRecord(record);
+                        first = new TradingRecord(record);
+                        high = new TradingRecord(record);
                     }
 
                     //dann gibt es ein neues Low
                     if (record.AdjustedPrice < low.AdjustedPrice)
-                        low = record;
+                        low = new TradingRecord(record);
+                    //auch das high merken
+                    if (record.AdjustedPrice > high.AdjustedPrice)
+                        high = new TradingRecord(record);
+
                     //merke mir hier immer den letzten Record
                     last = record;
-
                 }
                 //wenn lastLowMetaInfo == null bin ich beim ersten Record
                 _lowMetaInfos.Add(item.Asof, lastLowMetaInfo != null
                         ? new LowMetaInfo(first, low, last, lastLowMetaInfo, true)
                         : new LowMetaInfo(first, low, last, records));
+
+                //das high nachziehen
+                _lowMetaInfos.LastItem.Value.UpdateHigh(high);
 
             }
             catch (Exception e)
@@ -386,9 +396,14 @@ namespace HelperLibrary.Calculations
             }
         }
 
-        public bool TryGetLastLowInfo(DateTime currentDate, out LowMetaInfo info)
+        public bool TryGetLastLowInfo(DateTime currentDate, out ILowMetaInfo info)
         {
-            return _lowMetaInfos.TryGetLastItem(currentDate, out info);
+            info = null;
+            if (!_lowMetaInfos.TryGetLastItem(currentDate, out var infoInternal))
+                return false;
+            info = infoInternal;
+            return true;
+
         }
 
         public bool DateIsNewLow(DateTime currentDate)
@@ -409,55 +424,37 @@ namespace HelperLibrary.Calculations
                 yield return new Tuple<DateTime, LowMetaInfo>(kvp.Key, kvp.Value);
             }
         }
-
-
     }
 
-    public class MovingVolaMetaInfo
+    public class DailyReturnMetaInfo : IDailyReturnMetaInfo
     {
-        private readonly IPriceHistoryCollectionSettings _settings;
-        private readonly int _count;
-
-        public MovingVolaMetaInfo(decimal averageReturn, decimal variance, IPriceHistoryCollectionSettings settings, int count)
+        public DailyReturnMetaInfo(ITradingRecord fromRecord, ITradingRecord toRecord, decimal absoluteReturn)
         {
-            _settings = settings;
-            _count = count;
-            AverageReturn = averageReturn;
-            Variance = variance;
-            //Wurzel aus varianz/ N-1 und auf 250 Tage bringen
-            DailyVolatility = (decimal)(Math.Sqrt((double)variance / (count - 1)) * Math.Sqrt(settings.MovingDaysVolatility));
+            FromRecord = fromRecord;
+            ToRecord = toRecord;
+            AbsoluteReturn = absoluteReturn;
         }
-        /// <summary>
-        /// die tägliche Volatilität
-        /// </summary>
-        public decimal DailyVolatility { get; }
 
         /// <summary>
-        /// das arithmetrische MIttel der daily Returns
+        /// Der komplette Record from
         /// </summary>
-        public decimal AverageReturn { get; }
+        public ITradingRecord FromRecord { get; }
 
         /// <summary>
-        /// die Varianz => Achtung ist schon durch N-1 bereiningt
+        /// Der komplette Record to
         /// </summary>
-        public decimal Variance { get; }
+        public ITradingRecord ToRecord { get; }
 
+        /// <summary>
+        /// der Return 
+        /// </summary>
+        public decimal AbsoluteReturn { get; }
 
-        public static MovingVolaMetaInfo Create(MovingVolaMetaInfo lastMetaInfo, ITradingRecord item, decimal firstDailyReturn, decimal lastDailyReturn, int count)
+        /// <summary>Gibt eine Zeichenfolge zurück, die das aktuelle Objekt darstellt.</summary>
+        /// <returns>Eine Zeichenfolge, die das aktuelle Objekt darstellt.</returns>
+        public override string ToString()
         {
-            //ändere hier nur den letzen und ersten Value
-            var currentAverage = lastMetaInfo.AverageReturn;
-            currentAverage += lastDailyReturn * 1 / (count - 1);
-            currentAverage -= firstDailyReturn * 1 / (count - 1);
-
-            //auch bei der Varianz
-            var currentVariance = lastMetaInfo.Variance;
-            currentVariance += (decimal)Math.Pow(((double)currentAverage - (double)lastDailyReturn), 2);
-            currentVariance -= (decimal)Math.Pow(((double)lastMetaInfo.AverageReturn - (double)firstDailyReturn), 2);
-
-            //Trace.TraceInformation($"aktuelle Varianz: {currentVariance:N6}, aktueller Average: {currentAverage:N6}, aktuelles Datum {item.Asof}");
-            //gebe dann die aktualisierte Info zurück
-            return new MovingVolaMetaInfo(currentAverage, currentVariance, lastMetaInfo._settings, count);
+            return $"{FromRecord.Asof.ToShortDateString()}_{AbsoluteReturn}";
         }
     }
 }

@@ -69,5 +69,11 @@ namespace Trading.DataStructures.Interfaces
         /// die Minimale Positionsgröße in % 
         /// </summary>
         decimal MinimumPositionSizePercent { get; set; }
+
+        /// <summary>
+        /// die zu erwartende Ticket Fee die beim Backtest berüclsichtigt werden soll
+        /// </summary>
+        decimal ExpectedTicketFee { get; set; }
+
     }
 }

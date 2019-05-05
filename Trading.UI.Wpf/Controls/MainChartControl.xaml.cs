@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Arts.Financial;
 using Arts.WCharting;
+using Trading.DataStructures.Enums;
 using Trading.UI.Wpf.Utils;
 using Trading.UI.Wpf.ViewModels;
 using Trading.UI.Wpf.ViewModels.EventArgs;
@@ -33,6 +34,11 @@ namespace Trading.UI.Wpf.Controls
                 return;
 
             _model = model;
+            //De-Register events
+            _model.BacktestCompletedEvent -= OnBacktestCompleted;
+            _model.IndexBacktestCompletedEvent -= OnIndexBacktestCompleted;
+            _model.MoveCursorToNextTradingDayEvent -= OnMoveCursorToNextTradingDay;
+            _model.MoveCursorToNextStoppDayEvent -= OnMoveCursorToNextStoppDayEvent;
             //Register events
             _model.BacktestCompletedEvent += OnBacktestCompleted;
             _model.IndexBacktestCompletedEvent += OnIndexBacktestCompleted;
@@ -114,10 +120,43 @@ namespace Trading.UI.Wpf.Controls
                 FillMode = WLCFillMode.FillAlpha,
                 FillAlpha = 0.25
             });
+
+            var indexFints = GetIndexFints(args, navFints);
+
             ChartControl.Data.Add(new WLineChartFINTS(navFints) { Color = Colors.Blue, Caption = "Backtest", StrokeThickness = 0.75 });
-            ChartControl.Data.Add(new WLineChartFINTS(FintsSecuritiesRepo.Eurostoxx50.Value) { Color = Colors.LightCoral, Caption = "EuroStoxx 50", StrokeThickness = 0.75 });
+            ChartControl.Data.Add(new WLineChartFINTS(indexFints) { Color = Colors.LightCoral, Caption = args.Settings.IndexType.ToString(), StrokeThickness = 0.75 });
             ChartControl.ViewBeginDate = navFints.BeginDate;
             ChartControl.ViewEndDate = navFints.EndDate;
+        }
+
+        private static FINTS<double> GetIndexFints(BacktestResultEventArgs args, FINTS<double> navFints)
+        {
+            var indexFints = FINTS<double>.Empty;
+
+            switch (args.Settings.IndexType)
+            {
+                case IndexType.Dax:
+                    indexFints =
+                        FINTS.Create(FintsSecuritiesRepo.Dax.Value.Where(x =>
+                            x.Date >= navFints.BeginDate && x.Date <= navFints.EndDate));
+                    break;
+                case IndexType.EuroStoxx50:
+                    indexFints =
+                        FINTS.Create(FintsSecuritiesRepo.Eurostoxx50.Value.Where(x =>
+                            x.Date >= navFints.BeginDate && x.Date <= navFints.EndDate));
+                    break;
+                case IndexType.MsciWorldEur:
+                    indexFints = FINTS.Create(FintsSecuritiesRepo.MsciWorldEur.Value.Where(x =>
+                        x.Date >= navFints.BeginDate && x.Date <= navFints.EndDate));
+                    break;
+                case IndexType.SandP500:
+                    throw new NotImplementedException();
+                default:
+                    throw new NotImplementedException();
+            }
+
+            indexFints.DataType = FINTSDataType.Return;
+            return indexFints;
         }
 
         private void OnChartControlClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)

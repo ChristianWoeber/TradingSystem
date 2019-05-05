@@ -13,34 +13,33 @@ using HelperLibrary.Extensions;
 namespace HelperLibrary.Collections
 {
 
-    /// <summary>
-    /// Hilfsklasse die den YahooDataRecord beliebig erweitert
-    /// </summary>
-    public class PriceHistoryItem
-    {
-        /// <summary>
-        /// Standard Konstruktor
-        /// </summary>
-        /// <param name="dbRecord">der Db Record</param>
-        public PriceHistoryItem(TradingRecord dbRecord)
-        {
-            DbRecord = dbRecord;
-        }
+    ///// <summary>
+    ///// Hilfsklasse die den YahooDataRecord beliebig erweitert
+    ///// </summary>
+    //public class PriceHistoryItem
+    //{
+    //    /// <summary>
+    //    /// Standard Konstruktor
+    //    /// </summary>
+    //    /// <param name="dbRecord">der Db Record</param>
+    //    public PriceHistoryItem(TradingRecord dbRecord)
+    //    {
+    //        DbRecord = dbRecord;
+    //    }
 
-        /// <summary>
-        /// Die tägliche Veränderung des Prices für das PriceDate 20.01.2016 bspw ist es die Veränderung von 19.01 auf 20.01 und hat als DateTime den 20.01
-        /// </summary>
-        public decimal DailyReturn { get; set; }
+    //    /// <summary>
+    //    /// Die tägliche Veränderung des Prices für das PriceDate 20.01.2016 bspw ist es die Veränderung von 19.01 auf 20.01 und hat als DateTime den 20.01
+    //    /// </summary>
+    //    public decimal DailyReturn { get; set; }
 
-        /// <summary>
-        /// Der Deb Record der Im Konstruktor injected wird
-        /// </summary>
-        public TradingRecord DbRecord { get; private set; }
-    }
+    //    /// <summary>
+    //    /// Der Deb Record der Im Konstruktor injected wird
+    //    /// </summary>
+    //    public TradingRecord DbRecord { get; private set; }
+    //}
 
 
 
-    //TODO: BinarySearch Collection verwenden für das getten der Items
     /// <summary>
     /// Price History Collection - Enthält Berechnungen zur PriceHistory und gibt die Items zurück
     /// </summary>
@@ -52,8 +51,6 @@ namespace HelperLibrary.Collections
         /// <summary>
         /// der Backing Storage für die Items die im Enumerator zrückgegeben werden
         /// </summary>
-        //private readonly ObservableCollection<ITradingRecord> _items = new ObservableCollection<ITradingRecord>();
-
         private readonly BinarySearchCollection<DateTime, ITradingRecord> _items = new BinarySearchCollection<DateTime, ITradingRecord>();
 
 
@@ -64,6 +61,9 @@ namespace HelperLibrary.Collections
         private ITradingRecord _first => _items != null && _items.Count > 0 ? _items?.FirstItem.Value : null;
         private ITradingRecord _last => _items != null && _items.Count > 0 ? _items?.LastItem.Value : null;
 
+        /// <summary>
+        /// der Context für die diversen Berechungen
+        /// </summary>
         private readonly CalculationContext _calculationContext;
 
         #endregion
@@ -78,31 +78,17 @@ namespace HelperLibrary.Collections
             AddRange(tradingRecords);
         }
 
-        //public void Delete(ITradingRecord selectedRecord)
-        //{
-        //    if (_items.Get(selectedRecord.Asof) != null)
-        //        _items.Remove(selectedRecord);
-        //}
-
-        public static IPriceHistoryCollection Create(IEnumerable<ITradingRecord> tradingRecords,
-            IPriceHistoryCollectionSettings settings = null)
+        /// <summary>
+        /// Methode zum erstellen der PriceHistoryCollection
+        /// </summary>
+        /// <param name="tradingRecords">die records</param>
+        /// <param name="settings">die Einstellungen zur Collection</param>
+        /// <returns></returns>
+        public static IPriceHistoryCollection Create(IEnumerable<ITradingRecord> tradingRecords, IPriceHistoryCollectionSettings settings = null)
         {
             return new PriceHistoryCollection(tradingRecords, settings);
         }
 
-
-        ///// <summary>
-        ///// Clears the old items and loads the complete collecton anew
-        ///// </summary>
-        //public void Refresh(int secid)
-        //{
-
-        //    if (_items.Count > 0)
-        //        _items.Clear();
-
-        //    var newItems = DataBaseQueryHelper.GetSinglePriceHistory(secid);
-        //    AddRange(newItems.ToList());
-        //}
 
 
         #endregion
@@ -120,18 +106,21 @@ namespace HelperLibrary.Collections
         /// </summary>
         public ITradingRecord LastItem => _last;
 
-
         /// <summary>
         /// Zugriff auf den Calculation Context
         /// </summary>
         public ICalculationContext Calc => _calculationContext;
 
+        /// <summary>
+        /// Das Low der PriceHistory
+        /// </summary>
+        public ITradingRecord Low { get; internal set; }
 
-        //internal void Clear()
-        //{
-        //    _items.Clear();
+        /// <summary>
+        /// Das High der PriceHistory
+        /// </summary>
+        public ITradingRecord High { get; internal set; }
 
-        //}
 
         internal void Add(ITradingRecord item)
         {
@@ -141,12 +130,23 @@ namespace HelperLibrary.Collections
             if (item.AdjustedPrice == decimal.Zero || item.Price == decimal.Zero)
                 return;
 
-            //add the item to the history collection
+            //Low und High der Collection mitziehen
+            if (item.AdjustedPrice > High?.AdjustedPrice)
+                High = item;
+
+            if (item.AdjustedPrice < Low?.AdjustedPrice)
+                Low = item;
+
+            //einfügen
             _items.Add(new BinarySearchCollection<DateTime, ITradingRecord>.KeyValuePair(item.Asof, item));
 
-            //beim ersten eintrag kann ich noch nichts berechnen
+            //beim ersten Eintrag kann ich noch nichts berechnen
             if (_items.Count == 1)
             {
+                //low & High initialisieren
+                Low = new TradingRecord(_items.FirstItem.Value);
+                High = new TradingRecord(Low);
+                //last Ultimo initialiseren
                 _calculationContext.LastUltimoRecord = _items.FirstItem.Value;
                 return;
             }
@@ -167,14 +167,19 @@ namespace HelperLibrary.Collections
             if (Settings?.MovingAverageLengthInDays > 0)
             {
                 _calculationContext.CalcMovingLows(item, _items.Count);
-
             }
+
             if (Settings?.MovingDaysVolatility > 0)
             {
                 if (item.Asof >= FirstItem.Asof.AddDays(Settings.MovingDaysVolatility))
                     _calculationContext.CalcMovingVola(item, _items.Count);
             }
 
+            if (Settings?.MovingDaysAbsoluteLossesGains > 0)
+            {
+                if (item.Asof >= FirstItem.Asof.AddDays(Settings.MovingDaysAbsoluteLossesGains))
+                    _calculationContext.CalcAbsoluteLossesAndGains(item, _items.Count);
+            }
 
         }
 
@@ -189,7 +194,7 @@ namespace HelperLibrary.Collections
         {
             if (record == null)
                 return decimal.MinusOne;
-            return _calculationContext.TryGetDailyReturn(record.Asof, out var dailyReturn) ? dailyReturn : decimal.MinusOne;
+            return _calculationContext.TryGetDailyReturn(record.Asof, out var dailyReturn) ? dailyReturn.AbsoluteReturn : decimal.MinusOne;
         }
 
         /// <summary>
@@ -226,26 +231,14 @@ namespace HelperLibrary.Collections
             var end = to ?? DateTime.MaxValue;
 
             return _items.Range(start, end).Select(x => x.Value);
-            //return _items.Where(x => x.Asof >= start && x.Asof <= end);
         }
 
-        //public PriceHistoryCollection RangeHistory(int from, int? to = null, PriceHistoryOption option = PriceHistoryOption.PreviousItem)
-        //{
-        //    var start = from == 0 ? FirstItem : Get(from);
-        //    var end = to == null ? LastItem : Get(to.Value);
-
-        //    return new PriceHistoryCollection(_items.Range(start, end).Select(x => x.Value));
-
-        //    //return new PriceHistoryCollection(_items.Where(x => x.Asof >= start.Asof && x.Asof <= end.Asof));
-        //}
 
         public PriceHistoryCollection RangeHistory(DateTime? from, DateTime? to, PriceHistoryOption option = PriceHistoryOption.PreviousItem)
         {
             var start = from ?? DateTime.MinValue;
             var end = to ?? DateTime.MaxValue;
             return new PriceHistoryCollection(_items.Range(start, end).Select(x => x.Value));
-
-            // return new PriceHistoryCollection(_items.Where(x => x.Asof >= start && x.Asof <= end));
         }
 
         public IEnumerable<Tuple<DateTime, LowMetaInfo>> EnumLows()
@@ -260,8 +253,7 @@ namespace HelperLibrary.Collections
                 yield return item.Value;
         }
 
-
-        public bool TryGetLowMetaInfo(DateTime currentDate, out LowMetaInfo info)
+        public bool TryGetLowMetaInfo(DateTime currentDate, out ILowMetaInfo info)
         {
             return _calculationContext.TryGetLastLowInfo(currentDate, out info);
         }
@@ -271,9 +263,10 @@ namespace HelperLibrary.Collections
             return _calculationContext.TryGetLastVolatilityInfo(currentDate, out info);
         }
 
-
-        private const int CANCELLATION_COUNT = 30;
-        private int _count;
+        public bool TryGetAbsoluteLossesAndGains(DateTime currentDate, out IAbsoluteLossesAndGainsMetaInfo info)
+        {
+            return _calculationContext.TryGetLastAbsoluteLossAndGain(currentDate, out info);
+        }
 
 
         public ITradingRecord Get(DateTime asof, PriceHistoryOption option = PriceHistoryOption.PreviousItem, int count = 0)
@@ -284,31 +277,7 @@ namespace HelperLibrary.Collections
             var match = _items.Get(asof, option == PriceHistoryOption.PreviousItem
                 ? BinarySearchOption.GetLastIfNotFound
                 : BinarySearchOption.GetNextIfNotFound);
-            return match.Value;
-
-            //_count = count;
-
-            //// Wenn nach 30 Versuchen kein Preis gefunden wurde breche ich ab und gebe null zurück
-            //if (_count == CANCELLATION_COUNT)
-            //    return null;
-
-            //var record = _items.FirstOrDefault(x => x.Asof == asof);
-
-            //if (record != null)
-            //    return record;
-
-            //_count++;
-
-            //switch (option)
-            //{
-            //    case PriceHistoryOption.PreviousItem:
-            //        return Get(asof.AddDays(-1), option, _count);
-            //    case PriceHistoryOption.NextItem:
-            //        return Get(asof.AddDays(1), option, _count); ;
-            //}
-
-            //return null;
-
+            return match?.Value;
         }
 
         public ITradingRecord Get(int index, PriceHistoryOption option = PriceHistoryOption.PreviousItem, int count = 0)
@@ -320,28 +289,6 @@ namespace HelperLibrary.Collections
                 ? BinarySearchOption.GetLastIfNotFound
                 : BinarySearchOption.GetNextIfNotFound);
             return match.Value;
-
-            //_count = count;
-
-            //// Wenn nach 30 Versuchen kein Preis gefunden wurde breche ich ab und gebe null zurück
-            //if (_count == CANCELLATION_COUNT)
-            //    return null;
-
-            //var record = _items[index];
-
-            //if (record != null)
-            //    return record;
-
-
-            //switch (option)
-            //{
-            //    case PriceHistoryOption.PreviousItem:
-            //        return Get(index--, option, _count);
-            //    case PriceHistoryOption.NextItem:
-            //        return Get(index++, option, _count); ;
-            //}
-
-            //return null;
 
         }
 

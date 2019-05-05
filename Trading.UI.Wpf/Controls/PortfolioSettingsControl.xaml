@@ -110,6 +110,12 @@
                                         DisplayMode="Decimal" />
             </StackPanel>
 
+            <arts:SmartNumberUpDown Value="{Binding ExpectedTicketFee, StringFormat=C2,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                    SmallStep="1" 
+                                    MinHeight="55"
+                                    Description="Erwartete Ticket Fees EUR"
+                                    DisplayMode="Decimal" />
+
         </UniformGrid>
 
             <StackPanel Orientation="Vertical" Grid.Row="2">

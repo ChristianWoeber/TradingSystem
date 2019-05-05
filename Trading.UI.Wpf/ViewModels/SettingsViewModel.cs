@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Common.Lib.Interfaces;
 using Common.Lib.UI.WPF.Core.Controls.Core;
+using HelperLibrary.Trading.PortfolioManager.Exposure;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 using Trading.DataStructures.Enums;
@@ -16,14 +18,14 @@ namespace Trading.UI.Wpf.ViewModels
     {
         private TradingDay _selectedTradingDay;
         private TradingIntervalUtil _selectedTradingInterval;
-        private decimal _minimumPositionSizePercent;
-        private decimal _allocationToRiskBuffer;
+        private decimal _expectedTicketFee;
 
         public SettingsViewModel(IPortfolioSettings defaultSettings)
         {
             PortfolioSettings = defaultSettings;
             SelectedTradingDay = new TradingDay(PortfolioSettings.TradingDay);
             SelectedInterval = new TradingIntervalUtil(PortfolioSettings.Interval);
+            ExpectedTicketFee = 50;
 
             //Commands
             //  OpenSaveDialogCommand = new RelayCommand(OnOpenSaveFileDialog);
@@ -293,6 +295,30 @@ namespace Trading.UI.Wpf.ViewModels
                 yield return new TradingIntervalUtil(TradingInterval.ThreeWeeks);
                 yield return new TradingIntervalUtil(TradingInterval.TwoWeeks);
                 yield return new TradingIntervalUtil(TradingInterval.Weekly);
+            }
+        }
+
+        public IndexType IndexType
+        {
+            get => PortfolioSettings.IndexType;
+            set
+            {
+                if (value == PortfolioSettings.IndexType)
+                    return;
+                PortfolioSettings.IndexType = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public decimal ExpectedTicketFee
+        {
+            get => PortfolioSettings.ExpectedTicketFee;
+            set
+            {
+                if (value == PortfolioSettings.ExpectedTicketFee)
+                    return;
+                PortfolioSettings.ExpectedTicketFee = value;
+                OnPropertyChanged();
             }
         }
 

@@ -11,6 +11,12 @@ namespace Trading.Backtest.Data.Models
     {
         private string _uniqueKey;
 
+
+        /// <summary>
+        /// die Ticket Fee pro Trade
+        /// </summary>
+        public decimal TicketFee { get; set; }
+
         /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using HelperLibrary.Database.Models;
+using HelperLibrary.Trading.PortfolioManager.Settings;
 using HelperLibrary.Trading.PortfolioManager.Transactions;
 using NUnit.Framework;
 using Trading.DataStructures.Enums;
@@ -12,15 +13,15 @@ namespace TradingSystemTests.TestCases
     public class CalculationHandlerTests
     {
         private TransactionCalculationHandler _handler;
+        private PortfolioValuation _portfolioValuation;
 
         [SetUp]
         public void CreateTestCandidates()
         {
             if (_handler != null)
                 return;
-
-            var portfolioValuation = new PortfolioValuation { AllocationToRisk = 1, PortfolioAsof = DateTime.Today, PortfolioValue = new decimal(100000) };
-            _handler = new TransactionCalculationHandler(portfolioValuation);
+            _portfolioValuation = new PortfolioValuation { AllocationToRisk = 1, PortfolioAsof = DateTime.Today, PortfolioValue = new decimal(100000) };
+            _handler = new TransactionCalculationHandler(_portfolioValuation, new ConservativePortfolioSettings());
         }
         //Change TEST decrement
         [TestCase(true, 0.165, TransactionType.Changed, ExpectedResult = -16500)]
@@ -36,7 +37,7 @@ namespace TradingSystemTests.TestCases
 
             testCandidate.LastTransaction = CreateTransaction();
             testCandidate.CurrentPosition = CreateTransaction();
-
+         
             return _handler.CalculateTargetAmount(testCandidate);
         }
 
@@ -74,7 +75,30 @@ namespace TradingSystemTests.TestCases
             var testCandidate = new TestTradingCandidate(isInvested, type, new TestQuote { AdjustedPrice = 100, Asof = DateTime.Today, Price = 100 });
             if (isInvested)
                 testCandidate.CurrentPosition = CreateTransaction();
+
+            _handler = new TransactionCalculationHandler(_portfolioValuation, new ConservativePortfolioSettings(){ExpectedTicketFee = 0});
             return _handler.CalculateTargetShares(testCandidate, targetAmount);
         }
+
+        //Change TEST decrement
+        //[TestCase(true, -16500, TransactionType.Changed, ExpectedResult = -165)]
+        //////Closing TEST
+        //[TestCase(true, -33000, TransactionType.Close, ExpectedResult = -330)]
+        ////Opening TEST
+        [TestCase(false, 15000, TransactionType.Open)]
+        public void CreateTransactionTest(bool isInvested, decimal targetAmount, TransactionType type)
+        {
+            var testCandidate = new TestTradingCandidate(isInvested, type, new TestQuote { AdjustedPrice = 100, Asof = DateTime.Today, Price = 100 });
+            if (isInvested)
+                testCandidate.CurrentPosition = CreateTransaction();
+            else
+            {
+                testCandidate.TargetWeight = 0.05M;
+            }
+            var transaction = _handler.CreateTransaction(testCandidate, targetAmount);
+
+            Assert.IsTrue(transaction != null);
+        }
+
     }
 }

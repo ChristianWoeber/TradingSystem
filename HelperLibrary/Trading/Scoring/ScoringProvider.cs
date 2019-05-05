@@ -30,12 +30,12 @@ namespace HelperLibrary.Trading
                 return new ConservativeScoringResult();
 
             //Das Datum des NAVs der in der PriceHistoryCollection gefunden wurde
-            var priceHistoryRecordAsOf = priceHistory.Get(date, PriceHistoryOption.NextItem)?.Asof;
+            var priceHistoryRecordAsOf = priceHistory.Get(date)?.Asof;
             if (priceHistoryRecordAsOf == null)
                 return new ConservativeScoringResult();
 
             //die 250 Tages Performance
-            var performance250 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-250), date, null, PriceHistoryOption.NextItem);
+            var performance250 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-250), date);
 
             //Wenn keine Berechungn der 250 Tages Performance möglich ist, returne ich false
             if (performance250 == -1)
@@ -46,15 +46,16 @@ namespace HelperLibrary.Trading
             //    return new ScoringResult { IsValid = false };
 
             //Alle Berechnungnen durchführen
-            var performance10 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-10), date, null, PriceHistoryOption.NextItem);
-            var performance30 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-30), date, null, PriceHistoryOption.NextItem);
-            var performance90 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-90), date, null, PriceHistoryOption.NextItem);
-             priceHistory.Calc.TryGetLastVolatility(date.AddDays(-250), out var volatility);
-           
+            var performance10 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-10), date);
+            var performance30 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-30), date);
+            var performance90 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-90), date);
+            priceHistory.Calc.TryGetLastVolatility(date.AddDays(-250), out var volatility);
+            priceHistory.Calc.TryGetLastAbsoluteLossAndGain(date, out var absoluteLossesAndGainsMetaInfo);
+
             //var maxDrawDown = priceHistory.Calc.GetMaximumDrawdown(date.AddDays(-250), date, CaclulationOption.Adjusted);
 
             // Das Ergebnis returnen
-            return new ConservativeScoringResult
+            var result = new ConservativeScoringResult
             {
                 Asof = priceHistoryRecordAsOf.Value,
                 Performance10 = performance10,
@@ -63,8 +64,14 @@ namespace HelperLibrary.Trading
                 Performance250 = performance250,
                 //MaxDrawdown = maxDrawDown,
                 Volatility = volatility,
-                IsNewLow = priceHistory.Calc.DateIsNewLow(date)
+                IsNewLow = priceHistory.Calc.DateIsNewLow(date),
+                AbsoluteGainAndLossMetaInfo = absoluteLossesAndGainsMetaInfo
+
             };
+            if (priceHistory.Calc.TryGetLastLowInfo(date, out var lowMetaInfo))
+                result.LowMetaInfo = lowMetaInfo;
+
+            return result;
         }
 
         public ITradingRecord GetTradingRecord(int securityId, DateTime asof)

@@ -18,6 +18,13 @@ namespace HelperLibrary.Database.Models
         public event EventHandler CancelledEvent;
 
         /// <summary>
+        /// die Ticket Fee pro Trade
+        /// </summary>
+        [InputMapping(KeyWords = new[] { "Fee", nameof(TicketFee) }, SortIndex = 10)]
+        [Column(Storage = "TICKET_FEE")]
+        public decimal TicketFee { get; set; }
+
+        /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt
         /// </summary>
         [InputMapping(KeyWords = new[] { "DateTime", nameof(TransactionDateTime) }, SortIndex = 1)]

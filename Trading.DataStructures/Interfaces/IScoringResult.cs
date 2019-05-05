@@ -43,5 +43,10 @@ namespace Trading.DataStructures.Interfaces
         /// der Score der sich aus den Berechnungen ergibt 
         /// </summary>
         decimal Score { get; }
+
+        /// <summary>
+        /// die LowMetaInfo zu dem Stichtag
+        /// </summary>
+        ILowMetaInfo LowMetaInfo { get; set; }
     }
 }

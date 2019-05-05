@@ -1,5 +1,6 @@
 ﻿using System;
 using HelperLibrary.Trading.PortfolioManager.Rebalancing;
+using HelperLibrary.Trading.PortfolioManager.Settings;
 using Newtonsoft.Json;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Enums;
@@ -16,22 +17,22 @@ namespace HelperLibrary.Trading
         private readonly ITransactionsHandler _transactionsHandler;
         [JsonProperty]
         [JsonConverter(typeof(PortfolioValuationConverter))]
-        private readonly IPortfolioValuation _valuation;
+        private readonly IAdjustmentProvider _adjustmentProvider;
 
         public TradingCandidate()
         {
-            
+
         }
 
-        public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, IPortfolioValuation valuation, bool isInvested = false)
+        public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, IAdjustmentProvider adjustmentProvider, bool isInvested = false)
         {
             _tradingCandidateBase = tradingCandidateBase;
             _transactionsHandler = transactionsHandler;
-            _valuation = valuation;
+            _adjustmentProvider = adjustmentProvider;
 
             //Initialisierungen
             IsInvested = isInvested;
-            PortfolioAsof = valuation.PortfolioAsof;
+            PortfolioAsof = adjustmentProvider.PortfolioAsof;
             RebalanceScore = new RebalanceScoringResult(tradingCandidateBase.ScoringResult);
 
             Record = tradingCandidateBase.Record;
@@ -57,7 +58,7 @@ namespace HelperLibrary.Trading
             if (shares == null)
                 return 0;
 
-            return (Record.AdjustedPrice * shares.Value) / _valuation.PortfolioValue;
+            return (Record.AdjustedPrice * shares.Value) / _adjustmentProvider.PortfolioValue;
         }
 
         /// <summary>
@@ -130,11 +131,22 @@ namespace HelperLibrary.Trading
         /// </summary>
         public decimal Performance => 1 - AveragePrice / Record.AdjustedPrice;
 
-        //gibt an ob der aktuelle Score höher ist als der letzte
-        // muss mindestens 25% besser sein und es darf aktuell kein Stop ausgelöst worden sein
-        //TODO: Regeln für has better Scoring
-        public bool HasBetterScoring => ScoringResult.Score * new decimal(1.25) > LastScoringResult?.Score && !IsBelowStopp;
+        ////gibt an ob der aktuelle Score höher ist als der letzte
+        //// muss mindestens 25% besser sein und es darf aktuell kein Stop ausgelöst worden sein
+        ////TODO: PositionWatcher hier verwenden!
+        public bool HasBetterScoring
+        {
+            get
+            {
+                var meta = _adjustmentProvider.PositionWatcher.GetStopLossMeta(this);
+                if (meta.High.Asof == Record.Asof)
+                    return true;
+                return false;
+                //return ScoringResult.Score * new decimal(1.25) > LastScoringResult?.Score && !IsBelowStopp;
+            }
+        }
 
+        public IStopLossMeta StopLossMeta => _adjustmentProvider.PositionWatcher.GetStopLossMeta(this);
 
         /// <summary>
         /// Der Name des Records
@@ -171,7 +183,7 @@ namespace HelperLibrary.Trading
         {
             return
                 $"{Name} | Score: {Score} | | {nameof(RebalanceScore)}: {RebalanceScore.Score} | Invested: {IsInvested} | IsTemporary: {IsTemporary} | CurrentWeight: {CurrentWeight:N} | TargetWeight: {TargetWeight:N} " +
-                $"| CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N} | HasBetterScoring: {HasBetterScoring} | TransactionType: {TransactionType} " +
+                $"| CurrentPrice: {Record.AdjustedPrice:N} | AveragePrice: {AveragePrice:N}  | TransactionType: {TransactionType} " +
                 $"| SecurityId: {Record.SecurityId} ";
             ;
         }

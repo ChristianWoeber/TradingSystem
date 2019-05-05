@@ -47,6 +47,11 @@ namespace TradingSystemTests.TestCases
         public decimal MinimumAllocationToRisk { get; set; } /*= new decimal(0.20)*/
         public string IndicesDirectory { get; set; }
         public DayOfWeek TradingDay { get; set; }
+
+        /// <summary>
+        /// Der Index der für die Steuerung der Aktienquote verwender werden soll
+        /// </summary>
+        public IndexType IndexType { get; set; }
         public DateTime Asof { get; set; }
         public decimal SimulationNav { get; set; }
         public decimal IndexLevel { get; set; }
@@ -80,7 +85,7 @@ namespace TradingSystemTests.TestCases
             if (_allocationToRiskWatcher != null)
                 return;
             _settings = settings;
-            _allocationToRiskWatcher = new ExposureWatcher(_settings, IndexType.MsciWorldEur);
+            _allocationToRiskWatcher = new ExposureWatcher(_settings);
             _output = new List<Tuple<DateTime, decimal>>();
         }
         [TestCase("01.01.2000", true)]

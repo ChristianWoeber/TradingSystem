@@ -9,6 +9,7 @@
              xmlns:portfolioManager="clr-namespace:HelperLibrary.Trading.PortfolioManager;assembly=HelperLibrary"
              xmlns:converter="clr-namespace:Trading.UI.Wpf.Converter"
              xmlns:exposure="clr-namespace:HelperLibrary.Trading.PortfolioManager.Exposure;assembly=HelperLibrary"
+             xmlns:enums="clr-namespace:Trading.DataStructures.Enums;assembly=Trading.DataStructures"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid d:DataContext="{d:DesignInstance viewModels:IndexBacktestSettings}">
@@ -26,13 +27,13 @@
 
         <StackPanel Grid.Row="1">
             <arts:SmartTextBlock Text="Index-Type" Appearance="Header4" Margin="2 0"></arts:SmartTextBlock>
-            <arts:SmartComboBox ItemsSource="{Binding Source={x:Type exposure:IndexType}}"   
+            <arts:SmartComboBox ItemsSource="{Binding Source={x:Type enums:IndexType}}"   
                             
                             Width="200" 
                             Margin="10" 
                             HorizontalAlignment="Left" 
                             DisplayMemberPath="Value"
-                            SelectedItem="{Binding TypeOfIndex, Converter={x:Static converter:SmartMappingItemToValueConverter.Inst}}"
+                            SelectedItem="{Binding TypeOfIndex, Converter={x:Static converter:SmartMappingItemToValueConverter.Inst}, UpdateSourceTrigger=PropertyChanged}"
                             Height="30"></arts:SmartComboBox>
 
         </StackPanel>

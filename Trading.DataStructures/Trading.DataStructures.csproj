@@ -45,19 +45,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\CaclulationOption.cs" />
+    <Compile Include="Enums\IndexType.cs" />
     <Compile Include="Enums\PriceHistoryOption.cs" />
     <Compile Include="Enums\TradingInterval.cs" />
     <Compile Include="Enums\TransactionType.cs" />
+    <Compile Include="Interfaces\IAbsoluteLossesAndGainsMetaInfo.cs" />
     <Compile Include="Interfaces\IAdjustmentProvider.cs" />
     <Compile Include="Interfaces\ICalculationContext.cs" />
     <Compile Include="Interfaces\ICashManager.cs" />
+    <Compile Include="Interfaces\IDailyReturnMetaInfo.cs" />
     <Compile Include="Interfaces\IExposureReceiver.cs" />
-    <Compile Include="Interfaces\IMovingCaclulationsSettings.cs" />
+    <Compile Include="Interfaces\ILowMetaInfo.cs" />
+    <Compile Include="Interfaces\IPositionWatchService.cs" />
+    <Compile Include="Interfaces\IPriceHistoryCollectionSettings.cs" />
     <Compile Include="Interfaces\IPortfolioValuation.cs" />
     <Compile Include="Interfaces\IPriceHistoryCollection.cs" />
     <Compile Include="Interfaces\IPriceHistoryStorageProvider.cs" />
     <Compile Include="Interfaces\IRebalanceProvider.cs" />
     <Compile Include="Interfaces\IRebalanceScoringResult.cs" />
+    <Compile Include="Interfaces\IStopLossMeta.cs" />
     <Compile Include="Interfaces\ITradingCandidate.cs" />
     <Compile Include="Interfaces\ITradingCandidateBase.cs" />
     <Compile Include="Interfaces\ITradingRecord.cs" />

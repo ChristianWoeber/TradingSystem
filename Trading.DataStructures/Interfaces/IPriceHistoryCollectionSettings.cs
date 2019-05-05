@@ -20,5 +20,11 @@
         /// </summary>
         string Name { get; set; }
 
+        /// <summary>
+        /// die "Länge" der Periode für die Betrachtung der kumulierten Losses und Gains
+        /// versuche mit diesem Parameter die Stablilität des Trends zu bewerten
+        /// </summary>
+        int MovingDaysAbsoluteLossesGains { get; set; }
+
     }
 }

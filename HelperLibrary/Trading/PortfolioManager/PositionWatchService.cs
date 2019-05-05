@@ -1,90 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using HelperLibrary.Extensions;
+using HelperLibrary.Trading.PortfolioManager.Settings;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
-namespace HelperLibrary.Trading.PortfolioManager.Settings
+namespace HelperLibrary.Trading.PortfolioManager
 {
-    public class StopLossMeta : IStopLossMeta
-    {
-        public StopLossMeta(decimal price, DateTime asof)
-        {
-            Opening = new Record(price, asof);
-            PreviousLow = new Record(price, asof);
-            LocalLow = new Record(price, asof);
-            High = new Record(price, asof);
-        }
-
-        /// <summary>
-        /// Der Preis der eröffnung
-        /// </summary>
-        public IPriceRecord Opening { get; set; }
-
-        /// <summary>
-        /// Das niedrigste Low
-        /// </summary>
-        public IPriceRecord PreviousLow { get; private set; }
-
-        /// <summary>
-        /// Das aktuell höchste Low
-        /// </summary>
-        public IPriceRecord LocalLow { get; private set; }
-
-        /// <summary>
-        /// Das High seit Eröffnung
-        /// </summary>
-        public IPriceRecord High { get; private set; }
-
-
-        public void UpdateHigh(decimal? price, DateTime asof)
-        {
-            High = new Record(price.Value, asof);
-        }
-
-        public void UpdateLocalLow(decimal? price, DateTime asof)
-        {
-            LocalLow = new Record(price.Value, asof);
-        }
-
-        public void UpdatePreviousLow(decimal? price, DateTime asof)
-        {
-            PreviousLow = new Record(price.Value, asof);
-        }
-
-        public void UpdatePreviousLow(IPriceRecord rec)
-        {
-            PreviousLow = new Record(rec.Price, rec.Asof);
-        }
-
-    }
-
-    //TODO: Refactoring StopLossService der die Settings injected bekommt
-    public class DefaultStopLossSettings : IStopLossSettings
+    public class PositionWatchService : IPositionWatchService
     {
         private readonly Dictionary<int, StopLossMeta> _limitDictionary = new Dictionary<int, StopLossMeta>();
         private readonly Dictionary<int, DateTime> _lastStopsDictionary = new Dictionary<int, DateTime>();
+        private readonly IStopLossSettings _stopLossSettings;
+
+        public PositionWatchService(IStopLossSettings stopLossSettings)
+        {
+            _stopLossSettings = stopLossSettings;
+        }
 
         /// <summary>
-        /// Der Wert um den die Stücke reduzoert werden sollen, wenn das Scoring oder die Bwetertung abnimmt, Position aber noch im Portfolio bleibt
+        /// Methode für das Berechnen des LossLimits
         /// </summary>
-        public double ReductionValue => (double)1 / 2;
-
-        /// <summary>
-        /// Das Stop Loss Limt - der Wert wird bei Positionseröffnung gesetzt und dananch bei jedem Allokationslauf angepasst - trailing limit
-        /// Ist der 1- OpeningPrice / CurrentPrice
-        /// </summary>
-        public decimal LossLimit { get; set; }
-
-        /// <summary>
-        /// die mindesthaltedauer nachdem ein Stop ausgelöst wurde (soll gleich am nächsten Tag wieder ein Stop ausgelöst werden? )
-        /// </summary>
-        public int MinimumStopHoldingPeriodeInDays { get; set; } = 7;
-
-        /// <summary>
-        /// Gibt zurück ob es die aktuelle Position ausstoppt
-        /// </summary>
-        /// <param name="candidate">der Trading Candidate</param>
+        /// <param name="candidate"></param>
         /// <returns></returns>
         public bool HasStopLoss(ITradingCandidate candidate)
         {
@@ -102,7 +38,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
                 return false;
 
             if (candidate.LastTransaction?.Shares < 0 &&
-                candidate.LastTransaction?.TransactionDateTime.AddDays(MinimumStopHoldingPeriodeInDays) < candidate.PortfolioAsof)
+                candidate.LastTransaction?.TransactionDateTime.AddDays(_stopLossSettings.MinimumStopHoldingPeriodeInDays) < candidate.PortfolioAsof)
             {
                 return false;
             }
@@ -110,16 +46,21 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
             //die Jahres vola
             var volatility = candidate.ScoringResult.Volatility;
 
+            //dann ist die historie noch nocht lang genug
+            if (volatility == -1)
+            {
+                if (currentPrice * new decimal(0.9) >= stopLossMeta.Opening.Price)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
             //1 Sigma
             var sigma = volatility / (decimal)Math.Sqrt(250d);
 
             var hasStop = false;
-
-            ////der aktuelle drawdown
-            //var drawdown = (1 - stopLossMeta.High / currentPrice);
-
-
-            //var hasStop = buffer - Math.Abs(drawdown) <= 0 && stopLossMeta.LowDateTime == candidate.PortfolioAsof;
 
             //der Rückgabewert
             //wenn der aktuelle Preis <= ist dem letzten High abzüglich der Vola stopp ich
@@ -136,10 +77,6 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
             {
                 hasStop = true;
             }
-
-            //var hasStop = currentPrice <= stopLossMeta.High.Price * (1 - (3 * sigma))
-            //    && currentPrice < candidate.AveragePrice
-            //    || currentPrice * (1 + sigma) < stopLossMeta.PreviousLow.Price;
 
             //sollte es einen Stop geben die lastStops updaten
             UpdateLastStops(hasStop, candidate);
@@ -159,47 +96,10 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
             else
                 _lastStopsDictionary.Add(candidate.Record.SecurityId, candidate.Record.Asof);
 
-            //if (_limitDictionary.TryGetValue(candidate.Record.SecurityId, out _))
-            //{
-            //    //dann ziehe ich das high nach, sprich aktualisere es um den aktuellen Preis zu dem ich ausgestoppt wurde
-            //    _limitDictionary[candidate.Record.SecurityId] = new StopLossMeta(candidate.Record.AdjustedPrice, candidate.PortfolioAsof);
-            //}
-
         }
-
-        public bool IsBelowMinimumStopHoldingPeriod(ITradingCandidate candidate)
-        {
-            if (!_lastStopsDictionary.TryGetValue(candidate.Record.SecurityId, out var lastStopDateTime))
-                return false;
-
-            var days = (candidate.Record.Asof - lastStopDateTime).Days;
-
-            if (days == 0)
-                return false;
-            //gebe nur true zurück wenn es schon länger als x Tage her ist, dass es die Positon ausgestoppt hat
-            return days >= MinimumStopHoldingPeriodeInDays;
-        }
-
-        public void AddOrRemoveDailyLimit(ITransaction transactionItem)
-        {
-            //ich füge hier nur neue ein, bzw. remove bestehende Elemente
-            switch (transactionItem.TransactionType)
-            {
-                case TransactionType.Open:
-                    {
-                        if (!_limitDictionary.ContainsKey(transactionItem.SecurityId))
-                            _limitDictionary.Add(transactionItem.SecurityId, new StopLossMeta(transactionItem.EffectiveAmountEur / transactionItem.Shares, transactionItem.TransactionDateTime));
-                        break;
-                    }
-                case TransactionType.Close:
-                    _limitDictionary.Remove(transactionItem.SecurityId);
-                    break;
-            }
-        }
-
 
         /// <summary>
-        /// Wird bei jedem Change des Asof Datums invoked
+        /// Die Methode berechnet die Limits auf täglicher basis
         /// </summary>
         /// <param name="transactionItem"></param>
         /// <param name="price"></param>
@@ -238,6 +138,56 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Die bekommt die transaktion und entscheidet auf Basis des Transaktionstypen ob sie hinzugefügt oder geadded wird
+        /// </summary>
+        /// <param name="transactionItem"></param>
+        public void AddOrRemoveDailyLimit(ITransaction transactionItem)
+        {
+            //ich füge hier nur neue ein, bzw. remove bestehende Elemente
+            switch (transactionItem.TransactionType)
+            {
+                case TransactionType.Open:
+                    {
+                        if (!_limitDictionary.ContainsKey(transactionItem.SecurityId))
+                            _limitDictionary.Add(transactionItem.SecurityId, new StopLossMeta(transactionItem.EffectiveAmountEur / transactionItem.Shares, transactionItem.TransactionDateTime));
+                        break;
+                    }
+                case TransactionType.Close:
+                    _limitDictionary.Remove(transactionItem.SecurityId);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Gibt zurück ab welchem Time-Lag in tagen die Positon wider ausgestoppt werden darf 
+        /// </summary>
+        /// <param name="candidate"></param>
+        /// <returns></returns>
+        public bool IsBelowMinimumStopHoldingPeriod(ITradingCandidate candidate)
+        {
+            if (!_lastStopsDictionary.TryGetValue(candidate.Record.SecurityId, out var lastStopDateTime))
+                return false;
+
+            var days = (candidate.Record.Asof - lastStopDateTime).Days;
+
+            if (days == 0)
+                return false;
+            //gebe nur true zurück wenn es schon länger als x Tage her ist, dass es die Positon ausgestoppt hat
+            return days >= _stopLossSettings.MinimumStopHoldingPeriodeInDays;
+        }
+
+
+        /// <summary>
+        /// Gibt zum Stichtag die zugehörige StopLossMetaInfo zurück
+        /// </summary>
+        /// <param name="candidate">der TradingKandiate</param>
+        /// <returns></returns>
+        public IStopLossMeta GetStopLossMeta(ITradingCandidate candidate)
+        {
+            return _limitDictionary.TryGetValue(candidate.Record.SecurityId, out var metaInfo) ? metaInfo : null;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace HelperLibrary.Calculations
     /// <summary>
     /// Hilfsklasse für die Berechnung der neuen Lows
     /// </summary>
-    public class LowMetaInfo
+    public class LowMetaInfo : ILowMetaInfo
     {
         /// <summary>
         /// der erste Wert der Betrachtungsperiode
@@ -20,6 +20,11 @@ namespace HelperLibrary.Calculations
         /// Das Low der Betrachtungsperiode
         /// </summary>
         public ITradingRecord Low { get; }
+
+        /// <summary>
+        /// Das High der Betrachtungsperiode
+        /// </summary>
+        public ITradingRecord High { get; private set; }
 
         /// <summary>
         /// Der Letzte Wert der Betrachtungsperiode
@@ -61,8 +66,8 @@ namespace HelperLibrary.Calculations
         //TODO: eigentlich gehört hier auch ein movingaverage genommen 15 Tage => brauche für die pricehistory ein setting dass ich im konstruktor mit üergebe
         private void CalcPerformance()
         {
-            var first = PeriodeRecords.Count < 16 
-                ? PeriodeRecords[0] 
+            var first = PeriodeRecords.Count < 16
+                ? PeriodeRecords[0]
                 : PeriodeRecords[PeriodeRecords.Count - 16];
             CanMoveToNextStep = 1 - (first.AdjustedPrice / Last.AdjustedPrice) > 0;
         }
@@ -102,6 +107,11 @@ namespace HelperLibrary.Calculations
             PeriodeRecords.RemoveAt(0);
             //addnew one
             PeriodeRecords.Add(newLast);
+        }
+
+        public void UpdateHigh(ITradingRecord newHigh)
+        {
+            High = newHigh ?? Last;
         }
     }
 }

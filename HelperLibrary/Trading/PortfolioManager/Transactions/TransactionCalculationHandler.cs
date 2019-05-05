@@ -15,10 +15,12 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
     public class TransactionCalculationHandler : ITransactionCalculation
     {
         private readonly IPortfolioValuation _pm;
+        private readonly IPortfolioSettings _portfolioSettings;
 
-        public TransactionCalculationHandler(IPortfolioValuation pm)
+        public TransactionCalculationHandler(IPortfolioValuation pm, IPortfolioSettings portfolioSettings)
         {
             _pm = pm;
+            _portfolioSettings = portfolioSettings;
         }
 
         protected decimal PortfolioValue => _pm.PortfolioValue;
@@ -50,7 +52,9 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
         {
             //die gesamt ziel shares bestimmen, werden immer abgerundet
             //aussder wird bei aktivem investment nicht der target amount, sondern der
-            var completeTargetShares = (int)Math.Floor(!candidate.IsInvested ? targetAmount / candidate.Record.AdjustedPrice : GetCurrentTargetAmount() / candidate.Record.AdjustedPrice);
+            var completeTargetShares = (int)Math.Floor(!candidate.IsInvested 
+                ? (targetAmount - _portfolioSettings.ExpectedTicketFee) / candidate.Record.AdjustedPrice 
+                : GetCurrentTargetAmount() / candidate.Record.AdjustedPrice);
             if (candidate.IsInvested)
             {
                 //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
@@ -59,7 +63,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
             return completeTargetShares;
 
             //interne methode gibt mir den aktuell bewerteten Totalen Amount in EUR zurück (Stücke mal heutiger Preis
-            decimal GetCurrentTargetAmount() => (targetAmount + (candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice));
+            decimal GetCurrentTargetAmount() => (targetAmount + (candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice) -_portfolioSettings.ExpectedTicketFee);
         }
 
 

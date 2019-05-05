@@ -7,6 +7,19 @@ namespace HelperLibrary.Database.Models
 {
     public class TradingRecord : ITradingRecord
     {
+        public TradingRecord()
+        {
+
+        }
+        public TradingRecord(ITradingRecord record)
+        {
+            Asof = record.Asof;
+            Price = record.Price;
+            AdjustedPrice = record.AdjustedPrice;
+            SecurityId = record.SecurityId;
+            Name = record?.Name;
+        }
+
         [InputMapping(KeyWords = new[] { nameof(Asof), "date", "as of" })]
         [Column(Storage = "ASOF")]
         public DateTime Asof { get; set; }

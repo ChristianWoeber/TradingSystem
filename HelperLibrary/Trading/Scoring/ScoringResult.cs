@@ -40,6 +40,11 @@ namespace HelperLibrary.Trading
             }
         }
 
+        /// <summary>
+        /// die LowMetaInfo zu dem Stichtag
+        /// </summary>
+        public ILowMetaInfo LowMetaInfo { get; set; }
+
         public int CompareTo(object obj)
         {
             return Score.CompareTo(((IScoringResult)obj).Score);
@@ -69,6 +74,8 @@ namespace HelperLibrary.Trading
         public decimal Performance10 { get; set; }
         public decimal MaxDrawdown { get; set; }
         public decimal Volatility { get; set; }
+        public bool IsNewLow { get; set; }
+        public ILowMetaInfo LowMetaInfo { get; set; }
 
         public decimal Score
         {
@@ -82,13 +89,43 @@ namespace HelperLibrary.Trading
                               + Performance250 * (decimal)0.20;
 
                 var score = Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
-                return IsNewLow ? score / 2 : score;
+
+                if (Performance10 < 0 && Performance30 < 0)
+                    return 0;
+
+                if (score <= 1)
+                    return score;
+
+                if (AbsoluteGainAndLossMetaInfo == null)
+                    return 0;
+
+                return score * ManipulateScoreFromAbsoluteLoss();
+
+                //return IsNewLow ? score / 2 : score;
 
                 //return Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
             }
         }
 
-        public bool IsNewLow { get; set; }
+        public decimal ManipulateScoreFromAbsoluteLoss()
+        {
+            var loss = Math.Abs(AbsoluteGainAndLossMetaInfo.AbsoluteLoss);
+            if (loss >= 1)
+                return new decimal(0.66);
+            if (loss >= new decimal(0.75))
+                return new decimal(0.5);
+            if (loss >= new decimal(0.5))
+                return new decimal(0.35);
+            if (loss >= new decimal(0.25))
+                return new decimal(0.2);
+            if (loss >= new decimal(0.0))
+                return new decimal(0.1);
+
+            return 1;
+        }
+
+
+        public IAbsoluteLossesAndGainsMetaInfo AbsoluteGainAndLossMetaInfo { get; set; }
 
         public int CompareTo(object obj)
         {
