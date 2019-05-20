@@ -244,7 +244,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                     {
                         //wird nur aufgestockt wenn er lang genug gehalten wurde
                         if (IsBelowMinimumHoldingPeriode(candidate))
-                            return;
+                            continue;
 
                         AdjustTradingCandidateBuy(candidate.CurrentWeight, candidate);
                     }
@@ -588,6 +588,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public void AddToTemporaryPortfolio(ITradingCandidate candidate)
         {
+            //TODO: könnte hier den RebalanceScore und den PerformanceScore mit speichern
             //zur temporären Liste hinzufügen
             TemporaryCandidates.Add(candidate.Record.SecurityId, candidate);
             candidate.IsTemporary = true;
@@ -646,6 +647,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 TransactionType = candidate.TransactionType,
                 EffectiveWeight = effectiveWeight,
                 EffectiveAmountEur = effectiveAmountEur,
+                TicketFee = PortfolioSettings.ExpectedTicketFee
                 //Name = candidate.Name
             };
         }

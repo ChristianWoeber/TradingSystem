@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using Arts.Financial;
 using Common.Lib.Extensions;
 using Common.Lib.UI.WPF.Core.Controls.Core;
+using Common.Lib.UI.WPF.Core.Controls.Dialog;
 using Common.Lib.UI.WPF.Core.Input;
 using Common.Lib.UI.WPF.Core.Primitives;
 using CreateTestDataConsole;
+using HelperLibrary.Collections;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Extensions;
 using HelperLibrary.Parsing;
@@ -23,7 +27,7 @@ using HelperLibrary.Trading.PortfolioManager.Exposure;
 using HelperLibrary.Trading.PortfolioManager.Settings;
 using HelperLibrary.Trading.PortfolioManager.Transactions;
 using JetBrains.Annotations;
-using Trading.DataStructures.Enums;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Models;
 using Trading.UI.Wpf.Utils;
@@ -32,80 +36,6 @@ using Trading.UI.Wpf.Windows;
 
 namespace Trading.UI.Wpf.ViewModels
 {
-    public static class TransactionsRepo
-    {
-        private static Dictionary<int, List<Transaction>> _transactionsDictionary;
-        private static IEnumerable<Transaction> _transactions;
-
-        private static bool _isInitialized;
-
-        public static void Initialize(IEnumerable<Transaction> transactions)
-        {
-            _transactions = transactions;
-            _transactionsDictionary = _transactions.ToDictionaryList(x => x.SecurityId);
-            _isInitialized = true;
-        }
-
-
-        public static IEnumerable<Transaction> GetTransactions(DateTime asof, int securityId)
-        {
-            if (!_isInitialized)
-                throw new ArgumentException("Bitte vorher das Repo initialiseren");
-
-            if (!_transactionsDictionary.TryGetValue(securityId, out var transactions))
-                throw new ArgumentException("Es wurden keine Transacktionen gefunden!");
-
-
-            return transactions/*.Where(t => t.TransactionDateTime <= asof)*/.OrderBy(x => x.TransactionDateTime);
-
-            //sortiere die Transactionen hier mit dem frühesten DateTime bgeinnend
-            var orderdReversed = transactions.Where(t => t.TransactionDateTime <= asof).OrderBy(x => x.TransactionDateTime).ToList();
-            //danach laufe ich sie von hinten durch bis zum ersten opening
-            //und gebe nur diese Range zurück
-            var index = 0;
-            for (var i = orderdReversed.Count - 1; i >= 0; i--)
-            {
-                var current = orderdReversed[i];
-                index = i;
-                if (current.TransactionType == TransactionType.Open)
-                    break;
-            }
-
-            return orderdReversed.GetRange(index, orderdReversed.Count - 1 - index);
-        }
-
-        public static IEnumerable<Transaction> GetAllTransactions()
-        {
-            return _transactions;
-        }
-
-        public static int GetAllTransactionsCount()
-        {
-            return _transactions.Count();
-        }
-    }
-
-
-    public static class StoppLossRepo
-    {
-        private static IEnumerable<Transaction> _stopps;
-        private static bool _isInitialized;
-
-        public static void Initialize(IEnumerable<Transaction> stopps)
-        {
-            _stopps = stopps;
-            _isInitialized = true;
-        }
-
-
-        public static IEnumerable<Transaction> GetStops(DateTime asof)
-        {
-            if (!_isInitialized)
-                throw new ArgumentException("Bitte vorher das Repo initialiseren");
-            return _stopps.Where(x => x.TransactionDateTime <= asof);
-        }
-    }
-
     public class TradingViewModel : INotifyPropertyChanged, ISmartProgessRegion
     {
         #region Private Members
@@ -139,7 +69,9 @@ namespace Trading.UI.Wpf.ViewModels
             MoveCursorToNextStoppDayCommand = new RelayCommand(() => MoveCursorToNextStoppDayEvent?.Invoke(this, System.EventArgs.Empty));
             ShowSelectedPositionCommand = new RelayCommand(ShowNewSelectedPositionWindow);
             ShowSelectedCandidateCommand = new RelayCommand(ShowSelectedCandidateWindow);
+            SaveBacktestCommand = new RelayCommand(OnSaveBacktest);
         }
+
 
         private async void ShowSelectedCandidateWindow()
         {
@@ -151,7 +83,7 @@ namespace Trading.UI.Wpf.ViewModels
 
             var win = new ChartWindow(SelectedCandidate.Record.SecurityId, ChartDate);
 
-            await win.CreateFints(priceHistoryCollection, NameCatalog[SelectedCandidate.Record.SecurityId]);
+            await win.CreateFints(priceHistoryCollection, NameCatalog[SelectedCandidate.Record.SecurityId], false);
 
             win.Show();
         }
@@ -162,12 +94,31 @@ namespace Trading.UI.Wpf.ViewModels
                 return;
 
             if (!_scoringProvider.PriceHistoryStorage.TryGetValue(SelectedPosition.SecurityId, out var priceHistoryCollection))
-                return;
+            {
+                //wenn es noch keine History zu dem Kandidaten gibt lade ich diesen dynamisch nach
+                if (Globals.IsTestMode)
+                {
+                    await Task.Run(() =>
+                    {
+                        //namen des Files erstellen
+                        var name = $"{NameCatalog[SelectedPosition.SecurityId]}_{ SelectedPosition.SecurityId}.csv";
+                        var filename = Path.Combine(Globals.PriceHistoryDirectory, name);
+                        //die records parsen
+                        var history = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(filename);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            //die Pricehistory erstellen und storen im dictionary
+                            priceHistoryCollection = PriceHistoryCollection.Create(history, new PriceHistorySettings { Name = name });
+                            _scoringProvider.PriceHistoryStorage.Add(SelectedPosition.SecurityId, priceHistoryCollection);
+                        });
+                    });
+                }
+                else
+                    return;
+            };
 
             var win = new ChartWindow(SelectedPosition.SecurityId, ChartDate);
-
             await win.CreateFints(priceHistoryCollection, NameCatalog[SelectedPosition.SecurityId]);
-
             win.Show();
 
         }
@@ -214,7 +165,7 @@ namespace Trading.UI.Wpf.ViewModels
         public ICommand ShowSelectedCandidateCommand { get; }
 
 
-
+        public ICommand SaveBacktestCommand { get; }
 
         #endregion
 
@@ -255,36 +206,29 @@ namespace Trading.UI.Wpf.ViewModels
 
         private async void OnRunBacktest()
         {
-
             //Pm erstellen für den Backtest
             using (SmartBusyRegion.Start(this))
             {
                 //Clean up
-                var files = Directory.GetFiles(Settings.LoggingPath);
+                var files = Directory.GetFiles(Settings.LoggingPath, "*.csv");
                 foreach (var file in files)
                     File.Delete(file);
 
                 var transactionsPath = Path.Combine(Settings.LoggingPath, "Transactions.csv");
 
-                var pm = new PortfolioManager(null, Settings, new TransactionsHandler(null, new BacktestTransactionsCacheProvider(() => LoadHistory(transactionsPath))));
+                InitializePortfolioManager(transactionsPath);
 
-                //scoring Provider registrieren
-                pm.RegisterScoringProvider(_scoringProvider);
-                pm.CalcStartingAllocationToRisk(StartDateTime);
-
-                var loggingProvider = new LoggingSaveProvider(Settings.LoggingPath, pm);
+                var loggingProvider = new LoggingSaveProvider(Settings.LoggingPath, _portfolioManager);
 
                 //einen BacktestHandler erstellen
                 _candidatesProvider = new CandidatesProvider(_scoringProvider);
 
                 //backtestHandler erstellen
-                var backtestHandler = new BacktestHandler(pm, _candidatesProvider, loggingProvider);
+                var backtestHandler = new BacktestHandler(_portfolioManager, _candidatesProvider, loggingProvider);
 
                 //Backtest
                 _cancellationSource = new CancellationTokenSource();
                 await backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
-                _portfolioManager = pm;
-
 
             }
 
@@ -295,16 +239,10 @@ namespace Trading.UI.Wpf.ViewModels
             //Repos initialisieren
             TransactionsRepo.Initialize(SimpleTextParser.GetListOfTypeFromFilePath<Transaction>(Path.Combine(Settings.LoggingPath, "Transactions.csv")));
             StoppLossRepo.Initialize(SimpleTextParser.GetListOfTypeFromFilePath<Transaction>(Path.Combine(Settings.LoggingPath, "StoppLoss" + nameof(Transaction) + "s.csv")));
-
-            if (_cashInfosDictionary?.Count > 0)
-                _cashInfosDictionary.Clear();
-            //CashInfos updaten
-            _cashInfosDictionary = new CashInfoCollection(cashMovements);
+            InitializeCashMovements(cashMovements);
 
             TransactionsCountTotal = TransactionsRepo.GetAllTransactionsCount();
-
             AveragePortfolioSize = await CalculateAveragePortfolioHoldings();
-
             PortfolioTurnOver = TransactionsCountPerWeek / AveragePortfolioSize;
 
             var resultWindow = new ResultWindow { DataContext = this };
@@ -312,7 +250,24 @@ namespace Trading.UI.Wpf.ViewModels
             resultWindow.Show();
         }
 
+        private void InitializeCashMovements(List<CashMetaInfo> cashMovements)
+        {
+            if (_cashInfosDictionary?.Count > 0)
+                _cashInfosDictionary.Clear();
+            //CashInfos updaten
+            _cashInfosDictionary = new CashInfoCollection(cashMovements);
+        }
 
+        private void InitializePortfolioManager(string transactionsPath)
+        {
+            var pm = new PortfolioManager(null, Settings,
+                new TransactionsHandler(null, new BacktestTransactionsCacheProvider(() => LoadHistory(transactionsPath))));
+
+            //scoring Provider registrieren
+            pm.RegisterScoringProvider(_scoringProvider);
+            pm.CalcStartingAllocationToRisk(StartDateTime);
+            _portfolioManager = pm;
+        }
 
         private Task<decimal> CalculateAveragePortfolioHoldings()
         {
@@ -327,7 +282,7 @@ namespace Trading.UI.Wpf.ViewModels
                     sum += holdings.Count();
                 }
 
-                return sum/count;
+                return sum / count;
             });
         }
 
@@ -342,11 +297,89 @@ namespace Trading.UI.Wpf.ViewModels
             return SimpleTextParser.GetListOfTypeFromFilePath<Transaction>(filename)?.OfType<ITransaction>()?.ToDictionaryList(x => x.SecurityId);
         }
 
+        private async void OnSaveBacktest()
+        {
+            var dialog = new CommonOpenFileDialog { InitialDirectory = Settings.LoggingPath, IsFolderPicker = true };
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+                return;
+
+            var nameDialog = SmartDialog.CreateCommentDefaultDialog(Settings);
+            if (nameDialog.ShowDialog() == false)
+                return;
+
+            await CreateBacktestZipAsync(dialog.FileName);
+        }
+
+        public async Task CreateBacktestZipAsync(string targetDirectory)
+        {
+            await Task.Run(() => CreateBacktestZip(targetDirectory));
+        }
+
+        public void CreateBacktestZip(string targetDirectory)
+        {
+            var fileName = Path.Combine(targetDirectory, $"{Settings.BacktestDescription ?? "Backtest"}_{DateTime.Now:d}.zip");
+            if (File.Exists(fileName))
+                File.Delete(fileName);
+
+            using (var zipMs = new FileStream(fileName, FileMode.CreateNew))
+            {
+                using (var zipArchiv = new ZipArchive(zipMs, ZipArchiveMode.Create, true))
+                {
+                    foreach (var filePath in Directory.GetFiles(Settings.LoggingPath, "*.csv"))
+                    {
+                        var entry = zipArchiv.CreateEntry(Path.GetFileName(filePath) ?? throw new InvalidOperationException("Achtung die Datei konnte nicht gefunden werden"));
+                        using (var stream = entry.Open())
+                        {
+                            var bytes = File.ReadAllBytes(filePath);
+                            stream.Write(bytes, 0, bytes.Length);
+                        }
+                    }
+                }
+            }
+        }
+
+
         private void OnLoadBacktest()
         {
-            var filePath = _portfolioManager.PortfolioSettings.LoggingPath;
-            var values = SimpleTextParser.GetListOfType<PortfolioValuation>(File.ReadAllText(filePath));
-            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(values, null, Settings));
+            //file auswählen
+            var dialog = new CommonOpenFileDialog { InitialDirectory = Settings.LoggingPath, Filters = { new CommonFileDialogFilter("*.", "*.zip") } };
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+                return;
+
+            //unzippen
+            var filePath = UnZipToTempDirectory(dialog.FileName);
+
+            //Valuations, Stops & Transaktionen
+            var valuations = SimpleTextParser.GetListOfType<PortfolioValuation>(File.ReadAllText(Path.Combine(filePath, "PortfolioValuations.csv")));
+            var transactions = SimpleTextParser.GetListOfType<Transaction>(File.ReadAllText(Path.Combine(filePath, "Transactions.csv")));
+            var stops = SimpleTextParser.GetListOfType<Transaction>(File.ReadAllText(Path.Combine(Settings.LoggingPath, "StoppLoss" + nameof(Transaction) + "s.csv")));
+            var cashMovements = SimpleTextParser.GetListOfTypeFromFilePath<CashMetaInfo>(Path.Combine(Settings.LoggingPath, nameof(CashMetaInfo) + "s.csv"));
+
+            //Repos initialisieren
+            TransactionsRepo.Initialize(transactions);
+            StoppLossRepo.Initialize(stops);
+            InitializeCashMovements(cashMovements);
+            if (_candidatesProvider == null)
+                _candidatesProvider = new CandidatesProvider(_scoringProvider);
+
+            //Wenn der Pm noch nicht initialisert wurde an dieser Stelle initialiseren
+            if (_portfolioManager == null)
+            {
+                var path = Path.Combine(Settings.LoggingPath, $"{nameof(Transaction)}s.csv");
+                if (!File.Exists(path))
+                    MessageBox.Show($"Achtung das angebene File {path} existiert nicht!");
+                InitializePortfolioManager(path);
+            }
+
+            //Event invoken
+            BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(valuations, TransactionsRepo.GetAllTransactions(), Settings));
+        }
+
+        private string UnZipToTempDirectory(string filePath)
+        {
+            var tempDir = Path.Combine(Path.GetTempPath(), Path.GetTempFileName().Replace(".tmp", ".zip"));
+            ZipFile.ExtractToDirectory(filePath, tempDir);
+            return tempDir;
         }
 
         #endregion
@@ -417,6 +450,7 @@ namespace Trading.UI.Wpf.ViewModels
                 Holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(asof.AddDays(-1)).Select(t => new TransactionViewModel(t, GetScore(t, asof)))
                     .Concat(tradingDayTransaction.Select(t => new TransactionViewModel(t, GetScore(t, asof)) { IsNew = true }));
             }
+
         }
 
         private void UpdateCandidates(DateTime asof)

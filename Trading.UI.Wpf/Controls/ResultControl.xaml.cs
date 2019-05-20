@@ -39,7 +39,7 @@ namespace Trading.UI.Wpf.Controls
 
         private void OnIndexBacktestCompleted(object sender, IndexBacktestResultEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void OnBacktestCompleted(object sender, BacktestResultEventArgs args)
@@ -49,19 +49,22 @@ namespace Trading.UI.Wpf.Controls
             var from = new SDate(args.PortfolioValuations[0].PortfolioAsof);
             var to = new SDate(args.PortfolioValuations.Last().PortfolioAsof);
 
-
             //Fints aus dem PortfolioValue erstellen
             var navFints = FINTS.Create(args.PortfolioValuations.Select(x => new Quote<double>(new SDate(x.PortfolioAsof), (double)x.PortfolioValue)));
 
+            //gibt an ob Monatsbalken verwendet werden sollen
+            var isMonthly = from.ToDateTime() - to.ToDateTime() <= TimeSpan.FromDays(365*2);
+
             //zu ChartControl hinzufügen zuerst die yearly returns
-            BarChartControl.Data.Add(new WLineChartBars(from.ToDateTime() - to.ToDateTime() > TimeSpan.FromDays(650)
-                ? GetFints(navFints, from, to, false)
-                : GetFints(navFints, from, to))
+            BarChartControl.Data.Add(new WLineChartBars(isMonthly
+                ? GetFints(navFints, from, to)
+                : GetFints(navFints, from, to, false), isMonthly ? BarType.Month : BarType.Year)
             {
                 FillColor = Colors.AliceBlue,
                 Color = Colors.LightBlue,
-                Caption = "Backtest",
-                Scale = WLineChartScale.Secondary
+                Caption = isMonthly ? "Monatserträge Backtest" : "Jahreserträge Backtest",
+                Scale = WLineChartScale.Secondary,
+                
             });
 
             //ChartControl.Data.Add(new WLineChartFINTS(navFints) { Color = Colors.Blue, Caption = "Backtest", StrokeThickness = 0.75 });
@@ -91,8 +94,17 @@ namespace Trading.UI.Wpf.Controls
                 Color = Colors.LightCoral,
                 Caption = args.Settings.IndexType.ToString(),
                 StrokeThickness = 0.75
-
             });
+
+            BarChartControl.Data.Add(new WLineChartFINTS(navFints)
+            {
+                FillColor = Colors.CornflowerBlue,
+                Color = Colors.CornflowerBlue,
+                Caption = navFints.Caption ?? "Backtest NAV",
+                StrokeThickness = 0.75
+            });
+
+
             BarChartControl.ViewBeginDate = navFints.BeginDate;
             BarChartControl.ViewEndDate = navFints.EndDate;
         }

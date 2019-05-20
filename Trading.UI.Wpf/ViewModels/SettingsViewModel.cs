@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Common.Lib.Interfaces;
 using Common.Lib.UI.WPF.Core.Controls.Core;
+using Common.Lib.UI.WPF.Core.Controls.Dialog;
 using HelperLibrary.Trading.PortfolioManager.Exposure;
 using JetBrains.Annotations;
 using Microsoft.Win32;
@@ -19,6 +20,7 @@ namespace Trading.UI.Wpf.ViewModels
         private TradingDay _selectedTradingDay;
         private TradingIntervalUtil _selectedTradingInterval;
         private decimal _expectedTicketFee;
+        private string _backtestDescription;
 
         public SettingsViewModel(IPortfolioSettings defaultSettings)
         {
@@ -318,6 +320,19 @@ namespace Trading.UI.Wpf.ViewModels
                 if (value == PortfolioSettings.ExpectedTicketFee)
                     return;
                 PortfolioSettings.ExpectedTicketFee = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [SmartDialogInputProperty(InputControl = SmartDialogInputControl.Textbox)]
+        public string BacktestDescription
+        {
+            get => _backtestDescription;
+            set
+            {
+                if (value == _backtestDescription)
+                    return;
+                _backtestDescription = value;
                 OnPropertyChanged();
             }
         }

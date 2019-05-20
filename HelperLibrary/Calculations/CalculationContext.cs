@@ -206,9 +206,9 @@ namespace HelperLibrary.Calculations
         }
 
 
-        public bool TryGetLastVolatility(DateTime asof, out decimal volatility)
+        public bool TryGetLastVolatility(DateTime asof, out decimal? volatility)
         {
-            volatility = decimal.MinusOne;
+            volatility = null;
             if (!_movingVolaMetaInfos.TryGetLastItem(asof, out var metaInfo))
                 return false;
 

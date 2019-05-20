@@ -91,31 +91,31 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         #region Add
 
-        public void Add(ITransaction item, bool isTemporary = true)
+        public void Add(ITransaction transaction, bool isTemporary = true)
         {
             // das temporary flag setzen
-            item.IsTemporary = isTemporary;
+            transaction.IsTemporary = isTemporary;
 
             //Has Changes True setzen
             HasChanges = isTemporary;
 
             //wenn es sich um einen geplanten Verkauf handelt, den erlös cashwirksam buchen
-            if (item.IsTemporary)
+            if (transaction.IsTemporary)
             {
-                UpdateCash(item);
+                UpdateCash(transaction);
             }
             try
             {
-                _uniqueTransactions.Add(item.UniqueKey, item);
+                _uniqueTransactions.Add(transaction.UniqueKey, transaction);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
 
-            item.CancelledEvent += OnTransactionCancelled;
+            transaction.CancelledEvent += OnTransactionCancelled;
             //hinzufügen
-            _temporaryTransactions.Add(item);
+            _temporaryTransactions.Add(transaction);
         }
 
         private void OnTransactionCancelled(object sender, EventArgs e)
@@ -132,50 +132,52 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
-        private void UpdateCash(ITransaction item, bool reverse = false)
+        private void UpdateCash(ITransaction transaction, bool reverse = false)
         {
             if (reverse)
             {
                 //wenn das flag gestzt ist erhöhe ich das Cash bei einem kauf, weil ich die temporäre transakion storniere
-                item.Shares *= -1;
+                transaction.Shares *= -1;
+                transaction.TicketFee *= -1;
             }
 
-            if (item.Shares < 0)
-                IncrementCash(item);
+            if (transaction.Shares < 0)
+                IncrementCash(transaction);
             else
-                DecrementCash(item);
+                DecrementCash(transaction);
+
+            //in jedem Fall die Ticket Fee dem Cash negativ anlasten
+            _cashManager.Cash -= transaction.TicketFee;
         }
 
-        public void DecrementCash(ITransaction item)
+        public void DecrementCash(ITransaction transaction)
         {
-            if (item.TransactionDateTime != _adjustmentProvider.PortfolioAsof)
+            if (transaction.TransactionDateTime != _adjustmentProvider.PortfolioAsof)
             {
-                var record = _adjustmentProvider.ScoringProvider.GetTradingRecord(item.SecurityId, _adjustmentProvider.PortfolioAsof);
-                var currentValue = item.Shares * record.AdjustedPrice;
+                var record = _adjustmentProvider.ScoringProvider.GetTradingRecord(transaction.SecurityId, _adjustmentProvider.PortfolioAsof);
+                var currentValue = transaction.Shares * record.AdjustedPrice;
                 _cashManager.Cash -= Math.Abs(currentValue);
             }
             else
-                _cashManager.Cash -= Math.Abs(item.EffectiveAmountEur);
+                _cashManager.Cash -= Math.Abs(transaction.EffectiveAmountEur);
         }
 
-        public void IncrementCash(ITransaction item)
+        public void IncrementCash(ITransaction transaction)
         {
             //TODO: alle aufrufe nach dem aktuellen score und aktuellem Record nur einmal machen => eventuell ein Repo mit Singelton ??
-            if (item.TransactionDateTime != _adjustmentProvider.PortfolioAsof)
+            if (transaction.TransactionDateTime != _adjustmentProvider.PortfolioAsof)
             {
-                var record =
-                    _adjustmentProvider.ScoringProvider.GetTradingRecord(item.SecurityId,
-                        _adjustmentProvider.PortfolioAsof);
-                var currentValue = item.Shares * record.AdjustedPrice;
+                var record = _adjustmentProvider.ScoringProvider.GetTradingRecord(transaction.SecurityId, _adjustmentProvider.PortfolioAsof);
+                var currentValue = transaction.Shares * record.AdjustedPrice;
                 _cashManager.Cash += Math.Abs(currentValue);
             }
             else
-                _cashManager.Cash += Math.Abs(item.EffectiveAmountEur);
+                _cashManager.Cash += Math.Abs(transaction.EffectiveAmountEur);
         }
 
-        public void AddRange(IEnumerable<ITransaction> items, bool isTemporary = true)
+        public void AddRange(IEnumerable<ITransaction> transactions, bool isTemporary = true)
         {
-            foreach (var item in items)
+            foreach (var item in transactions)
                 Add(item, isTemporary);
         }
 

@@ -42,15 +42,16 @@
         <UniformGrid x:Name="UniformGrid" Columns="2" Grid.Row="1" MinWidth="375">
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Max InitialPositionSize" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MaximumInitialPositionSize,StringFormat=P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                <arts:SmartNumberUpDown Value="{Binding MaximumInitialPositionSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                         SmallStep="0.01" 
-                                        
+                                        StringFormat="P2"
                                         DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="MaximumPositionSize" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MaximumPositionSize, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                <arts:SmartNumberUpDown Value="{Binding MaximumPositionSize,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                     SmallStep="0.01" 
+                                    StringFormat="P2"
                                     DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
@@ -61,58 +62,65 @@
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="MaximumPositionSizeBuffer" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MaximumPositionSizeBuffer, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                <arts:SmartNumberUpDown Value="{Binding MaximumPositionSizeBuffer,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                         SmallStep="0.01" 
+                                        StringFormat="P2"
                                     DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Maximaler Investitionsgrad" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MaxTotaInvestmentLevel, StringFormat=P,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                <arts:SmartNumberUpDown Value="{Binding MaxTotaInvestmentLevel,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                                         SmallStep="0.01" 
+                                        StringFormat="P2"
                                         DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Cash Buffer Size" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding CashPufferSizePercent, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                <arts:SmartNumberUpDown Value="{Binding CashPufferSizePercent,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                         SmallStep="0.01" 
+                                        StringFormat="P2"
                                         DisplayMode="Decimal" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Trading-Tag" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartTextBox Text="{Binding SelectedTradingDay.FilterableText, StringFormat=P}" Height="35"
+                <arts:SmartTextBox Text="{Binding SelectedTradingDay.FilterableText}" Height="35"
                                    TextChangedDelay="500" 
                                    AutoSuggestionItemsSource="{Binding AvailableTradingDays, Mode=OneWay}" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Trading-Interval" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartTextBox Text="{Binding SelectedInterval.FilterableText, StringFormat=P}" Height="35"
+                <arts:SmartTextBox Text="{Binding SelectedInterval.FilterableText}" Height="35"
                                    TextChangedDelay="500" 
                                    AutoSuggestionItemsSource="{Binding AvailableTradingIntervals, Mode=OneWay}" />
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Replace-Buffer Size" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding ReplaceBufferPct, StringFormat=P}" 
+                <arts:SmartNumberUpDown Value="{Binding ReplaceBufferPct}" 
                                         SmallStep="0.01" 
+                                        StringFormat="P2"
                                         DisplayMode="Decimal" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="MaximumAllocation To Risk" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MaximumAllocationToRisk, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                <arts:SmartNumberUpDown Value="{Binding MaximumAllocationToRisk,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                         SmallStep="0.1" 
+                                        StringFormat="P2"
                                         DisplayMode="Decimal" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical">
                 <arts:SmartTextBlock Text="Minimum Allocation To Risk" Style="{StaticResource LabelStyle}"/>
-                <arts:SmartNumberUpDown Value="{Binding MinimumAllocationToRisk, StringFormat=P,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                <arts:SmartNumberUpDown Value="{Binding MinimumAllocationToRisk,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                         SmallStep="0.1" 
+                                        StringFormat="P2"
                                         DisplayMode="Decimal" />
             </StackPanel>
 
-            <arts:SmartNumberUpDown Value="{Binding ExpectedTicketFee, StringFormat=C2,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+            <arts:SmartNumberUpDown Value="{Binding ExpectedTicketFee,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                     SmallStep="1" 
                                     MinHeight="55"
+                                    StringFormat="C2"
                                     Description="Erwartete Ticket Fees EUR"
                                     DisplayMode="Decimal" />
 

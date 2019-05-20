@@ -27,7 +27,11 @@
                     </arts:SmartFlyoutItem.FlyoutContent>
                 </arts:SmartFlyoutItem>
 
-
+                    <arts:SmartFlyoutItem HeaderText="Stopps" TextAppearance="Header2" HeaderTextForeground="White" Width="870">
+                        <arts:SmartFlyoutItem.FlyoutContent>
+                            <controls:StopsControl/>
+                        </arts:SmartFlyoutItem.FlyoutContent>
+                    </arts:SmartFlyoutItem>
                 <arts:SmartFlyoutItem HeaderText="Candidates" Icon="UwpList" TextAppearance="Header2"  HeaderTextForeground="White" Width="870">
                     <arts:SmartFlyoutItem.FlyoutContent>
                         <controls:CandidatesControl />
@@ -50,6 +54,14 @@
                         <arts:SmartIconButton Icon="UwpOpenFile"                                             
                                               Description="Backtesteinstellungen laden" 
                                               Command="{Binding LoadBacktestCommand}" 
+                                              Width="auto" 
+                                              Margin="5" 
+                                              VerticalContentAlignment="Center" 
+                                              HorizontalContentAlignment="Center"/>
+
+                        <arts:SmartIconButton Icon="UwpSave"                                             
+                                              Description="Backtesteinstellungen speichern" 
+                                              Command="{Binding SaveBacktestCommand}" 
                                               Width="auto" 
                                               Margin="5" 
                                               VerticalContentAlignment="Center" 

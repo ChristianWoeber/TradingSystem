@@ -134,7 +134,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 if (date >= endDateTime || date >= DateTime.Today.GetBusinessDay(false))
                     return;
 
-                var candidates = _candidatesProvider.GetCandidates(date, PriceHistoryOption.PreviousItem)?.ToList();
+                var candidates = _candidatesProvider.GetCandidates(date)?.Where(x => x.ScoringResult.IsValid).ToList();
                 var asof = candidates?.OrderByDescending(x => x.Record.Asof).FirstOrDefault()?.Record.Asof;
 
                 if (asof == null)

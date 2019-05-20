@@ -53,7 +53,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
             //die gesamt ziel shares bestimmen, werden immer abgerundet
             //aussder wird bei aktivem investment nicht der target amount, sondern der
             var completeTargetShares = (int)Math.Floor(!candidate.IsInvested 
-                ? (targetAmount - _portfolioSettings.ExpectedTicketFee) / candidate.Record.AdjustedPrice 
+                ? targetAmount / candidate.Record.AdjustedPrice 
                 : GetCurrentTargetAmount() / candidate.Record.AdjustedPrice);
             if (candidate.IsInvested)
             {
@@ -63,7 +63,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
             return completeTargetShares;
 
             //interne methode gibt mir den aktuell bewerteten Totalen Amount in EUR zurück (Stücke mal heutiger Preis
-            decimal GetCurrentTargetAmount() => (targetAmount + (candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice) -_portfolioSettings.ExpectedTicketFee);
+            decimal GetCurrentTargetAmount() => targetAmount + candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice;
         }
 
 

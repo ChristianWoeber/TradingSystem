@@ -100,7 +100,8 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
             }
 
             //Dann bestehende Investments abschichten // sonst bin ich fertig
-            if (_adjustmentProvider.CurrentSumInvestedEffectiveWeight > _adjustmentProvider.MaximumBoundary)
+            //Achtung ! Aufrund der Transaktionskosten kann es auch sein, dass das Cash < 0 ist dann muss ich es anpassen
+            if (_adjustmentProvider.CurrentSumInvestedEffectiveWeight > _adjustmentProvider.MaximumBoundary || CashHandler.Cash < 0)
             {
                 //dann muss ich die schwächsten Candidaten entsprechend abschichten
                 //und dazu merge ich die investierten mit den temporären
@@ -108,6 +109,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
                 CashHandler.CleanUpCash(temporaryCandidates);
             }
 
+            //Dürfte hier nicht mehr sein, sonst kommt die messagebox
             if (CashHandler.Cash > 0)
                 return;
 

@@ -134,6 +134,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
             return transaction?.TargetAmountEur / transaction?.Shares;
         }
 
+        //TODO: Average Price fixen
         public decimal? GetAveragePrice(int secid, DateTime asof)
         {
             if (CurrentPortfolio[secid] == null)

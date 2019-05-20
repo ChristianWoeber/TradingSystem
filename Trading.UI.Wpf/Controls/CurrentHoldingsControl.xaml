@@ -14,7 +14,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <arts:SmartDataGrid AutoGenerateColumns="False" ItemsSource="{Binding Holdings, Mode=OneWay}" 
                             SelectedItem="{Binding SelectedPosition}"
@@ -87,37 +86,5 @@
                 
             </Expander>
         </StackPanel>
-
-        
-            <StackPanel    Grid.Row="2">
-            <arts:SmartTextBlock Text="Bislang ausgeführte Stops" FontWeight="DemiBold" Appearance="Header2" Margin="10 10 5 0" MaxHeight="500"/>
-
-            <arts:SmartDataGrid ItemsSource="{Binding Stopps}" AutoGenerateColumns="False" Margin="10" MaxHeight="550"
-                                HeaderFontSize="4"
-                                SelectedGroupingKey="{arts:SmartMappingItem BoundPropertyName=SecurityId, Key=SecurityId}" 
-                                ShowGrouping="True">
-                <arts:SmartDataGrid.Columns >
-                    <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
-                                          ColumnEditingItemsSource="{Binding Source={x:Static viewModels:TradingViewModel.NameCatalog}}"
-                                          Header="Name"  />
-                    <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
-                                          Header="SecurityId" 
-                                          IsGroupable="True"
-                                          Visibility="Visible"/>
-                    <arts:SmartDataGridColumn Binding="{Binding TransactionDateTime, StringFormat=d, Mode=OneWay}" 
-                                          Header="TransaktionsDatum" 
-                                          SortDirection="Descending"/>
-                    <arts:SmartDataGridColumn Binding="{Binding TargetWeight, StringFormat=P, Mode=OneWay}" 
-                                          Header="Ziel-Gewicht"/>
-                    <arts:SmartDataGridColumn Binding="{Binding EffectiveAmountEur, StringFormat=C, Mode=OneWay}" 
-                                          Header="Ziel-Amount-Eff"/>
-                    <arts:SmartDataGridColumn Binding="{Binding Type, Mode=OneWay}" 
-                                          Header="Typ"/>
-                    <arts:SmartDataGridColumn Binding="{Binding Score,Mode=OneWay, StringFormat=N}" 
-                                          Header="Score" />
-                </arts:SmartDataGrid.Columns>
-            </arts:SmartDataGrid>
-        </StackPanel>
-            
     </Grid>
 </UserControl>

@@ -21,6 +21,10 @@ namespace Trading.UI.Wpf
             Globals.PriceHistoryFilePath = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/PriceHistory/EuroStoxx50Member.xlsx"));
             Globals.IndicesBasePath = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/Indices"));
             Globals.PriceHistoryDirectory = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/PriceHistory"));
+            Globals.TransactionsDirectory = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/Transactions"));
+            Globals.PortfolioValuationDirectory = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/PortfolioValue"));
+
+            Globals.IsTestMode = true;
 
             //scoring provider erstellen
             var scoringProvider = new ScoringProvider(BootStrapperFactory.CreatePriceHistoryFromSingleFiles(Globals.PriceHistoryDirectory));

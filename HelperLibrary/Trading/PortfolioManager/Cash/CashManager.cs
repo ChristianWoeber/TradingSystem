@@ -57,8 +57,8 @@ namespace HelperLibrary.Trading.PortfolioManager.Cash
                 for (var i = temporaryCandidates.Count - 1; i >= 0; i--)
                 {
                     //Das ist meine Abbruchbedingung wenn ich der Range bin oder kleiner als die MinimumBoundary
-                    if (_portfolioManager.CurrentSumInvestedEffectiveWeight.IsBetween(_portfolioManager.MinimumBoundary, _portfolioManager.MaximumBoundary)
-                        || _portfolioManager.CurrentSumInvestedEffectiveWeight <= _portfolioManager.MinimumBoundary)
+                    if ((_portfolioManager.CurrentSumInvestedEffectiveWeight.IsBetween(_portfolioManager.MinimumBoundary, _portfolioManager.MaximumBoundary)
+                        || _portfolioManager.CurrentSumInvestedEffectiveWeight <= _portfolioManager.MinimumBoundary) && Cash > 0)
                         return;
 
                     //ist der aktuell schlechteste Kandiat und der wird auch gleich removed

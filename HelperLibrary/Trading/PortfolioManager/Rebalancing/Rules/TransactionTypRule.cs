@@ -13,10 +13,10 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
             switch (candidate.TransactionType)
             {
                 case TransactionType.Open:
-                    candidate.RebalanceScore.Update(Context.Delta * 2, false);
+                    candidate.RebalanceScore.Update(Context.Delta * 5, false);
                     break;
                 case TransactionType.Unknown:
-                    candidate.RebalanceScore.Update(Context.Delta * 4, false);
+                    candidate.RebalanceScore.Update(Context.Delta * 8, false);
                     break;
             }
         }

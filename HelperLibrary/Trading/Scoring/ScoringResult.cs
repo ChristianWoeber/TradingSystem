@@ -20,7 +20,7 @@ namespace HelperLibrary.Trading
         public decimal Performance90 { get; set; }
         public decimal Performance30 { get; set; }
         public decimal Performance10 { get; set; }
-        public decimal Volatility { get; set; }
+        public decimal? Volatility { get; set; }
 
         public decimal Score
         {
@@ -35,8 +35,8 @@ namespace HelperLibrary.Trading
                               + Performance250 * (decimal)0.10;
                 //+ MaxDrawdown * (decimal)0.1;
 
-                return Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
-
+                //danach zinse ich quais die vola ab wenn null dann nehm ich als default 20%
+                return Math.Round(avgPerf * (1 - Volatility ?? 0.2M) * 100, 2);
             }
         }
 
@@ -73,7 +73,7 @@ namespace HelperLibrary.Trading
         public decimal Performance30 { get; set; }
         public decimal Performance10 { get; set; }
         public decimal MaxDrawdown { get; set; }
-        public decimal Volatility { get; set; }
+        public decimal? Volatility { get; set; }
         public bool IsNewLow { get; set; }
         public ILowMetaInfo LowMetaInfo { get; set; }
 
@@ -87,25 +87,28 @@ namespace HelperLibrary.Trading
                               + Performance30 * (decimal)0.30
                               + Performance90 * (decimal)0.40
                               + Performance250 * (decimal)0.20;
-
-                var score = Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
-
-                if (Performance10 < 0 && Performance30 < 0)
+                if (avgPerf == 0)
                     return 0;
+
+                var score = Math.Round((avgPerf * (1 - Volatility ?? 0.25M)) * 100, 2);
 
                 if (score <= 1)
                     return score;
 
                 if (AbsoluteGainAndLossMetaInfo == null)
                     return 0;
+                //fall wenn bei der Vola ein schrott rauskommt
+                if (score > 200)
+                    score = -1;
 
-                return score * ManipulateScoreFromAbsoluteLoss();
+                return score /**ManipulateScoreFromAbsoluteLoss()*/;
 
                 //return IsNewLow ? score / 2 : score;
 
                 //return Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
             }
         }
+
 
         public decimal ManipulateScoreFromAbsoluteLoss()
         {

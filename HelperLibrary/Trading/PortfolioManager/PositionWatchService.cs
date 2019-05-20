@@ -30,6 +30,11 @@ namespace HelperLibrary.Trading.PortfolioManager
             if (!_limitDictionary.TryGetValue(candidate.Record.SecurityId, out var stopLossMeta))
                 throw new ArgumentException("An dieser Stelle muss es ein Limit geben");
 
+            if (((TradingCandidate)candidate).SecurityId == 413740 && candidate.PortfolioAsof >= new DateTime(2015, 01, 20))
+            {
+
+            }
+
             //akuteller Preis
             var currentPrice = candidate.Record.AdjustedPrice;
 
@@ -37,43 +42,53 @@ namespace HelperLibrary.Trading.PortfolioManager
             if (stopLossMeta.High.Price <= currentPrice)
                 return false;
 
-            if (candidate.LastTransaction?.Shares < 0 &&
-                candidate.LastTransaction?.TransactionDateTime.AddDays(_stopLossSettings.MinimumStopHoldingPeriodeInDays) < candidate.PortfolioAsof)
-            {
+            //wenn der letzte verkauf kürzer als 7 Tage her ist verkaufe ich nicht nochmal (StopLock Periode)
+            if (candidate.LastTransaction?.Shares < 0 && candidate.LastTransaction?.TransactionDateTime.AddDays(_stopLossSettings.MinimumStopHoldingPeriodeInDays) > candidate.PortfolioAsof)
                 return false;
-            }
 
             //die Jahres vola
             var volatility = candidate.ScoringResult.Volatility;
 
             //dann ist die historie noch nocht lang genug
-            if (volatility == -1)
+            if (volatility == -1 || volatility == null)
             {
-                if (currentPrice * new decimal(0.9) >= stopLossMeta.Opening.Price)
-                {
-                    return true;
-                }
+                //solange im Plus kein stop
+                if (candidate.Performance > 0)
+                    return false;
 
-                return false;
+                //wenn der aktuelle Preis mehr als 20% gegenber dem letzten low gefallen ist
+                return currentPrice * new decimal(0.8) > stopLossMeta.PreviousLow.Price;
             }
 
             //1 Sigma
             var sigma = volatility / (decimal)Math.Sqrt(250d);
 
+            if (sigma == 0)
+            {
+                return currentPrice * new decimal(0.8) > stopLossMeta.Opening.Price;
+            }
+
             var hasStop = false;
+
+            //Wenn der Stop schon einmal abgeschictet wurde
+            if (candidate.LastTransaction?.TransactionType == TransactionType.Changed &&
+                candidate.LastTransaction?.Shares < 0)
+            {
+
+            }
 
             //der Rückgabewert
             //wenn der aktuelle Preis <= ist dem letzten High abzüglich der Vola stopp ich
             //wenn der aktuelle Preis kleiner als der average Preis ist sprich ich im minus bin mit der Position abzüglichn der Volatilität
-            if (currentPrice < stopLossMeta.Opening.Price * (1 - 4 * sigma) && currentPrice < candidate.AveragePrice)
+            if (currentPrice < stopLossMeta.Opening.Price * (1 - 6 * sigma) && currentPrice < candidate.AveragePrice * (1 - 2 * sigma))
             {
                 hasStop = true;
             }
-            else if (currentPrice <= stopLossMeta.High.Price * (1 - 4 * sigma) && currentPrice < candidate.AveragePrice)
+            else if (currentPrice <= stopLossMeta.High.Price * (1 - 6 * sigma) && currentPrice < candidate.AveragePrice * (1 - 2 * sigma))
             {
                 hasStop = true;
             }
-            else if (currentPrice * (1 + 4 * sigma) < stopLossMeta.PreviousLow.Price && stopLossMeta.Opening.Asof != stopLossMeta.PreviousLow.Asof)
+            else if (currentPrice < stopLossMeta.PreviousLow.Price * (1 - 6 * sigma) && stopLossMeta.Opening.Asof != stopLossMeta.PreviousLow.Asof)
             {
                 hasStop = true;
             }

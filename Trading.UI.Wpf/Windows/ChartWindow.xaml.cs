@@ -38,13 +38,16 @@ namespace Trading.UI.Wpf.Windows
             _chartDate = chartDate;
         }
 
-        public async Task CreateFints(IPriceHistoryCollection priceHistoryCollection, string caption)
+        public async Task CreateFints(IPriceHistoryCollection priceHistoryCollection, string caption, bool needsTransactions = true)
         {
             var task = Task.Factory.StartNew(() =>
             {
                 _securityFints = FINTS.Create(priceHistoryCollection.Select(rec => new Quote<double>(new SDate(rec.Asof), (double)rec.AdjustedPrice)), caption);
-                _transactions = TransactionsRepo.GetTransactions(_chartDate, _securityId).ToList();
-                _investedFints = FINTS.Create(_transactions.Select(t => new Quote<double>(new SDate(t.TransactionDateTime), (double)t.TargetWeight)), "Investitionsgrad");
+                if (needsTransactions)
+                {
+                    _transactions = TransactionsRepo.GetTransactions(_chartDate, _securityId).ToList();
+                    _investedFints = FINTS.Create(_transactions.Select(t => new Quote<double>(new SDate(t.TransactionDateTime), (double)t.TargetWeight)), "Investitionsgrad");
+                }
             });
 
             await task;
@@ -54,18 +57,21 @@ namespace Trading.UI.Wpf.Windows
         private void AddToChart()
         {
             ChartControl.Data.Clear();
-            _investedFints.DataType = FINTSDataType.Exposure;
-
-            //zu ChartControl hinzufügen zuerst die Aktienquote
-            var wlineFints = new WLineChartFINTS(_investedFints)
+            if (_investedFints != null)
             {
-                FillColor = Colors.OrangeRed,
-                Color = Colors.Red,
-                FillMode = WLCFillMode.FillAlpha,
-                FillAlpha = 0.25,
+                _investedFints.DataType = FINTSDataType.Exposure;
 
-            };
-            ChartControl.Data.Add(wlineFints);
+                //zu ChartControl hinzufügen zuerst die Aktienquote
+                var wlineFints = new WLineChartFINTS(_investedFints)
+                {
+                    FillColor = Colors.OrangeRed,
+                    Color = Colors.Red,
+                    FillMode = WLCFillMode.FillAlpha,
+                    FillAlpha = 0.25,
+
+                };
+                ChartControl.Data.Add(wlineFints);
+            }
 
             var securityFints = new WLineChartFINTS(_securityFints) { Color = Colors.Blue, StrokeThickness = 0.75 };
 
@@ -85,6 +91,9 @@ namespace Trading.UI.Wpf.Windows
         private DateTime _currentOpen;
         private IEnumerable<Tuple<DateTime, DateTime>> EnumHighlightRanges()
         {
+            if (_transactions == null)
+                yield break;
+
             foreach (var transaction in _transactions.Where(t => t.TransactionType == TransactionType.Open || t.TransactionType == TransactionType.Close))
             {
                 if (transaction.TransactionType == TransactionType.Open)

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
 using HelperLibrary.Collections;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Parsing;
+using Nms.Expr.NBasic;
 using OfficeOpenXml;
 using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Models;
@@ -22,7 +24,6 @@ namespace Trading.UI.Wpf.Utils
                 ? SimpleTextParser.GetListOfTypeFromFilePath<T>(path)
                 : null;
         }
-
 
 
         private static readonly Dictionary<int, string> _idToNameCatalog = new Dictionary<int, string>();
@@ -95,7 +96,7 @@ namespace Trading.UI.Wpf.Utils
                 throw new ArgumentException(@"Am angegeben Pfad exisitert keine Datei !", path);
 
             //Parallel For Each ist in diesem Fall um den Faktor der kerne schneller
-            Parallel.ForEach(Directory.GetFiles(path, "*.csv"), file =>
+            Parallel.ForEach(Directory.GetFiles(path, "*.csv"), (file, state) =>
             {
                 if (string.IsNullOrWhiteSpace(file))
                     return;
@@ -119,10 +120,16 @@ namespace Trading.UI.Wpf.Utils
                 var settings = new PriceHistorySettings { Name = name };
                 //im dictionary merken
                 dic.Add(id, PriceHistoryCollection.Create(data, settings));
+
+                //bei 100 einträge stoppen, dass reicht zum testen
+                if (Globals.IsTestMode && dic.Count >= 100)
+                    state.Stop();
+
             });
 
             return dic;
         }
+
 
     }
 }

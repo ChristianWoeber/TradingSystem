@@ -64,6 +64,12 @@
     <Reference Include="LiteDB, Version=2.0.2.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\Git\NuGetPackages\LiteDB.2.0.2\lib\net35\LiteDB.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.3.3, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\Microsoft-WindowsAPICodePack-Core.1.1.3.3\lib\net452\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.3.3, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\Microsoft-WindowsAPICodePack-Shell.1.1.3.3\lib\net452\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\Git\NuGetPackages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -153,6 +159,9 @@
     <Compile Include="Controls\SettingsControl.xaml.cs">
       <DependentUpon>SettingsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\StopsControl.xaml.cs">
+      <DependentUpon>StopsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converter\SmartMappingItemToValueConverter.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Models\LoggingSaveProvider.cs" />
@@ -166,8 +175,10 @@
     <Compile Include="ViewModels\EventArgs\IndexBacktestResultEventArgs.cs" />
     <Compile Include="ViewModels\IndexBacktestSettings.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\StoppLossRepo.cs" />
     <Compile Include="ViewModels\TradingViewModel.cs" />
     <Compile Include="Utils\Factory.cs" />
+    <Compile Include="ViewModels\TransactionsRepo.cs" />
     <Compile Include="ViewModels\TransactionViewModel.cs" />
     <Compile Include="Windows\ChartWindow.xaml.cs">
       <DependentUpon>ChartWindow.xaml</DependentUpon>
@@ -200,6 +211,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\StopsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

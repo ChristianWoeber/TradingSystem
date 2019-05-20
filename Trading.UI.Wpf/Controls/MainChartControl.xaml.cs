@@ -155,14 +155,14 @@ namespace Trading.UI.Wpf.Controls
                     throw new NotImplementedException();
             }
 
-            indexFints.DataType = FINTSDataType.Return;
+            //indexFints.DataType = FINTSDataType.Return;
             return indexFints;
         }
 
         private void OnChartControlClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (!_model.HasPortfolioManager)
-                return;
+               return;
 
             if (ChartControl.Cursors[0]?.IsSet == false)
                 return;

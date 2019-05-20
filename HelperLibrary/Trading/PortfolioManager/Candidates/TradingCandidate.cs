@@ -139,7 +139,7 @@ namespace HelperLibrary.Trading
             get
             {
                 var meta = _adjustmentProvider.PositionWatcher.GetStopLossMeta(this);
-                if (meta.High.Asof == Record.Asof)
+                if (Record.AdjustedPrice >= meta.High.Price)
                     return true;
                 return false;
                 //return ScoringResult.Score * new decimal(1.25) > LastScoringResult?.Score && !IsBelowStopp;

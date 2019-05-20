@@ -22,11 +22,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing.Rules
 
             //wenn die Position am High ist und beretis einaml aufgestock wurde deutlich erhhöhen
             if (candidate.StopLossMeta.High.Asof == candidate.Record.Asof && candidate.CurrentWeight > span)
-                candidate.RebalanceScore.Update(Context.Delta * new decimal(1.5));
+                candidate.RebalanceScore.Update(Context.Delta * 3);
 
             //wenn die Position am High ist und größer als 3 * der span ist (=maximum) deutlich erhhöhen
             if (candidate.StopLossMeta.High.Asof == candidate.Record.Asof && candidate.CurrentWeight > span * 3)
-                candidate.RebalanceScore.Update(Context.Delta * 3);
+                candidate.RebalanceScore.Update(Context.Delta * 4);
 
             //wenn der aktuelle Preis < als das opening ist, reduzieren
             if (candidate.Record.AdjustedPrice < candidate.StopLossMeta.Opening.AdjustedPrice)

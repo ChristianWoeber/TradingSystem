@@ -84,7 +84,7 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="asof">der Stichtag</param>
         /// <param name="volatility">das Ergbenis der Volatilitätsberechnung</param>
         /// <returns></returns>
-        bool TryGetLastVolatility(DateTime asof, out decimal volatility);
+        bool TryGetLastVolatility(DateTime asof, out decimal? volatility);
 
         /// <summary>
         /// Gibt an ob es zu dem Zeitpunkt ein neues Low gab

@@ -37,7 +37,7 @@ namespace Trading.DataStructures.Interfaces
         /// <summary>
         /// The Volatility of the last 250 Days
         /// </summary>
-        decimal Volatility { get; set; }
+        decimal? Volatility { get; set; }
 
         /// <summary>
         /// der Score der sich aus den Berechnungen ergibt 
