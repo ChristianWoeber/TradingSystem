@@ -52,5 +52,10 @@ namespace TradingSystemTests.TestCases
         /// die StopLossMetainfo zum Kandiodaten
         /// </summary>
         public IStopLossMeta StopLossMeta { get; }
+
+        /// <summary>
+        /// Die Totale Performance der Position
+        /// </summary>
+        public decimal? PerformanceUnderlying { get; }
     }
 }

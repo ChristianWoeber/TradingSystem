@@ -18,7 +18,7 @@ namespace Trading.UI.Wpf.Utils
 
     public static class BootStrapperFactory
     {
-        public static IEnumerable<T> CreateCollectionFromFile<T>(string path)
+        public static IEnumerable<T> CreateCollectionFromFile<T>(string path) where T : class
         {
             return File.Exists(path)
                 ? SimpleTextParser.GetListOfTypeFromFilePath<T>(path)
@@ -95,6 +95,8 @@ namespace Trading.UI.Wpf.Utils
             if (!Directory.Exists(path))
                 throw new ArgumentException(@"Am angegeben Pfad exisitert keine Datei !", path);
 
+            var sw = Stopwatch.StartNew();
+
             //Parallel For Each ist in diesem Fall um den Faktor der kerne schneller
             Parallel.ForEach(Directory.GetFiles(path, "*.csv"), (file, state) =>
             {
@@ -115,7 +117,7 @@ namespace Trading.UI.Wpf.Utils
                 var name = fileName.Substring(0, idx).Trim('_');
                 var id = Convert.ToInt32(fileName.Substring(idx, fileName.Length - idx).Trim('_'));
                 //die TradingRecords auslesen
-                var data = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(file);
+                var data = SimpleTextParser.GetItemsOfTypeFromFilePath<TradingRecord>(file);
                 //settings erstellen
                 var settings = new PriceHistorySettings { Name = name };
                 //im dictionary merken
@@ -126,7 +128,8 @@ namespace Trading.UI.Wpf.Utils
                     state.Stop();
 
             });
-
+            sw.Stop();
+            Trace.TraceInformation($"Dauer des Ladevorgangs in Sekunden: {sw.Elapsed.TotalSeconds:N}");
             return dic;
         }
 

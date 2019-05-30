@@ -7,6 +7,7 @@ using HelperLibrary.Database.Models;
 using HelperLibrary.Parsing;
 using HelperLibrary.Trading.PortfolioManager;
 using HelperLibrary.Trading.PortfolioManager.Cash;
+using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
 namespace Trading.UI.Wpf.Models
@@ -32,7 +33,7 @@ namespace Trading.UI.Wpf.Models
             _cashPath = Path.Combine(_loggingPath, nameof(CashMetaInfo) + "s.csv");
             _portfolioValuationPath = Path.Combine(_loggingPath, nameof(PortfolioValuation) + "s.csv");
             _stoppLossPath = Path.Combine(_loggingPath, "StoppLoss" + nameof(Transaction) + "s.csv");
-          
+
 
             //clean Up
             if (File.Exists(_transactionsPath))
@@ -59,10 +60,6 @@ namespace Trading.UI.Wpf.Models
 
         private void OnPortfolioAsofChanged(object sender, DateTime e)
         {
-            if (Debugger.IsAttached && e == new DateTime(2001, 01, 17))
-            {
-
-            }
             SimpleTextParser.AppendToFile(new PortfolioValuation { AllocationToRisk = _pm.AllocationToRisk, PortfolioAsof = e, PortfolioValue = _pm.PortfolioValue }, _portfolioValuationPath);
         }
 
@@ -70,6 +67,33 @@ namespace Trading.UI.Wpf.Models
         public void Save(IEnumerable<ITransaction> items)
         {
             SimpleTextParser.AppendToFile(items.Cast<Transaction>().Where(x => x.IsTemporary && x.Cancelled != 1), _transactionsPath);
+        }
+
+        /// <summary>
+        /// Methode um den Rebalance Score, swoie den Performance Score zu speichern und zu tracen
+        /// </summary>
+        /// <param name="temporaryCandidatesDictionary"></param>
+        /// <param name="temporaryPortfolio"></param>
+        public void SaveScoring(Dictionary<int, ITradingCandidate> temporaryCandidatesDictionary, ITemporaryPortfolio temporaryPortfolio)
+        {
+            var completePath = Path.Combine(_loggingPath, nameof(ScoringTraceModel) + ".csv");
+            SimpleTextParser.AppendToFile(CreateScoringTraceModels(temporaryCandidatesDictionary, temporaryPortfolio), completePath);
+        }
+
+        /// <summary>
+        /// Gibt die ScoringTraceModels zum Speichern zurück
+        /// </summary>
+        /// <param name="temporaryCandidatesDictionary"></param>
+        /// <param name="temporaryPortfolio"></param>
+        /// <returns></returns>
+        private IEnumerable<ScoringTraceModel> CreateScoringTraceModels(Dictionary<int, ITradingCandidate> temporaryCandidatesDictionary, ITemporaryPortfolio temporaryPortfolio)
+        {
+            foreach (var transaction in temporaryPortfolio)
+            {
+                if (!temporaryCandidatesDictionary.TryGetValue(transaction.SecurityId, out var candidate))
+                    continue;
+                yield return new ScoringTraceModel(transaction, candidate.ScoringResult, candidate.RebalanceScore, _pm.PortfolioAsof);
+            }
         }
     }
 }

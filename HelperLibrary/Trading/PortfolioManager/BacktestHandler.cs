@@ -134,7 +134,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 if (date >= endDateTime || date >= DateTime.Today.GetBusinessDay(false))
                     return;
 
-                var candidates = _candidatesProvider.GetCandidates(date)?.Where(x => x.ScoringResult.IsValid).ToList();
+                var candidates = _candidatesProvider.GetCandidates(date)?.Where(x => x.ScoringResult.Performance10 > 0 && x.ScoringResult.Performance30 >0).ToList();
                 var asof = candidates?.OrderByDescending(x => x.Record.Asof).FirstOrDefault()?.Record.Asof;
 
                 if (asof == null)
@@ -182,6 +182,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             if (_portfolioManager.HasChanges)
             {
+               // _saveProvider.SaveScoring(_portfolioManager.TemporaryCandidates, _portfolioManager.TemporaryPortfolio);
                 _portfolioManager.TemporaryPortfolio.SaveTransactions(_saveProvider);
                 _portfolioManager.TransactionsHandler.UpdateCache();
             }

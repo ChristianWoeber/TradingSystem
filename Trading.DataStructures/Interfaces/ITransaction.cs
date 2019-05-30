@@ -3,7 +3,15 @@ using Trading.DataStructures.Enums;
 
 namespace Trading.DataStructures.Interfaces
 {
-    public interface ITransaction
+    /// <summary>
+    /// Durch das Interface können Klassen identifierziert werden, für die,
+    /// die property infos und die mappings infos beim erstellen des Konstructors einmalig gesammelt werden sollen
+    /// </summary>
+    public interface IInputMappable
+    {
+    }
+
+    public interface ITransaction : IInputMappable
     {
         /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt

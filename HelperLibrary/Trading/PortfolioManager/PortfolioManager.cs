@@ -90,7 +90,9 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Das erlaubte minimum inklusive Puffer
         /// </summary>
-        public decimal MinimumBoundary => PortfolioSettings.MaximumAllocationToRisk - PortfolioSettings.AllocationToRiskBuffer;
+        public decimal MinimumBoundary => PortfolioSettings.MaximumAllocationToRisk - PortfolioSettings.AllocationToRiskBuffer < 0
+            ? 0
+            : PortfolioSettings.MaximumAllocationToRisk - PortfolioSettings.AllocationToRiskBuffer;
 
         /// <summary>
         /// Das erlaubte Maximum inklusive Puffer
@@ -218,13 +220,8 @@ namespace HelperLibrary.Trading.PortfolioManager
                 return;
 
             // Wenn keine Aktienquote zulässig ist returne ich ebenfalls
-            if (PortfolioSettings.MaximumAllocationToRisk == 0)
+            if (CurrentAllocationToRisk <= 0 && PortfolioSettings.MaximumAllocationToRisk <= 0)
                 return;
-
-            if (PortfolioAsof >= new DateTime(2000, 01, 25))
-            {
-
-            }
 
             //liste mit den besten Kandiaten die, aktuelle verdrängen werden
             var bestCandidatesNotInvestedIn = new List<TradingCandidate>();
@@ -240,7 +237,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                     candidate.TransactionType = TransactionType.Unchanged;
 
                     //es wird nur an Handelstagen aufgestockt
-                    if (PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay && candidate.HasBetterScoring)
+                    if (PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay && candidate.CanBeIncremented)
                     {
                         //wird nur aufgestockt wenn er lang genug gehalten wurde
                         if (IsBelowMinimumHoldingPeriode(candidate))
@@ -503,7 +500,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         //TODO: refactoren
         public bool AdjustTemporaryPortfolioToCashPuffer(decimal missingCash, ITradingCandidate candidate, bool adjustPosition = false)
         {
-
             //die aktuelle Bewertung der Position, wenn ich investiert bin habe ich das aktuelle Gerwicht schon im Candidaten und brauche nur mit dem PortfolioValue zu multiplizieren
             var currentValue = candidate.IsInvested
                 ? Math.Round(candidate.CurrentWeight * PortfolioValue, 4)
@@ -614,6 +610,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                     transaction = CreateTransaction(candidate, targetAmount, targetShares, effectiveAmountEur, effectiveWeight);
                     //Add to temporary Portfolio
                     TemporaryPortfolio.Add(transaction);
+                    PositionWatcher.AddOrRemoveDailyLimit(transaction);
                     PositionChangedEvent?.Invoke(this, new PortfolioManagerEventArgs(transaction));
                     if (hasStopp)
                         StoppLossExecuted?.Invoke(this, new PortfolioManagerEventArgs(transaction));
@@ -623,7 +620,6 @@ namespace HelperLibrary.Trading.PortfolioManager
                     transaction = CreateTransaction(candidate, targetAmount, targetShares, effectiveAmountEur, effectiveWeight);
                     //Add to temporary Portfolio
                     TemporaryPortfolio.Add(transaction);
-                    //if (targetShares < 0)
                     PositionChangedEvent?.Invoke(this, new PortfolioManagerEventArgs(transaction));
                     if (hasStopp)
                         StoppLossExecuted?.Invoke(this, new PortfolioManagerEventArgs(transaction));
@@ -682,10 +678,17 @@ namespace HelperLibrary.Trading.PortfolioManager
 
                 //updaten der Stop Loss Limits
                 //StopLossSettings.UpdateDailyLimits(currentPosition, price, PortfolioAsof);
-                PositionWatcher.UpdateDailyLimits(currentPosition,price, PortfolioAsof);
+                PositionWatcher.UpdateDailyLimits(currentPosition, price, PortfolioAsof);
+
+                //updated das performance Dictionary
+                // PositionWatcher.UpdatePerformance(currentPosition, price, PortfolioAsof);
+
                 //summe erhöhen
                 sumInvested += currentPosition.Shares * price.Value;
             }
+
+            //Sortiere hier einmalig für jedes Datum das Performance Dictionay
+            PositionWatcher.CreateSortedPerformanceDictionary();
 
             //den Portfolio Wert berechnen
             PortfolioValue = Math.Round(sumInvested, 4) + CashHandler.Cash;

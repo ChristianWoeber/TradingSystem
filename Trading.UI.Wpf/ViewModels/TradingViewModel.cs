@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
@@ -42,7 +43,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         private PortfolioManager _portfolioManager;
         private readonly IScoringProvider _scoringProvider;
-        private IEnumerable<TransactionViewModel> _holdings;
+        private ObservableCollection<TransactionViewModel> _holdings;
         private DateTime _startDateTime;
         private DateTime _endDateTime;
         private CancellationTokenSource _cancellationSource;
@@ -229,16 +230,17 @@ namespace Trading.UI.Wpf.ViewModels
                 //Backtest
                 _cancellationSource = new CancellationTokenSource();
                 await backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
-
             }
 
             //create output
             var valuations = SimpleTextParser.GetListOfTypeFromFilePath<PortfolioValuation>(Path.Combine(Settings.LoggingPath, "PortfolioValuations.csv"));
             var cashMovements = SimpleTextParser.GetListOfTypeFromFilePath<CashMetaInfo>(Path.Combine(Settings.LoggingPath, nameof(CashMetaInfo) + "s.csv"));
+            var scoringTraces = SimpleTextParser.GetListOfTypeFromFilePath<ScoringTraceModel>(Path.Combine(Settings.LoggingPath, nameof(ScoringTraceModel) + ".csv"));
 
             //Repos initialisieren
             TransactionsRepo.Initialize(SimpleTextParser.GetListOfTypeFromFilePath<Transaction>(Path.Combine(Settings.LoggingPath, "Transactions.csv")));
-            StoppLossRepo.Initialize(SimpleTextParser.GetListOfTypeFromFilePath<Transaction>(Path.Combine(Settings.LoggingPath, "StoppLoss" + nameof(Transaction) + "s.csv")));
+            StoppLossRepository.Initialize(SimpleTextParser.GetListOfTypeFromFilePath<Transaction>(Path.Combine(Settings.LoggingPath, "StoppLoss" + nameof(Transaction) + "s.csv")));
+            ScoringRepository.Initialize(scoringTraces);
             InitializeCashMovements(cashMovements);
 
             TransactionsCountTotal = TransactionsRepo.GetAllTransactionsCount();
@@ -273,7 +275,7 @@ namespace Trading.UI.Wpf.ViewModels
         {
             return Task.Run(() =>
             {
-                var count = 0;
+                var count = 1;
                 var sum = 1M;
                 foreach (var dateGrp in TransactionsRepo.GetAllTransactions().GroupBy(x => x.TransactionDateTime))
                 {
@@ -354,10 +356,11 @@ namespace Trading.UI.Wpf.ViewModels
             var transactions = SimpleTextParser.GetListOfType<Transaction>(File.ReadAllText(Path.Combine(filePath, "Transactions.csv")));
             var stops = SimpleTextParser.GetListOfType<Transaction>(File.ReadAllText(Path.Combine(Settings.LoggingPath, "StoppLoss" + nameof(Transaction) + "s.csv")));
             var cashMovements = SimpleTextParser.GetListOfTypeFromFilePath<CashMetaInfo>(Path.Combine(Settings.LoggingPath, nameof(CashMetaInfo) + "s.csv"));
+            var scoringTraces = SimpleTextParser.GetListOfTypeFromFilePath<ScoringTraceModel>(Path.Combine(Settings.LoggingPath, nameof(ScoringTraceModel) + ".csv"));
 
             //Repos initialisieren
             TransactionsRepo.Initialize(transactions);
-            StoppLossRepo.Initialize(stops);
+            StoppLossRepository.Initialize(stops);
             InitializeCashMovements(cashMovements);
             if (_candidatesProvider == null)
                 _candidatesProvider = new CandidatesProvider(_scoringProvider);
@@ -429,7 +432,7 @@ namespace Trading.UI.Wpf.ViewModels
         public void UpdateStops(DateTime asof)
         {
             //die Stopps erstellen
-            Stopps = StoppLossRepo.GetStops(asof).Select(x => new TransactionViewModel(x, GetScore(x, x.TransactionDateTime), true));
+            Stopps = StoppLossRepository.GetStops(asof).Select(x => new TransactionViewModel(x, GetScore(x, x.TransactionDateTime), true));
         }
 
         public void UpdateHoldings(DateTime asof, bool isTradingDay = false)
@@ -442,15 +445,50 @@ namespace Trading.UI.Wpf.ViewModels
             UpdateCandidates(asof);
             var tradingDayTransaction = _portfolioManager.TransactionsHandler.GetTransactions(asof);
             if (tradingDayTransaction == null)
-                Holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(asof).Select(t => new TransactionViewModel(t, GetScore(t, asof)));
+            {
+                //Todo: auf Basis des Current Portfolio die ScoringResults holen
+                var holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(asof);
+                Holdings = new ObservableCollection<TransactionViewModel>(holdings.Select(transaction => CreateTransactionsViewModel(transaction, asof)));
+            }
             else
             {
                 //ich returne am tading tag den portfoliostand vor der umschichtung + die umschichtungen separat, damit
                 //die anzeige in der Gui klarer ist und nachvollzogen werden kann, was zu dem Stichtag geschehen ist
-                Holdings = _portfolioManager.TransactionsHandler.GetCurrentHoldings(asof.AddDays(-1)).Select(t => new TransactionViewModel(t, GetScore(t, asof)))
-                    .Concat(tradingDayTransaction.Select(t => new TransactionViewModel(t, GetScore(t, asof)) { IsNew = true }));
+                Holdings = new ObservableCollection<TransactionViewModel>(_portfolioManager.TransactionsHandler.GetCurrentHoldings(asof.AddDays(-1)).Select(t => CreateTransactionsViewModel(t, asof))
+                    .Concat(tradingDayTransaction.Select(t => CreateTransactionsViewModel(t, asof, true))));
             }
 
+            var stopDic = Stopps.ToDictionaryList(x => x.SecurityId);
+
+            foreach (var position in Holdings)
+            {
+                if (!stopDic.TryGetValue(position.SecurityId, out var stopps))
+                    continue;
+
+                if (stopps.Any(x => x.TransactionDateTime == position.TransactionDateTime))
+                    position.IsStop = true;
+            }
+
+
+
+        }
+
+        private TransactionViewModel CreateTransactionsViewModel(ITransaction t, DateTime asof, bool isNew = false)
+        {
+            var scoringTraceModel = GetScoreFromRepo(CreateKey(t, asof));
+            return scoringTraceModel == null
+                ? new TransactionViewModel(t, GetScore(t, asof)) { IsNew = isNew }
+                : new TransactionViewModel(t, scoringTraceModel) { IsNew = isNew };
+        }
+
+
+
+
+        private string CreateKey(ITransaction transaction, DateTime asof)
+        {
+            return $"{asof:d}_{transaction.SecurityId}";
+
+            return $"{transaction.TransactionDateTime:d}_{asof:d}_{transaction.Shares}_{(int)transaction.TransactionType}_{transaction.SecurityId}";
         }
 
         private void UpdateCandidates(DateTime asof)
@@ -461,6 +499,11 @@ namespace Trading.UI.Wpf.ViewModels
         private IScoringResult GetScore(ITransaction transaction, DateTime asof)
         {
             return _scoringProvider.GetScore(transaction.SecurityId, asof);
+        }
+
+        private ScoringTraceModel GetScoreFromRepo(string key)
+        {
+            return ScoringRepository.GetScore(key);
         }
 
 
@@ -526,7 +569,7 @@ namespace Trading.UI.Wpf.ViewModels
         /// <summary>
         /// Die Holdings zum jeweiligen Handelstag
         /// </summary>
-        public IEnumerable<TransactionViewModel> Holdings
+        public ObservableCollection<TransactionViewModel> Holdings
         {
             get => _holdings;
             set

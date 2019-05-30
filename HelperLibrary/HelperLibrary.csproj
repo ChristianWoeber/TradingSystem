@@ -69,6 +69,7 @@
     <Compile Include="Collections\PriceHistoryCollection.cs" />
     <Compile Include="Database\CallCmd.cs" />
     <Compile Include="Database\Models\PortfolioValue.cs" />
+    <Compile Include="Database\Models\ScoringTraceModel.cs" />
     <Compile Include="Database\Models\TradingRecord.cs" />
     <Compile Include="Database\Models\Transaction.cs" />
     <Compile Include="Calculations\CalculationHandler.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\ExpressionExtensions.cs" />
     <Compile Include="Extensions\PropertyInfoExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Interfaces\ICalculation.cs" />
@@ -139,6 +141,7 @@
     <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceProvider.cs" />
     <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceRulesService.cs" />
     <Compile Include="Trading\PortfolioManager\Settings\Record.cs" />
+    <Compile Include="Trading\PortfolioManager\Settings\StopLossMeta.cs" />
     <Compile Include="Trading\PortfolioManager\Transactions\TransactionCalculationHandler.cs" />
     <Compile Include="Trading\PortfolioManager\Transactions\TransactionsHandler.cs" />
     <Compile Include="Trading\Scoring\ScoringResult.cs" />

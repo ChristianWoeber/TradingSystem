@@ -1,12 +1,13 @@
 ﻿using System;
 using HelperLibrary.Util.Atrributes;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager.Cash
 {
     /// <summary>
     /// Hilfsklasse zum Ausgeben und Loggen das Cashs
     /// </summary>
-    public class CashMetaInfo
+    public class CashMetaInfo: IInputMappable
     {
         public CashMetaInfo()
         {

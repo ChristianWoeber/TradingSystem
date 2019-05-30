@@ -95,8 +95,8 @@ namespace HelperLibrary.Trading
                 if (score <= 1)
                     return score;
 
-                if (AbsoluteGainAndLossMetaInfo == null)
-                    return 0;
+                //if (AbsoluteGainAndLossMetaInfo == null)
+                //    return 0;
                 //fall wenn bei der Vola ein schrott rauskommt
                 if (score > 200)
                     score = -1;

@@ -36,5 +36,16 @@ namespace TradingSystemTests.Models
             if (_showInFile)
                 Process.Start(TempPath);
         }
+
+        /// <summary>
+        /// Methode um den Rebalance Score, swoie den Performance Score zu speichern und zu tracen
+        /// </summary>
+        /// <param name="portfolioManagerTemporaryCandidates"></param>
+        /// <param name="portfolioManagerTemporaryPortfolio"></param>
+        public void SaveScoring(Dictionary<int, ITradingCandidate> portfolioManagerTemporaryCandidates,
+            ITemporaryPortfolio portfolioManagerTemporaryPortfolio)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

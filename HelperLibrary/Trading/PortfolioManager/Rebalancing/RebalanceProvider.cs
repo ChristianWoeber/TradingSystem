@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using HelperLibrary.Database.Models;
+using HelperLibrary.Parsing;
 using HelperLibrary.Util.Converter;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -65,6 +68,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
             //die Rebalance Rules anwenden
             //Hier den Rebalance Score berechnen
             RebalanceScoringProvider.ApplyRules(mergedCandidates);
+
+            //Testweise zum Tracen der Scores
+            SimpleTextParser.AppendToFile(RebalanceScoringProvider.RebalanceCollection.Select(x => new ScoringTraceModel(x, _adjustmentProvider.PortfolioAsof)),
+                Path.Combine(_settings.LoggingPath, nameof(ScoringTraceModel) + ".csv"));
+
 
             //Gibt mir an ob ich überhaupt rebalancen muss
             if (!RebalanceScoringProvider.RebalanceCollection.NeedsRebalancing)

@@ -21,7 +21,7 @@
                     </arts:SmartFlyoutItem.FlyoutContent>
                 </arts:SmartFlyoutItem>
 
-                <arts:SmartFlyoutItem HeaderText="Holdings" TextAppearance="Header2"  HeaderTextForeground="White" Width="870">
+                <arts:SmartFlyoutItem HeaderText="Holdings" TextAppearance="Header2"  HeaderTextForeground="White" Width="950">
                     <arts:SmartFlyoutItem.FlyoutContent>
                         <controls:CurrentHoldingsControl />
                     </arts:SmartFlyoutItem.FlyoutContent>

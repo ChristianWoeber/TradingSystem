@@ -6,11 +6,11 @@ using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Database.Models
 {
-    public class PortfolioValuation : IPortfolioValuation
+    public class PortfolioValuation : IPortfolioValuation, IInputMappable
     {
         public PortfolioValuation()
         {
-            
+
         }
 
         public PortfolioValuation(IPortfolioValuation portfolioValuation)
@@ -23,7 +23,7 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Der primary Key des Tables - Das Datum des Portfolios
         /// </summary>
-        [InputMapping(KeyWords = new[] {  nameof(PortfolioAsof) }, SortIndex = 1)]
+        [InputMapping(KeyWords = new[] { nameof(PortfolioAsof) }, SortIndex = 1)]
         [Column(Storage = "PORTFOLIO_ASOF")]
         public DateTime PortfolioAsof { get; set; }
 

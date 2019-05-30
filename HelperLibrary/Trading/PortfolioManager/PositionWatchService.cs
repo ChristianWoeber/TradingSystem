@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using HelperLibrary.Calculations;
 using HelperLibrary.Trading.PortfolioManager.Settings;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -11,6 +13,10 @@ namespace HelperLibrary.Trading.PortfolioManager
         private readonly Dictionary<int, StopLossMeta> _limitDictionary = new Dictionary<int, StopLossMeta>();
         private readonly Dictionary<int, DateTime> _lastStopsDictionary = new Dictionary<int, DateTime>();
         private readonly IStopLossSettings _stopLossSettings;
+        /// <summary>
+        /// die Sorted List, die die Performance Kandidaten descending stored
+        /// </summary>
+        private Dictionary<int, decimal> _performanceDictionary = new Dictionary<int, decimal>();
 
         public PositionWatchService(IStopLossSettings stopLossSettings)
         {
@@ -30,7 +36,8 @@ namespace HelperLibrary.Trading.PortfolioManager
             if (!_limitDictionary.TryGetValue(candidate.Record.SecurityId, out var stopLossMeta))
                 throw new ArgumentException("An dieser Stelle muss es ein Limit geben");
 
-            if (((TradingCandidate)candidate).SecurityId == 413740 && candidate.PortfolioAsof >= new DateTime(2015, 01, 20))
+            if (((TradingCandidate)candidate).SecurityId == 413740 &&
+                candidate.PortfolioAsof >= new DateTime(2015, 01, 20))
             {
 
             }
@@ -43,7 +50,9 @@ namespace HelperLibrary.Trading.PortfolioManager
                 return false;
 
             //wenn der letzte verkauf kürzer als 7 Tage her ist verkaufe ich nicht nochmal (StopLock Periode)
-            if (candidate.LastTransaction?.Shares < 0 && candidate.LastTransaction?.TransactionDateTime.AddDays(_stopLossSettings.MinimumStopHoldingPeriodeInDays) > candidate.PortfolioAsof)
+            if (candidate.LastTransaction?.Shares < 0 &&
+                candidate.LastTransaction?.TransactionDateTime.AddDays(
+                    _stopLossSettings.MinimumStopHoldingPeriodeInDays) > candidate.PortfolioAsof)
                 return false;
 
             //die Jahres vola
@@ -80,15 +89,18 @@ namespace HelperLibrary.Trading.PortfolioManager
             //der Rückgabewert
             //wenn der aktuelle Preis <= ist dem letzten High abzüglich der Vola stopp ich
             //wenn der aktuelle Preis kleiner als der average Preis ist sprich ich im minus bin mit der Position abzüglichn der Volatilität
-            if (currentPrice < stopLossMeta.Opening.Price * (1 - 6 * sigma) && currentPrice < candidate.AveragePrice * (1 - 2 * sigma))
+            if (currentPrice < stopLossMeta.Opening.Price * (1 - 4 * sigma) &&
+                currentPrice < candidate.AveragePrice * (1 - 2 * sigma))
             {
                 hasStop = true;
             }
-            else if (currentPrice <= stopLossMeta.High.Price * (1 - 6 * sigma) && currentPrice < candidate.AveragePrice * (1 - 2 * sigma))
+            else if (currentPrice <= stopLossMeta.High.Price * (1 - 4 * sigma) &&
+                     currentPrice < candidate.AveragePrice * (1 - 2 * sigma))
             {
                 hasStop = true;
             }
-            else if (currentPrice < stopLossMeta.PreviousLow.Price * (1 - 6 * sigma) && stopLossMeta.Opening.Asof != stopLossMeta.PreviousLow.Asof)
+            else if (currentPrice < stopLossMeta.PreviousLow.Price * (1 - 4 * sigma) &&
+                     stopLossMeta.Opening.Asof != stopLossMeta.PreviousLow.Asof)
             {
                 hasStop = true;
             }
@@ -116,16 +128,16 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// Die Methode berechnet die Limits auf täglicher basis
         /// </summary>
-        /// <param name="transactionItem"></param>
+        /// <param name="transaction"></param>
         /// <param name="price"></param>
         /// <param name="asof"></param>
-        public void UpdateDailyLimits(ITransaction transactionItem, decimal? price, DateTime asof)
+        public void UpdateDailyLimits(ITransaction transaction, decimal? price, DateTime asof)
         {
             if (price == null)
                 throw new ArgumentException("Achtung der Preis darf nicht null sein!");
 
-            if (!_limitDictionary.TryGetValue(transactionItem.SecurityId, out var stopLossMeta))
-                _limitDictionary.Add(transactionItem.SecurityId, new StopLossMeta(price.Value, asof));
+            if (!_limitDictionary.TryGetValue(transaction.SecurityId, out var stopLossMeta))
+                _limitDictionary.Add(transaction.SecurityId, new StopLossMeta(price.Value, asof));
             else
             {
                 //dann gibt es ein neues High von dem aus ich die Stop Loss Grenze berechne
@@ -135,12 +147,12 @@ namespace HelperLibrary.Trading.PortfolioManager
                     //Komm hier nur einmal in der Phase des Highs hin
                     if (stopLossMeta.LocalLow.Asof != stopLossMeta.High.Asof)
                     {
-                        _limitDictionary[transactionItem.SecurityId].UpdatePreviousLow(stopLossMeta.LocalLow);
+                        _limitDictionary[transaction.SecurityId].UpdatePreviousLow(stopLossMeta.LocalLow);
                     }
 
                     //ich ziehe an dieser Stelle immer die das local high und das High nach
-                    _limitDictionary[transactionItem.SecurityId].UpdateHigh(price, asof);
-                    _limitDictionary[transactionItem.SecurityId].UpdateLocalLow(price, asof);
+                    _limitDictionary[transaction.SecurityId].UpdateHigh(price, asof);
+                    _limitDictionary[transaction.SecurityId].UpdateLocalLow(price, asof);
                 }
                 else
                 {
@@ -149,29 +161,54 @@ namespace HelperLibrary.Trading.PortfolioManager
                     if (price < stopLossMeta.LocalLow.Price)
                     {
                         //ziehe immer das lowest High nach
-                        _limitDictionary[transactionItem.SecurityId].UpdateLocalLow(price, asof);
+                        _limitDictionary[transaction.SecurityId].UpdateLocalLow(price, asof);
                     }
                 }
             }
+
+            if (!_performanceDictionary.TryGetValue(transaction.SecurityId, out var performanceValue))
+                _performanceDictionary.Add(transaction.SecurityId, CalculatePerformance());
+            else
+            {
+                _performanceDictionary[transaction.SecurityId] = CalculatePerformance();
+            }
+
+            decimal CalculatePerformance()
+            {
+                if (stopLossMeta == null)
+                    stopLossMeta = _limitDictionary[transaction.SecurityId];
+
+                if (stopLossMeta.Opening.Asof == asof)
+                    return 0;
+
+                return (decimal)(price / stopLossMeta.Opening.Price - 1);
+            }
         }
+
+
+
 
         /// <summary>
         /// Die bekommt die transaktion und entscheidet auf Basis des Transaktionstypen ob sie hinzugefügt oder geadded wird
         /// </summary>
-        /// <param name="transactionItem"></param>
-        public void AddOrRemoveDailyLimit(ITransaction transactionItem)
+        /// <param name="transaction"></param>
+        public void AddOrRemoveDailyLimit(ITransaction transaction)
         {
             //ich füge hier nur neue ein, bzw. remove bestehende Elemente
-            switch (transactionItem.TransactionType)
+            switch (transaction.TransactionType)
             {
                 case TransactionType.Open:
                     {
-                        if (!_limitDictionary.ContainsKey(transactionItem.SecurityId))
-                            _limitDictionary.Add(transactionItem.SecurityId, new StopLossMeta(transactionItem.EffectiveAmountEur / transactionItem.Shares, transactionItem.TransactionDateTime));
+                        if (!_limitDictionary.ContainsKey(transaction.SecurityId))
+                            _limitDictionary.Add(transaction.SecurityId,
+                                new StopLossMeta(transaction.EffectiveAmountEur / transaction.Shares,
+                                    transaction.TransactionDateTime));
                         break;
                     }
+
                 case TransactionType.Close:
-                    _limitDictionary.Remove(transactionItem.SecurityId);
+                    _limitDictionary.Remove(transaction.SecurityId);
+                    _performanceDictionary.Remove(transaction.SecurityId);
                     break;
             }
         }
@@ -203,6 +240,52 @@ namespace HelperLibrary.Trading.PortfolioManager
         public IStopLossMeta GetStopLossMeta(ITradingCandidate candidate)
         {
             return _limitDictionary.TryGetValue(candidate.Record.SecurityId, out var metaInfo) ? metaInfo : null;
+        }
+
+
+
+        /// <summary>
+        /// Methode um die Performance aller holdings mit zu tracen und auch in den Rebalacne score einfließen zu lassen
+        /// </summary>
+        /// <param name="currentPosition">die aktuelle Postion</param>
+        /// <param name="price">der Preis</param>
+        /// <param name="asof">und das Portfolio Datum</param>
+        public void UpdatePerformance(ITransaction currentPosition, decimal? price, DateTime asof)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// gibt on ob die aktuelle Positon zu den Top 5 der aktuell performancestärksten Positionen zählt
+        /// </summary>
+        /// <param name="securityId">die SecurityId</param>
+        /// <param name="count">der count</param>
+        /// <returns></returns>
+        public bool IsUnderTopPositions(int securityId, int count = 5)
+        {
+            if (!_performanceDictionary.TryGetValue(securityId, out var perValue))
+                throw new ArgumentException($"Achtung zu der SecurityId {securityId} konnte keine Performance gefunden werden");
+
+            var index = _performanceDictionary.Values.ToList().IndexOf(perValue);
+            return index <= count - 1;
+        }
+
+        /// <summary>
+        /// Sortiert das Performacne Dictionary
+        /// </summary>
+        public void CreateSortedPerformanceDictionary()
+        {
+            _performanceDictionary = _performanceDictionary.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
+        /// gibt die Performance des Underlyings zurück
+        /// </summary>
+        /// <param name="securityId">der Security id</param>
+        /// <returns></returns>
+        public decimal? GetUnderlyingPerformance(int securityId)
+        {
+            return _performanceDictionary.TryGetValue(securityId, out var performanceValue) ? performanceValue : 0;
         }
     }
 }

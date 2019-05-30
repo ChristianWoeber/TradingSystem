@@ -46,6 +46,9 @@ namespace HelperLibrary.Trading
             if (IsInvested)
                 CurrentPosition = transactionsHandler.CurrentPortfolio[SecurityId];
 
+            PerformanceUnderlying = _adjustmentProvider.PositionWatcher.GetUnderlyingPerformance(SecurityId);
+
+
         }
 
         /// <summary>
@@ -131,21 +134,31 @@ namespace HelperLibrary.Trading
         /// </summary>
         public decimal Performance => 1 - AveragePrice / Record.AdjustedPrice;
 
-        ////gibt an ob der aktuelle Score höher ist als der letzte
-        //// muss mindestens 25% besser sein und es darf aktuell kein Stop ausgelöst worden sein
-        ////TODO: PositionWatcher hier verwenden!
-        public bool HasBetterScoring
+        /// <summary>
+        /// Die Totale Performance des UNderlyings seit Eröffnung
+        /// </summary>
+        public decimal? PerformanceUnderlying { get; }
+
+
+        /// <summary>
+        /// Gibt on ob ich die aktuelle Position erhöhen darf
+        /// </summary>
+        public bool CanBeIncremented
         {
             get
             {
+                //gibt an ob sich die Position unter den Top 5 Performern, gemessen am Total Return des Position, befindet
+                var isUnderTopPositions = _adjustmentProvider.PositionWatcher.IsUnderTopPositions(SecurityId);
                 var meta = _adjustmentProvider.PositionWatcher.GetStopLossMeta(this);
-                if (Record.AdjustedPrice >= meta.High.Price)
+                if (Record.AdjustedPrice >= meta.High.Price && isUnderTopPositions)
                     return true;
                 return false;
-                //return ScoringResult.Score * new decimal(1.25) > LastScoringResult?.Score && !IsBelowStopp;
             }
         }
 
+        /// <summary>
+        /// Gibt die Info zur StopLoss Meta nach aussen
+        /// </summary>
         public IStopLossMeta StopLossMeta => _adjustmentProvider.PositionWatcher.GetStopLossMeta(this);
 
         /// <summary>

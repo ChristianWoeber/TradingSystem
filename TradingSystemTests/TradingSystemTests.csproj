@@ -84,6 +84,7 @@
     <Compile Include="TestCases\ScoringTests.cs" />
     <Compile Include="TestCases\StoppLossServiceTests.cs" />
     <Compile Include="TestCases\TestTradingCandidate.cs" />
+    <Compile Include="TestCases\TextParserTests.cs" />
     <Compile Include="TestCases\TransactionsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

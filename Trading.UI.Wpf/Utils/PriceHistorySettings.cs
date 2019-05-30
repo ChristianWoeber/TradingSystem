@@ -8,7 +8,8 @@ namespace Trading.UI.Wpf.Utils
         {
             MovingAverageLengthInDays = movingAverageLengthInDays;
             MovingDaysVolatility = movingDaysVolatility;
-            MovingDaysAbsoluteLossesGains = movingDaysAbsoluteLosses;
+            //deaktiviert da sehr performance intensiv, werden aktuell auch nicht benötigt
+            MovingDaysAbsoluteLossesGains = 0;
         }
 
         /// <summary>

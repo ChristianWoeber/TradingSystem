@@ -21,5 +21,7 @@
         /// Das High seit Eröffnung
         /// </summary>
         IPriceRecord High { get; }
+
+
     }
 }

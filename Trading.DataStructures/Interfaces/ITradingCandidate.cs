@@ -100,5 +100,10 @@ namespace Trading.DataStructures.Interfaces
         /// die StopLossMetainfo zum Kandiodaten
         /// </summary>
         IStopLossMeta StopLossMeta { get; }
+
+        /// <summary>
+        /// Die Totale Performance der Position
+        /// </summary>
+        decimal? PerformanceUnderlying { get; }
     }
 }

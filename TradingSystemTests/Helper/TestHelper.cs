@@ -42,7 +42,7 @@ namespace TradingSystemTests.Helper
             return name;
         }
 
-        public static IEnumerable<T> CreateTestCollection<T>(string filename)
+        public static IEnumerable<T> CreateTestCollection<T>(string filename) where T : class
         {
             var data = (string)Resource.ResourceManager.GetObject(Path.GetFileNameWithoutExtension(NormalizeName(filename)) ?? throw new InvalidOperationException("Achtung kein File gefunden !! -- FileName:" + filename));
 

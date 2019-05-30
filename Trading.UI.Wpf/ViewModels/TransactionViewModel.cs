@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using HelperLibrary.Database.Models;
 using JetBrains.Annotations;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
+using Trading.UI.Wpf.Models;
 
 namespace Trading.UI.Wpf.ViewModels
 {
@@ -13,6 +15,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         private readonly ITransaction _transaction;
         private bool _isNew;
+        private bool _isStop;
 
         #endregion
 
@@ -22,6 +25,12 @@ namespace Trading.UI.Wpf.ViewModels
         {
             _transaction = transaction;
             ScoringResult = scoringResult;
+        }
+
+        public TransactionViewModel(ITransaction transaction, ScoringTraceModel scoringResult)
+        {
+            _transaction = transaction;
+            ScoringTraceResult = scoringResult;
         }
 
         public TransactionViewModel(ITransaction transaction, IScoringResult scoringResult, bool isStop)
@@ -37,8 +46,11 @@ namespace Trading.UI.Wpf.ViewModels
         #region OneWay Properties
 
         public IScoringResult ScoringResult { get; }
+
+        public ScoringTraceModel ScoringTraceResult { get; }
+
         public int SecurityId => _transaction.SecurityId;
-        public TransactionType Type => (TransactionType)_transaction.TransactionType;
+        public TransactionType Type => _transaction.TransactionType;
         public decimal EffectiveAmountEur => _transaction.EffectiveAmountEur;
         public decimal TargetWeight => _transaction.TargetWeight;
         public DateTime TransactionDateTime => _transaction.TransactionDateTime;
@@ -65,9 +77,19 @@ namespace Trading.UI.Wpf.ViewModels
 
         public bool IsBuy => _transaction.Shares > 0;
 
-        public  bool IsStop { get;  }
-    
-        public decimal? Score => ScoringResult?.Score;
+        public bool IsStop
+        {
+            get => _isStop;
+            set
+            {
+                if (value == _isStop)
+                    return;
+                _isStop = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public decimal? Score => ScoringResult?.Score ?? ScoringTraceResult.PerformanceScore;
 
         #endregion
 

@@ -9,36 +9,10 @@ using System;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Enums;
 using HelperLibrary.Extensions;
+using JetBrains.Annotations;
 
 namespace HelperLibrary.Collections
 {
-
-    ///// <summary>
-    ///// Hilfsklasse die den YahooDataRecord beliebig erweitert
-    ///// </summary>
-    //public class PriceHistoryItem
-    //{
-    //    /// <summary>
-    //    /// Standard Konstruktor
-    //    /// </summary>
-    //    /// <param name="dbRecord">der Db Record</param>
-    //    public PriceHistoryItem(TradingRecord dbRecord)
-    //    {
-    //        DbRecord = dbRecord;
-    //    }
-
-    //    /// <summary>
-    //    /// Die tägliche Veränderung des Prices für das PriceDate 20.01.2016 bspw ist es die Veränderung von 19.01 auf 20.01 und hat als DateTime den 20.01
-    //    /// </summary>
-    //    public decimal DailyReturn { get; set; }
-
-    //    /// <summary>
-    //    /// Der Deb Record der Im Konstruktor injected wird
-    //    /// </summary>
-    //    public TradingRecord DbRecord { get; private set; }
-    //}
-
-
 
     /// <summary>
     /// Price History Collection - Enthält Berechnungen zur PriceHistory und gibt die Items zurück
@@ -84,7 +58,7 @@ namespace HelperLibrary.Collections
         /// <param name="tradingRecords">die records</param>
         /// <param name="settings">die Einstellungen zur Collection</param>
         /// <returns></returns>
-        public static IPriceHistoryCollection Create(IEnumerable<ITradingRecord> tradingRecords, IPriceHistoryCollectionSettings settings = null)
+        public static IPriceHistoryCollection Create([NotNull]IEnumerable<ITradingRecord> tradingRecords, IPriceHistoryCollectionSettings settings = null)
         {
             return new PriceHistoryCollection(tradingRecords, settings);
         }
