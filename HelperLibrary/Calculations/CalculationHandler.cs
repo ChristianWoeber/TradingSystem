@@ -23,7 +23,7 @@ namespace HelperLibrary.Calculations
             _calc = calc;
         }
 
-        public decimal CalcAverageReturn(ITradingRecord from, ITradingRecord to, CaclulationOption option)
+        public decimal CalcAverageReturn(ITradingRecord from, ITradingRecord to, CalculationOption option= CalculationOption.Adjusted)
         {
             // Wenn einer der beiden Werte null ist gebe ich -1 zurück
             if (from == null || to == null)
@@ -36,7 +36,7 @@ namespace HelperLibrary.Calculations
             return (decimal)Math.Pow(1 + (double)CalcAbsoluteReturn(from, to, option), 1 / GetYears(from.Asof, to.Asof)) - 1;
         }
 
-        public decimal CalcAverageReturnMonthly(ITradingRecord from, ITradingRecord to, CaclulationOption option)
+        public decimal CalcAverageReturnMonthly(ITradingRecord from, ITradingRecord to, CalculationOption option)
         {
             // Wenn einer der beiden Werte null ist gebe ich -1 zurück
             if (from == null || to == null)
@@ -58,7 +58,7 @@ namespace HelperLibrary.Calculations
             return (double)(to - from).Days / 30;
         }
 
-        public decimal CalcAbsoluteReturn(ITradingRecord from, ITradingRecord to, CaclulationOption option = CaclulationOption.Adjusted)
+        public decimal CalcAbsoluteReturn(ITradingRecord from, ITradingRecord to, CalculationOption option = CalculationOption.Adjusted)
         {
             // Wenn einer der beiden Werte null ist gebe ich -1 zurück
             if (from == null || to == null)
@@ -68,9 +68,9 @@ namespace HelperLibrary.Calculations
             {
                 switch (option)
                 {
-                    case CaclulationOption.Adjusted:
+                    case CalculationOption.Adjusted:
                         return to.AdjustedPrice / from.AdjustedPrice - 1;
-                    case CaclulationOption.NonAdjusted:
+                    case CalculationOption.NonAdjusted:
                         return to.Price / from.Price - 1;
                     default:
                         return decimal.MinusOne;
@@ -84,7 +84,7 @@ namespace HelperLibrary.Calculations
 
         }
 
-        public bool ScanRange(IEnumerable<ITradingRecord> priceHistoryRange, CaclulationOption opt = CaclulationOption.Adjusted)
+        public bool ScanRange(IEnumerable<ITradingRecord> priceHistoryRange, CalculationOption opt = CalculationOption.Adjusted)
         {
             var range = priceHistoryRange.ToList();
             var countDays = range.Count;
@@ -103,7 +103,7 @@ namespace HelperLibrary.Calculations
             return ((double)positiveCount / (double)countDays) >= 0.4;
         }
 
-        public bool ScanRangeNoLow(IEnumerable<ITradingRecord> priceHistoryRange, decimal vola, CaclulationOption opt = CaclulationOption.Adjusted)
+        public bool ScanRangeNoLow(IEnumerable<ITradingRecord> priceHistoryRange, decimal vola, CalculationOption opt = CalculationOption.Adjusted)
         {
             var range = priceHistoryRange.ToList();
 
@@ -124,21 +124,21 @@ namespace HelperLibrary.Calculations
 
 
 
-        public decimal CalcMaxDrawdown(IEnumerable<ITradingRecord> priceHistoryRange, CaclulationOption opt)
+        public decimal CalcMaxDrawdown(IEnumerable<ITradingRecord> priceHistoryRange, CalculationOption opt)
         {
             var drawdown = new MaxDrawdown(priceHistoryRange, opt, CalcAbsoluteReturn);
             var item = drawdown.Calculate();
             return item?.Drawdown ?? decimal.Zero;
         }
 
-        public DrawdownItem CalcMaxDrawdownItem(IEnumerable<ITradingRecord> priceHistoryRange, CaclulationOption opt)
+        public DrawdownItem CalcMaxDrawdownItem(IEnumerable<ITradingRecord> priceHistoryRange, CalculationOption opt)
         {
             var drawdown = new MaxDrawdown(priceHistoryRange, opt, CalcAbsoluteReturn);
             var item = drawdown.Calculate();
             return item;
         }
 
-        public decimal CalcVolatility(PriceHistoryCollection priceHistory, CaclulationOption opt)
+        public decimal CalcVolatility(PriceHistoryCollection priceHistory, CalculationOption opt)
         {
             var averageReturn = CalcAverageReturn(priceHistory.FirstItem, priceHistory.LastItem, opt);
             var items = priceHistory.EnumMonthlyUltimoItems().ToList();
@@ -158,7 +158,7 @@ namespace HelperLibrary.Calculations
             return (decimal)Math.Sqrt(variance / (items.Count - 1));
         }
 
-        public decimal CalcVolatility(IEnumerable<decimal> returns, CaclulationOption opt)
+        public decimal CalcVolatility(IEnumerable<decimal> returns, CalculationOption opt)
         {
             var variance = 0d;
             decimal averageReturn = 0;

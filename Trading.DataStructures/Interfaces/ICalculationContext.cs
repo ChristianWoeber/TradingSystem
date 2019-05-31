@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Trading.DataStructures.Enums;
 
 namespace Trading.DataStructures.Interfaces
@@ -14,7 +15,7 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="option"></param>
         /// <param name="priceHistoryOption"></param>
         /// <returns></returns>
-        decimal GetAbsoluteReturn(DateTime from, DateTime? to = null, CaclulationOption? option = null, PriceHistoryOption priceHistoryOption = PriceHistoryOption.PreviousItem);
+        decimal GetAbsoluteReturn(DateTime from, DateTime? to = null, CalculationOption? option = null, PriceHistoryOption priceHistoryOption = PriceHistoryOption.PreviousItem);
 
         /// <summary>
         /// Versucht den daily Return zu dem Zeitpunkt zurückzugeben
@@ -31,9 +32,9 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="to"></param>
         /// <param name="option"></param>
         /// <returns></returns>
-        decimal GetAverageReturn(DateTime from, DateTime? to = null, CaclulationOption? option = null);
+        decimal GetAverageReturn(DateTime from, DateTime? to = null, CalculationOption? option = null);
 
-        decimal GetAverageReturnMonthly(DateTime from, DateTime? to = null, CaclulationOption? option = null);
+        decimal GetAverageReturnMonthly(DateTime from, DateTime? to = null, CalculationOption? option = null);
 
         /// <summary>
         /// Berechnet den MaxDrawdown
@@ -42,7 +43,7 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="to"></param>
         /// <param name="option"></param>
         /// <returns></returns>
-        decimal GetMaximumDrawdown(DateTime? from = null, DateTime? to = null, CaclulationOption? option = null);
+        decimal GetMaximumDrawdown(DateTime? from = null, DateTime? to = null, CalculationOption? option = null);
 
         /// <summary>
         /// Berechnet die monatliche Volatitlität
@@ -52,7 +53,7 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="opt"></param>
         /// <param name="priceHistoryOption"></param>
         /// <returns></returns>
-        decimal GetVolatilityMonthly(DateTime? from, DateTime? to = null, CaclulationOption? opt = null, PriceHistoryOption priceHistoryOption = PriceHistoryOption.PreviousItem);
+        decimal GetVolatilityMonthly(DateTime? from, DateTime? to = null, CalculationOption? opt = null, PriceHistoryOption priceHistoryOption = PriceHistoryOption.PreviousItem);
 
         /// <summary>
         /// Enumeriert die täglichen Returns, nur die Werte ohne Datum
@@ -108,5 +109,17 @@ namespace Trading.DataStructures.Interfaces
         /// <returns></returns>
         bool TryGetLastAbsoluteLossAndGain(DateTime currentDate, out IAbsoluteLossesAndGainsMetaInfo info);
 
+        /// <summary>
+        /// Der Task berechnet die Rollierenden Ergebnisse auf Basis der PriceHistoryCollection
+        /// </summary>
+        /// <param name="periodesInYears">die perioden in Yahren die berechnet werden sollen</param>
+        /// <returns></returns>
+        Task CreateRollingPeriodeResultsTask(params int[] periodesInYears);
+
+        /// <summary>
+        /// Enumeriert alle verfügbaren ergebnisse zu den Rollierenden Perioden <see cref="CreateRollingPeriodeResultsTask"/>
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<IEnumerable<IHistogrammCollection>> EnumHistogrammClasses();
     }
 }

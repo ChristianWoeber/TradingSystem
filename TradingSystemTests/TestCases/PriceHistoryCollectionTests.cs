@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using HelperLibrary.Collections;
@@ -28,6 +29,31 @@ namespace TradingSystemTests.TestCases
             Assert.IsTrue(_history != null, "Achtung die Collection ist null");
             Assert.IsTrue(_history.Count > 100, "Achtung es konnten nicht alle daten geladen werden");
         }
+
+        [TestCase("AdidasHistory.txt", 3, 5, 10, 15)]
+        public void CalculateRollingPeriodsPriceHistoryTest(string fileName, params int[] periodesInYears)
+        {
+            var data = CreateTestCollecton(fileName);
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data);
+
+            _history.Calc.CreateRollingPeriodeResultsTask(periodesInYears).Wait();
+
+            var histogramms = _history.Calc.EnumHistogrammClasses().ToList();
+
+            foreach (var histogramm in histogramms)
+            {
+                foreach (var result in histogramm)
+                {
+                    Trace.TraceInformation($"Für das {result.PeriodeInYears} Jahres-Fenster lagen {result.RelativeFrequency:p2} " +
+                                           $"der Daten im Bereich von {result.Minimum.Performance:p2} und {result.Maximum.Performance:p2}");
+                }
+            }
+
+            Assert.IsTrue(histogramms.Count > 0);
+            Assert.IsTrue(_history != null, "Achtung die Collection ist null");
+            Assert.IsTrue(_history.Count > 100, "Achtung es konnten nicht alle daten geladen werden");
+        }
+
 
         [TestCase("AdidasHistory.txt", "17.11.1995", "08.03.2018")]
         public void TestFirstAndLastItem(string filename, string firstDate, string currentDate)
@@ -139,7 +165,7 @@ namespace TradingSystemTests.TestCases
                 Assert.IsTrue(itm.Asof.IsBusinessDayUltimo() || itm.Asof.IsUltimo());
         }
 
-        [TestCase("MICROCHIP_TECHNOLOGY.csv","01.10.2001")]
+        [TestCase("MICROCHIP_TECHNOLOGY.csv", "01.10.2001")]
         [TestCase("NVIDIA.csv", "01.10.2001")]
         [TestCase("AdidasHistory.txt", "21.11.2008")]
         public void CreatePriceHistoryWithCalculationSettingsTest(string fileName, string dateString)

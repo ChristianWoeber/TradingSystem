@@ -166,7 +166,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 }
             }
 
-            if (!_performanceDictionary.TryGetValue(transaction.SecurityId, out var performanceValue))
+            if (!_performanceDictionary.TryGetValue(transaction.SecurityId, out _))
                 _performanceDictionary.Add(transaction.SecurityId, CalculatePerformance());
             else
             {

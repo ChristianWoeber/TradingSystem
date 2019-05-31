@@ -55,7 +55,9 @@
     <Compile Include="Interfaces\ICashManager.cs" />
     <Compile Include="Interfaces\IDailyReturnMetaInfo.cs" />
     <Compile Include="Interfaces\IExposureReceiver.cs" />
+    <Compile Include="Interfaces\IHistogrammCollection.cs" />
     <Compile Include="Interfaces\ILowMetaInfo.cs" />
+    <Compile Include="Interfaces\IPeriodeResult.cs" />
     <Compile Include="Interfaces\IPositionWatchService.cs" />
     <Compile Include="Interfaces\IPriceHistoryCollectionSettings.cs" />
     <Compile Include="Interfaces\IPortfolioValuation.cs" />

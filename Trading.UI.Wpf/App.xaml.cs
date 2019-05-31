@@ -24,7 +24,7 @@ namespace Trading.UI.Wpf
             Globals.TransactionsDirectory = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/Transactions"));
             Globals.PortfolioValuationDirectory = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/PortfolioValue"));
 
-            Globals.IsTestMode = true;
+            Globals.IsTestMode = false;
 
             //scoring provider erstellen
             var scoringProvider = new ScoringProvider(BootStrapperFactory.CreatePriceHistoryFromSingleFiles(Globals.PriceHistoryDirectory));

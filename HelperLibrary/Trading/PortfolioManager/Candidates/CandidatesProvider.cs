@@ -27,7 +27,7 @@ namespace HelperLibrary.Trading
             {
                 if (priceHistory == null)
                 {
-                    continue;
+                    throw new ArgumentException("PriceHistory darf nicht null sein! ");
                 }
 
                 //den Score rechnen

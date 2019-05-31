@@ -62,10 +62,12 @@
     <Compile Include="Calculations\AbsoluteLossesAndGainsMetaInfo.cs" />
     <Compile Include="Calculations\CalculationContext.cs" />
     <Compile Include="Calculations\CalculationContext.LastItemDictionaryBase.cs" />
+    <Compile Include="Calculations\DailyReturnMetaInfo.cs" />
     <Compile Include="Calculations\DrawdownItem.cs" />
     <Compile Include="Calculations\LowMetaInfo.cs" />
     <Compile Include="Calculations\MaxDrawdown.cs" />
     <Compile Include="Calculations\MovingVolaMetaInfo.cs" />
+    <Compile Include="Calculations\PeriodeResult.cs" />
     <Compile Include="Collections\PriceHistoryCollection.cs" />
     <Compile Include="Database\CallCmd.cs" />
     <Compile Include="Database\Models\PortfolioValue.cs" />

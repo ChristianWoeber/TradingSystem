@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows.Forms;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Parsing;
-using HelperLibrary.Util.Converter;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 

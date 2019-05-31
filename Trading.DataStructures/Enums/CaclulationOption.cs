@@ -1,6 +1,6 @@
 ﻿namespace Trading.DataStructures.Enums
 {
-    public enum CaclulationOption
+    public enum CalculationOption
     {
         Adjusted,
         NonAdjusted

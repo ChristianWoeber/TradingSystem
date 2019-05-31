@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -71,8 +72,53 @@ namespace Trading.UI.Wpf.ViewModels
             ShowSelectedPositionCommand = new RelayCommand(ShowNewSelectedPositionWindow);
             ShowSelectedCandidateCommand = new RelayCommand(ShowSelectedCandidateWindow);
             SaveBacktestCommand = new RelayCommand(OnSaveBacktest);
+            CalculateRollingPeriodsCommand = new RelayCommand(OnCalculateRollingPeriods);
         }
 
+        private async void OnCalculateRollingPeriods()
+        {
+            var fileDlg = new CommonOpenFileDialog()
+            {
+                DefaultDirectory = Settings.LoggingPath,
+                Filters = { new CommonFileDialogFilter("*.", "*.zip") }
+            };
+            var dlgResult = fileDlg.ShowDialog();
+            if (dlgResult != CommonFileDialogResult.Ok)
+                await Task.CompletedTask;
+
+            //unzippen
+            var filePath = UnZipToTempDirectory(fileDlg.FileName);
+
+
+            //das File aus dem Temp verzeichnis parsen und priceHistoryColleciion erstellen
+            var valuations =
+                 SimpleTextParser.GetListOfTypeFromFilePath<PortfolioValuation>(Path.Combine(filePath,
+                     "PortfolioValuations.csv"));
+            var priceHistory = (PriceHistoryCollection)PriceHistoryCollection.Create(valuations.Select(v =>
+               new TradingRecord
+               {
+                   AdjustedPrice = v.PortfolioValue,
+                   Asof = v.PortfolioAsof,
+                   Name = "NAV - Backtest",
+                   Price = v.PortfolioValue,
+                   SecurityId = -100
+               }));
+
+            if (priceHistory == null)
+                throw new ArgumentException($"Achtung das Datum darf nicht null sein, anscheinend keine Werte" +
+                                            $" in der PrichistoryCollection mit dem Pfad {filePath}");
+
+            await priceHistory.Calc.CreateRollingPeriodeResultsTask(3, 5, 10, 15);
+
+            foreach (var histogramm in priceHistory.Calc.EnumHistogrammClasses())
+            {
+                foreach (var result in histogramm)
+                {
+                    Trace.TraceInformation($"Für das {result.PeriodeInYears} Jahres-Fenster lagen {result.RelativeFrequency:p2} " +
+                                           $"der Daten im Bereich von {result.Minimum.PerformanceCompound:p2} und {result.Maximum.PerformanceCompound:p2}");
+                }
+            }
+        }
 
         private async void ShowSelectedCandidateWindow()
         {
@@ -150,6 +196,8 @@ namespace Trading.UI.Wpf.ViewModels
         #endregion
 
         #region Commands
+
+        public ICommand CalculateRollingPeriodsCommand { get; }
 
         public ICommand RunNewIndexBacktestCommand { get; }
 
@@ -359,6 +407,7 @@ namespace Trading.UI.Wpf.ViewModels
             var scoringTraces = SimpleTextParser.GetListOfTypeFromFilePath<ScoringTraceModel>(Path.Combine(Settings.LoggingPath, nameof(ScoringTraceModel) + ".csv"));
 
             //Repos initialisieren
+            ScoringRepository.Initialize(scoringTraces);
             TransactionsRepo.Initialize(transactions);
             StoppLossRepository.Initialize(stops);
             InitializeCashMovements(cashMovements);
@@ -723,6 +772,8 @@ namespace Trading.UI.Wpf.ViewModels
                 OnPropertyChanged();
             }
         }
+
+
 
         public event EventHandler<double> ProgressValueChanged;
         public event EventHandler<double> MaximumValueChanged;

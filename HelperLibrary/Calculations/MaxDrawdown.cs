@@ -9,17 +9,17 @@ namespace HelperLibrary.Calculations
 {
     internal class MaxDrawdown
     {
-        private CaclulationOption _opt;
+        private CalculationOption _opt;
         private IEnumerable<ITradingRecord> _priceHistoryRange;
-        private Func<ITradingRecord, ITradingRecord, CaclulationOption, decimal> _calcAbsoluteReturnFunc;
+        private Func<ITradingRecord, ITradingRecord, CalculationOption, decimal> _calcAbsoluteReturnFunc;
 
-        public MaxDrawdown(IEnumerable<ITradingRecord> priceHistoryRange, CaclulationOption opt)
+        public MaxDrawdown(IEnumerable<ITradingRecord> priceHistoryRange, CalculationOption opt)
         {
             _priceHistoryRange = priceHistoryRange;
             _opt = opt;
         }
 
-        public MaxDrawdown(IEnumerable<ITradingRecord> priceHistoryRange, CaclulationOption opt, Func<ITradingRecord, ITradingRecord, CaclulationOption, decimal> calcAbsoluteReturn) :
+        public MaxDrawdown(IEnumerable<ITradingRecord> priceHistoryRange, CalculationOption opt, Func<ITradingRecord, ITradingRecord, CalculationOption, decimal> calcAbsoluteReturn) :
             this(priceHistoryRange, opt)
         {
             _calcAbsoluteReturnFunc = calcAbsoluteReturn;
@@ -29,9 +29,9 @@ namespace HelperLibrary.Calculations
         {
             switch (_opt)
             {
-                case CaclulationOption.Adjusted:
+                case CalculationOption.Adjusted:
                     return CalculateMaxDrawDownAdjusted();
-                case CaclulationOption.NonAdjusted:
+                case CalculationOption.NonAdjusted:
                     return CalculateMaxDrawDownNonAdjusted();
                 default:
                     return null; ;

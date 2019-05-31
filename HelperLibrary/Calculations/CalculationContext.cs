@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using HelperLibrary.Collections;
 using HelperLibrary.Database.Models;
@@ -19,7 +21,7 @@ namespace HelperLibrary.Calculations
         #region Private Member
 
         private readonly PriceHistoryCollection _priceHistory;
-        private readonly CalculationHandler _handler;
+        private readonly CalculationHandler _calculationHandler;
         private decimal _arithmeticMean;
         private decimal _arithmeticMeanDailyReturns;
         private const int MAX_TRIES = 15;
@@ -70,7 +72,7 @@ namespace HelperLibrary.Calculations
         public CalculationContext(PriceHistoryCollection priceHistory)
         {
             _priceHistory = priceHistory;
-            _handler = new CalculationHandler();
+            _calculationHandler = new CalculationHandler();
         }
 
         #endregion
@@ -82,11 +84,11 @@ namespace HelperLibrary.Calculations
         public ITradingRecord FirstRecord => _priceHistory.FirstItem;
 
 
-        public decimal GetAbsoluteReturn(DateTime from, DateTime? to = null, CaclulationOption? option = null, PriceHistoryOption priceHistoryOption = PriceHistoryOption.PreviousItem)
+        public decimal GetAbsoluteReturn(DateTime from, DateTime? to = null, CalculationOption? option = null, PriceHistoryOption priceHistoryOption = PriceHistoryOption.PreviousItem)
         {
-            var opt = option ?? CaclulationOption.Adjusted;
+            var opt = option ?? CalculationOption.Adjusted;
             var isLast = to == null ? true : false;
-            return _handler.CalcAbsoluteReturn(_priceHistory.Get(from, priceHistoryOption), isLast ? _priceHistory.LastItem : _priceHistory.Get(to.Value, priceHistoryOption), opt);
+            return _calculationHandler.CalcAbsoluteReturn(_priceHistory.Get(from, priceHistoryOption), isLast ? _priceHistory.LastItem : _priceHistory.Get(to.Value, priceHistoryOption), opt);
         }
 
         public bool TryGetDailyReturn(DateTime asof, out IDailyReturnMetaInfo dailyReturnMetaInfo)
@@ -102,46 +104,46 @@ namespace HelperLibrary.Calculations
         }
 
 
-        public decimal GetAverageReturn(DateTime from, DateTime? to = null, CaclulationOption? option = null)
+        public decimal GetAverageReturn(DateTime from, DateTime? to = null, CalculationOption? option = null)
         {
-            var opt = option ?? CaclulationOption.Adjusted;
+            var opt = option ?? CalculationOption.Adjusted;
             var isLast = to == null;
-            return _handler.CalcAverageReturn(_priceHistory.Get(from), isLast
+            return _calculationHandler.CalcAverageReturn(_priceHistory.Get(from), isLast
                 ? _priceHistory.LastItem
                 : _priceHistory.Get(to.Value), opt);
         }
 
-        public decimal GetAverageReturnMonthly(DateTime from, DateTime? to = null, CaclulationOption? option = null)
+        public decimal GetAverageReturnMonthly(DateTime from, DateTime? to = null, CalculationOption? option = null)
         {
-            var opt = option ?? CaclulationOption.Adjusted;
+            var opt = option ?? CalculationOption.Adjusted;
             var isLast = to == null ? true : false;
             if (isLast)
-                return _handler.CalcAverageReturnMonthly(_priceHistory.Get(from), _priceHistory.LastItem, opt);
+                return _calculationHandler.CalcAverageReturnMonthly(_priceHistory.Get(from), _priceHistory.LastItem, opt);
 
-            return _handler.CalcAverageReturnMonthly(_priceHistory.Get(from), _priceHistory.Get(to.Value), opt);
+            return _calculationHandler.CalcAverageReturnMonthly(_priceHistory.Get(from), _priceHistory.Get(to.Value), opt);
         }
 
-        public decimal GetMaximumDrawdown(DateTime? from = null, DateTime? to = null, CaclulationOption? option = null)
+        public decimal GetMaximumDrawdown(DateTime? from = null, DateTime? to = null, CalculationOption? option = null)
         {
             var start = from ?? FirstRecord.Asof;
             var end = to ?? LastRecord.Asof;
-            var opt = option ?? CaclulationOption.Adjusted;
-            return _handler.CalcMaxDrawdown(_priceHistory.Range(start, end), opt);
+            var opt = option ?? CalculationOption.Adjusted;
+            return _calculationHandler.CalcMaxDrawdown(_priceHistory.Range(start, end), opt);
         }
 
-        public DrawdownItem GetMaximumDrawdownItem(DateTime? from = null, DateTime? to = null, CaclulationOption? option = null)
+        public DrawdownItem GetMaximumDrawdownItem(DateTime? from = null, DateTime? to = null, CalculationOption? option = null)
         {
             var start = from ?? FirstRecord.Asof;
             var end = to ?? LastRecord.Asof;
-            var opt = option ?? CaclulationOption.Adjusted;
-            return _handler.CalcMaxDrawdownItem(_priceHistory.Range(start, end), opt);
+            var opt = option ?? CalculationOption.Adjusted;
+            return _calculationHandler.CalcMaxDrawdownItem(_priceHistory.Range(start, end), opt);
         }
 
         internal void AddDailyReturn(ITradingRecord from, ITradingRecord to)
         {
             if (_dailyReturns.LastItem == null || _dailyReturns.LastItem?.Key < to.Asof)
             {
-                var metaInfo = new DailyReturnMetaInfo(from, to, _handler.CalcAbsoluteReturn(from, to));
+                var metaInfo = new DailyReturnMetaInfo(from, to, _calculationHandler.CalcAbsoluteReturn(from, to));
                 _dailyReturns.Add(to.Asof, metaInfo);
             }
         }
@@ -149,27 +151,27 @@ namespace HelperLibrary.Calculations
 
         public void AddMonthlyUltimoReturn(ITradingRecord ultimoRecord)
         {
-            _monthlyReturns.Add(new Tuple<DateTime, decimal>(ultimoRecord.Asof, _handler.CalcAbsoluteReturn(LastUltimoRecord, ultimoRecord)));
+            _monthlyReturns.Add(new Tuple<DateTime, decimal>(ultimoRecord.Asof, _calculationHandler.CalcAbsoluteReturn(LastUltimoRecord, ultimoRecord)));
             LastUltimoRecord = ultimoRecord;
         }
 
         public bool ScanRange(DateTime backtestDateTime, DateTime startDateInput)
         {
-            return _handler.ScanRange(_priceHistory.Range(backtestDateTime, startDateInput));
+            return _calculationHandler.ScanRange(_priceHistory.Range(backtestDateTime, startDateInput));
         }
 
         public bool ScanRangeNoLow(DateTime backtestDateTime, DateTime startDateInput)
         {
             var vola = _priceHistory.Calc.GetVolatilityMonthly(backtestDateTime, startDateInput);
-            return _handler.ScanRangeNoLow(_priceHistory.Range(backtestDateTime, startDateInput), vola);
+            return _calculationHandler.ScanRangeNoLow(_priceHistory.Range(backtestDateTime, startDateInput), vola);
         }
 
-        public decimal GetVolatilityMonthly(DateTime? from, DateTime? to = null, CaclulationOption? opt = null, PriceHistoryOption priceHistoryOption = PriceHistoryOption.PreviousItem)
+        public decimal GetVolatilityMonthly(DateTime? from, DateTime? to = null, CalculationOption? opt = null, PriceHistoryOption priceHistoryOption = PriceHistoryOption.PreviousItem)
         {
             var start = from ?? FirstRecord.Asof;
             var end = to ?? LastRecord.Asof;
 
-            return _handler.CalcVolatility(EnumMonthlyReturns(), opt ?? CaclulationOption.Adjusted);
+            return _calculationHandler.CalcVolatility(EnumMonthlyReturns(), opt ?? CalculationOption.Adjusted);
         }
 
         public IEnumerable<decimal> EnumDailyReturns()
@@ -293,6 +295,50 @@ namespace HelperLibrary.Calculations
         {
             info = _absoluteLossAndGainInfos.Get(itemAsof, BinarySearchOption.GetLastIfNotFound)?.Value;
             return info != null;
+        }
+
+        private Dictionary<int, HistogrammCollection> _rollingResultsDictionary;
+
+        /// <summary>
+        /// Der Task berechnet die Rollierenden Ergebnisse auf Basis der PriceHistoryCollection
+        /// </summary>
+        /// <param name="periodesInYears">die perioden in Yahren die berechnet werden sollen</param>
+        /// <returns></returns>
+        public Task CreateRollingPeriodeResultsTask(int[] periodesInYears)
+        {
+            return Task.Run(() =>
+            {
+                //einmalig erstellen
+                if (_rollingResultsDictionary == null)
+                    _rollingResultsDictionary = new Dictionary<int, HistogrammCollection>();
+
+                //ich geh die PriceHistory einmal durch und berechne gleich alle möglichen Performancezeiträume
+                for (var i = 0; i < _priceHistory.Count - 1; i++)
+                {
+                    var currentRecord = _priceHistory.Get(i);
+                    foreach (var currentPeriode in periodesInYears)
+                    {
+                        var toDate = currentRecord.Asof.AddYears(currentPeriode);
+                        if (toDate >= _priceHistory.LastItem.Asof)
+                            continue;
+
+                        var perfAbsolute = _calculationHandler.CalcAbsoluteReturn(currentRecord, _priceHistory.Get(toDate));
+                        var perfCompound = _calculationHandler.CalcAverageReturn(currentRecord, _priceHistory.Get(toDate));
+
+                        if (!_rollingResultsDictionary.TryGetValue(currentPeriode, out _))
+                            _rollingResultsDictionary.Add(currentPeriode, new HistogrammCollection());
+                        _rollingResultsDictionary[currentPeriode].Add(new PeriodeResult(currentPeriode, perfAbsolute, perfCompound, currentRecord.Asof, toDate));
+                    }
+                }
+            });
+        }
+
+        public IEnumerable<IEnumerable<IHistogrammCollection>> EnumHistogrammClasses()
+        {
+            foreach (var kvp in _rollingResultsDictionary)
+            {
+                yield return kvp.Value.EnumHistogrammClasses();
+            }
         }
 
         private AbsoluteLossesAndGainsMetaInfo GetLastAbsoluteLossAndGainMetaInfo()
@@ -426,35 +472,80 @@ namespace HelperLibrary.Calculations
         }
     }
 
-    public class DailyReturnMetaInfo : IDailyReturnMetaInfo
+    public class HistogrammCollection : List<PeriodeResult>, IHistogrammCollection
     {
-        public DailyReturnMetaInfo(ITradingRecord fromRecord, ITradingRecord toRecord, decimal absoluteReturn)
+
+        public HistogrammCollection(int classCount = 5)
         {
-            FromRecord = fromRecord;
-            ToRecord = toRecord;
-            AbsoluteReturn = absoluteReturn;
+            ClassCount = classCount;
+        }
+
+        public HistogrammCollection(IEnumerable<PeriodeResult> results, int periodeInYears, decimal relativeFrequency)
+        {
+            PeriodeInYears = periodeInYears;
+            RelativeFrequency = relativeFrequency;
+            AddRange(results);
         }
 
         /// <summary>
-        /// Der komplette Record from
+        /// das Maximum
         /// </summary>
-        public ITradingRecord FromRecord { get; }
+        public IPeriodeResult Maximum => this.OrderByDescending(x => x.Performance).FirstOrDefault();
 
         /// <summary>
-        /// Der komplette Record to
+        /// Das Minimum
         /// </summary>
-        public ITradingRecord ToRecord { get; }
+        public IPeriodeResult Minimum => this.OrderByDescending(x => x.Performance).LastOrDefault();
 
         /// <summary>
-        /// der Return 
+        /// Bestimmt die Klassenbreite
         /// </summary>
-        public decimal AbsoluteReturn { get; }
+        public int ClassCount { get; }
 
-        /// <summary>Gibt eine Zeichenfolge zurück, die das aktuelle Objekt darstellt.</summary>
-        /// <returns>Eine Zeichenfolge, die das aktuelle Objekt darstellt.</returns>
-        public override string ToString()
+        /// <summary>
+        /// die Periode für die Rollierende Berechnung
+        /// </summary>
+        public int PeriodeInYears { get; }
+
+        /// <summary>
+        /// die Relative Häufigkeit der Klasse
+        /// </summary>
+        public decimal RelativeFrequency { get; }
+
+        /// <summary>
+        /// der Count der Collection
+        /// </summary>
+        int IHistogrammCollection.Count => this.Count;
+
+        /// <summary>
+        /// Enumeriert die aktuelle Klasse und zieht das minimum und maximum immer nach
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<IHistogrammCollection> EnumHistogrammClasses()
         {
-            return $"{FromRecord.Asof.ToShortDateString()}_{AbsoluteReturn}";
+            var span = Maximum.Performance - Minimum.Performance;
+            var classWidth = span / ClassCount;
+            var currentMax = 0M;
+            var currentMin = Minimum.Performance;
+            for (var i = 0; i < ClassCount; i++)
+            {
+                if (currentMax == 0)
+                    currentMax = Minimum.Performance + classWidth;
+                else
+                {
+                    currentMin = currentMax;
+                    currentMax += classWidth;
+                }
+                
+                var result = this.OrderByDescending(x => x.Performance).Where(x => x.Performance < currentMax && x.Performance > currentMin).ToList();
+                var rel = (decimal)result.Count / this.Count;
+                yield return new HistogrammCollection(result, this[0].RollingPeriodeInYears, rel);
+            }
+        }
+
+        IEnumerable<IHistogrammCollection> IHistogrammCollection.EnumHistogrammClasses()
+        {
+            throw new NotImplementedException();
         }
     }
 }

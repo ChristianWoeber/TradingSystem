@@ -256,7 +256,7 @@ namespace HelperLibrary.Collections
 
         public ITradingRecord Get(int index, PriceHistoryOption option = PriceHistoryOption.PreviousItem, int count = 0)
         {
-            if (index <= 0)
+            if (index < 0)
                 return null;
 
             var match = _items.Get(index, option == PriceHistoryOption.PreviousItem
