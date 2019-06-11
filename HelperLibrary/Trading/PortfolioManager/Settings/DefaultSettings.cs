@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
@@ -35,7 +36,7 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
             //2% Toleranz
             AllocationToRiskBuffer = new decimal(0.02);
             MinimumPositionSizePercent = new decimal(0.02);
-            ExpectedTicketFee = 25;
+            ExpectedTicketFee = 35;
         }
 
         /// <summary>
@@ -96,14 +97,30 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         /// </summary>
         public decimal MaximumPositionSizeBuffer { get; set; } = new decimal(0.05);
 
+        /// <summary>
+        /// Der Pfad in den Standardmäßig geloggt wird
+        /// </summary>
         public string LoggingPath { get; set; }
         public decimal AllocationToRiskBuffer { get; set; }
+
+        /// <summary>
+        /// die Minimal Positionshröße in %
+        /// </summary>
         public decimal MinimumPositionSizePercent { get; set; }
 
         /// <summary>
         /// die zu erwartende Ticket Fee die beim Backtest berüclsichtigt werden soll
         /// </summary>
         public decimal ExpectedTicketFee { get; set; }
+
+        /// <summary>
+        /// Flag das angibt ob (immer) die Preise des Vortages für den backtest herangezogen werden solllen
+        /// </summary>
+        public bool UsePreviousDayPricesForBacktest { get; set; }
+
+        /// <summary>
+        /// Der Pfas mit dem Ordern der die Indizes Preishistorien enthält
+        /// </summary>
         public string IndicesDirectory { get; set; }
 
         /// <summary>
@@ -117,22 +134,22 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         public decimal MinimumAllocationToRisk { get; set; }
     }
 
+ 
     public class DefaultPortfolioSettings : IPortfolioSettings
     {
         public DefaultPortfolioSettings()
         {
             InitialCashValue = HelperLibrary.Settings.Default.PortfolioValueInitial;
             MaximumAllocationToRisk = 1;
-            AllocationToRiskBuffer = new decimal(0.02);
-            MinimumPositionSizePercent = (decimal)2 / 100;
+            AllocationToRiskBuffer = 0.02M;
+            MinimumPositionSizePercent = 0.02M;
             ExpectedTicketFee = 25;
         }
 
         /// <summary>
         /// Die maximale Initiale Positionsgröße - 10% wenn noch kein Bestand in der Position, dann wird initial eine 10% Positoneröffnet - sprich nach der ersten Allokatoin sollten 10 stocks im Bestand sein
         /// </summary>
-        public decimal MaximumInitialPositionSize { get; set; } =
-        new decimal(0.1);
+        public decimal MaximumInitialPositionSize { get; set; } = new decimal(0.1);
 
         /// <summary>
         /// Die maximale gesamte Positionsgröße - 33% - diese kann nach dem ersen aufstocken erreicht werden - 10% dann 20% dann 33%
@@ -207,6 +224,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Settings
         /// die zu erwartende Ticket Fee die beim Backtest berüclsichtigt werden soll
         /// </summary>
         public decimal ExpectedTicketFee { get; set; }
+
+        /// <summary>
+        /// Flag das angibt ob (immer) die Preise des Vortages für den backtest herangezogen werden solllen
+        /// </summary>
+        public bool UsePreviousDayPricesForBacktest { get; set; }
 
         /// <summary>
         /// der Pfad in dem die Daten zu den Indices liegen

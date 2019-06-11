@@ -11,7 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Arts.Financial;
 using Common.Lib.Extensions;
 using Common.Lib.UI.WPF.Core.Controls.Core;
 using Common.Lib.UI.WPF.Core.Controls.Dialog;
@@ -30,6 +29,7 @@ using HelperLibrary.Trading.PortfolioManager.Settings;
 using HelperLibrary.Trading.PortfolioManager.Transactions;
 using JetBrains.Annotations;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Newtonsoft.Json;
 using Trading.DataStructures.Interfaces;
 using Trading.UI.Wpf.Models;
 using Trading.UI.Wpf.Utils;
@@ -259,12 +259,16 @@ namespace Trading.UI.Wpf.ViewModels
             using (SmartBusyRegion.Start(this))
             {
                 //Clean up
-                var files = Directory.GetFiles(Settings.LoggingPath, "*.csv");
-                foreach (var file in files)
+                var files = Directory.GetFiles(Settings.LoggingPath);
+                foreach (var file in files.Where(x => x.EndsWith(".csv") || x.EndsWith(".json")))
                     File.Delete(file);
 
-                var transactionsPath = Path.Combine(Settings.LoggingPath, "Transactions.csv");
+                //Save Settings in JSON
+                var ser = JsonConvert.SerializeObject(Settings.PortfolioSettings);
+                var fullJsonPath = Path.Combine(Settings.LoggingPath, "Settings.json");
+                File.WriteAllText(fullJsonPath, ser);
 
+                var transactionsPath = Path.Combine(Settings.LoggingPath, "Transactions.csv");
                 InitializePortfolioManager(transactionsPath);
 
                 var loggingProvider = new LoggingSaveProvider(Settings.LoggingPath, _portfolioManager);
@@ -375,8 +379,11 @@ namespace Trading.UI.Wpf.ViewModels
             {
                 using (var zipArchiv = new ZipArchive(zipMs, ZipArchiveMode.Create, true))
                 {
-                    foreach (var filePath in Directory.GetFiles(Settings.LoggingPath, "*.csv"))
+                    foreach (var filePath in Directory.GetFiles(Settings.LoggingPath))
                     {
+                        if (Path.GetExtension(filePath).EndsWith(".zip"))
+                            continue;
+
                         var entry = zipArchiv.CreateEntry(Path.GetFileName(filePath) ?? throw new InvalidOperationException("Achtung die Datei konnte nicht gefunden werden"));
                         using (var stream = entry.Open())
                         {
@@ -397,14 +404,21 @@ namespace Trading.UI.Wpf.ViewModels
                 return;
 
             //unzippen
-            var filePath = UnZipToTempDirectory(dialog.FileName);
+            var zipTempfilePath = UnZipToTempDirectory(dialog.FileName);
+
+            var jsonSettings = Path.Combine(zipTempfilePath, "Settings.json");
+            if (File.Exists(jsonSettings))
+            {
+                var ser = File.ReadAllText(jsonSettings);
+                Settings.UpdateFromDeserializedSettings(JsonConvert.DeserializeObject<ConservativePortfolioSettings>(ser));
+            }
 
             //Valuations, Stops & Transaktionen
-            var valuations = SimpleTextParser.GetListOfType<PortfolioValuation>(File.ReadAllText(Path.Combine(filePath, "PortfolioValuations.csv")));
-            var transactions = SimpleTextParser.GetListOfType<Transaction>(File.ReadAllText(Path.Combine(filePath, "Transactions.csv")));
-            var stops = SimpleTextParser.GetListOfType<Transaction>(File.ReadAllText(Path.Combine(Settings.LoggingPath, "StoppLoss" + nameof(Transaction) + "s.csv")));
-            var cashMovements = SimpleTextParser.GetListOfTypeFromFilePath<CashMetaInfo>(Path.Combine(Settings.LoggingPath, nameof(CashMetaInfo) + "s.csv"));
-            var scoringTraces = SimpleTextParser.GetListOfTypeFromFilePath<ScoringTraceModel>(Path.Combine(Settings.LoggingPath, nameof(ScoringTraceModel) + ".csv"));
+            var valuations = SimpleTextParser.GetListOfType<PortfolioValuation>(File.ReadAllText(Path.Combine(zipTempfilePath, "PortfolioValuations.csv")));
+            var transactions = SimpleTextParser.GetListOfType<Transaction>(File.ReadAllText(Path.Combine(zipTempfilePath, "Transactions.csv")));
+            var stops = SimpleTextParser.GetListOfType<Transaction>(File.ReadAllText(Path.Combine(zipTempfilePath, "StoppLoss" + nameof(Transaction) + "s.csv")));
+            var cashMovements = SimpleTextParser.GetListOfTypeFromFilePath<CashMetaInfo>(Path.Combine(zipTempfilePath, nameof(CashMetaInfo) + "s.csv"));
+            var scoringTraces = SimpleTextParser.GetListOfTypeFromFilePath<ScoringTraceModel>(Path.Combine(zipTempfilePath, nameof(ScoringTraceModel) + ".csv"));
 
             //Repos initialisieren
             ScoringRepository.Initialize(scoringTraces);
@@ -417,7 +431,7 @@ namespace Trading.UI.Wpf.ViewModels
             //Wenn der Pm noch nicht initialisert wurde an dieser Stelle initialiseren
             if (_portfolioManager == null)
             {
-                var path = Path.Combine(Settings.LoggingPath, $"{nameof(Transaction)}s.csv");
+                var path = Path.Combine(zipTempfilePath, $"{nameof(Transaction)}s.csv");
                 if (!File.Exists(path))
                     MessageBox.Show($"Achtung das angebene File {path} existiert nicht!");
                 InitializePortfolioManager(path);

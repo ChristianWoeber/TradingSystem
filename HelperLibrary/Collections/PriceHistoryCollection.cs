@@ -248,9 +248,16 @@ namespace HelperLibrary.Collections
             if (asof <= DateTime.MinValue)
                 return null;
 
-            var match = _items.Get(asof, option == PriceHistoryOption.PreviousItem
-                ? BinarySearchOption.GetLastIfNotFound
-                : BinarySearchOption.GetNextIfNotFound);
+            //standardmäßig setze ich die option getLastIfNotFound
+            var binaryOption = BinarySearchOption.GetLastIfNotFound;
+            if (option == PriceHistoryOption.NextItem)
+                binaryOption = BinarySearchOption.GetNextIfNotFound;
+
+            //das gefunden Item
+            var match = _items.Get(asof, binaryOption);
+            //Bei der option previousday price immer noch eines zuückgehen, wenn der Preis vom selben Tag ist
+            if (option == PriceHistoryOption.PreviousDayPrice && match?.Value.Asof >= asof)
+                match = _items.Get(asof.AddDays(-1), BinarySearchOption.GetLastIfNotFound);
             return match?.Value;
         }
 

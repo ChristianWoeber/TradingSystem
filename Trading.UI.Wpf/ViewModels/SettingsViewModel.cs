@@ -5,9 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Common.Lib.Interfaces;
-using Common.Lib.UI.WPF.Core.Controls.Core;
 using Common.Lib.UI.WPF.Core.Controls.Dialog;
-using HelperLibrary.Trading.PortfolioManager.Exposure;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 using Trading.DataStructures.Enums;
@@ -19,7 +17,6 @@ namespace Trading.UI.Wpf.ViewModels
     {
         private TradingDay _selectedTradingDay;
         private TradingIntervalUtil _selectedTradingInterval;
-        private decimal _expectedTicketFee;
         private string _backtestDescription;
 
         public SettingsViewModel(IPortfolioSettings defaultSettings)
@@ -336,6 +333,41 @@ namespace Trading.UI.Wpf.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public bool UsePreviousDayPricesForBacktest
+        {
+            get => PortfolioSettings.UsePreviousDayPricesForBacktest;
+            set
+            {
+                if (value == PortfolioSettings.UsePreviousDayPricesForBacktest)
+                    return;
+                PortfolioSettings.UsePreviousDayPricesForBacktest = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public void UpdateFromDeserializedSettings(IPortfolioSettings settings)
+        {
+            ExpectedTicketFee = settings.ExpectedTicketFee;
+            UsePreviousDayPricesForBacktest = settings.UsePreviousDayPricesForBacktest;
+            MinimumAllocationToRisk = settings.MinimumAllocationToRisk;
+            MinimumHoldingPeriodeInDays = settings.MinimumHoldingPeriodeInDays;
+            MaximumInitialPositionSize = settings.MaximumInitialPositionSize;
+      
+            MaximumInitialPositionSize = settings.MaximumInitialPositionSize;
+            MaximumPositionSize = settings.MaximumPositionSize;
+            MinimumPositionSizePercent = settings.MinimumPositionSizePercent;
+            InitialCashValue = settings.InitialCashValue;
+            TradingDay = settings.TradingDay;
+            AllocationToRiskBuffer = settings.AllocationToRiskBuffer;
+            IndexType = settings.IndexType;
+            Interval = settings.Interval;
+            CashPufferSizePercent = settings.CashPufferSizePercent;
+            SelectedInterval = new TradingIntervalUtil(Interval);
+            SelectedTradingDay = new TradingDay(TradingDay);
+        }
+
 
         #region INotifyPropertyChanged
 

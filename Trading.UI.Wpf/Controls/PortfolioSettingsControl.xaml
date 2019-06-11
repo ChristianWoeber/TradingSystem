@@ -8,7 +8,7 @@
              xmlns:viewModels="clr-namespace:Trading.UI.Wpf.ViewModels"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
-             d:DesignHeight="450" d:DesignWidth="800" Width="Auto">
+             d:DesignHeight="1000" d:DesignWidth="800" Width="Auto">
     <UserControl.Resources>
         <Style x:Key="LabelStyle" TargetType="arts:SmartTextBlock" BasedOn="{StaticResource {x:Type arts:SmartTextBlock}}">
             <Setter Property="Appearance" Value="Header4"/>
@@ -123,6 +123,11 @@
                                     StringFormat="C2"
                                     Description="Erwartete Ticket Fees EUR"
                                     DisplayMode="Decimal" />
+
+            <CheckBox Content="Vortages-Preise für Simulation verwenden" 
+                      IsChecked="{Binding UsePreviousDayPricesForBacktest}"
+                      Margin="10" 
+                      VerticalAlignment="Center"/>
 
         </UniformGrid>
 

@@ -75,5 +75,9 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
         decimal ExpectedTicketFee { get; set; }
 
+        /// <summary>
+        /// Flag das angibt ob (immer) die Preise des Vortages für den backtest herangezogen werden solllen
+        /// </summary>
+        bool UsePreviousDayPricesForBacktest { get; set; }
     }
 }

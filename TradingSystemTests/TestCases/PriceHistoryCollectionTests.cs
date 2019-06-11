@@ -7,6 +7,8 @@ using HelperLibrary.Collections;
 using HelperLibrary.Extensions;
 using HelperLibrary.Parsing;
 using HelperLibrary.Trading.PortfolioManager.Exposure;
+using HelperLibrary.Trading.PortfolioManager.Settings;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -14,6 +16,20 @@ using TradingSystemTests.Models;
 
 namespace TradingSystemTests.TestCases
 {
+    [TestFixture]
+    public class SerializeSettingsTest
+    {
+        [TestCase]
+        public void SerializePortfolioSettingsTest()
+        {
+            var settings = new DefaultPortfolioSettings();
+            var json = JsonConvert.SerializeObject(settings);
+
+            Assert.IsTrue(json != null, "Achtung die Collection ist null");
+            Assert.IsTrue(JsonConvert.DeserializeObject<DefaultPortfolioSettings>(json) != null);
+        }
+    }
+
     [TestFixture]
     public class PriceHistoryCollectionTests
     {
@@ -63,6 +79,32 @@ namespace TradingSystemTests.TestCases
 
             Assert.IsTrue(_history.FirstItem.Asof == DateTime.Parse(firstDate));
             Assert.IsTrue(_history.LastItem.Asof == DateTime.Parse(currentDate));
+        }
+
+        [TestCase("AdidasHistory.txt", "01.01.1996", PriceHistoryOption.PreviousItem)]
+        [TestCase("AdidasHistory.txt", "02.01.1996", PriceHistoryOption.PreviousDayPrice)]
+        [TestCase("AdidasHistory.txt", "17.11.1995", PriceHistoryOption.NextItem)]
+        public void GetItemTest(string filename, string stringdateTime, PriceHistoryOption option)
+        {
+            if (_history == null)
+                CreatePriceHistoryTest(filename);
+            var date = DateTime.Parse(stringdateTime);
+
+            var item = _history.Get(date, option);
+            switch (option)
+            {
+                case PriceHistoryOption.PreviousItem:
+                    Assert.IsTrue(item.Asof == new DateTime(1995, 12, 29));
+                    break;
+                case PriceHistoryOption.NextItem:
+                    Assert.IsTrue(item.Asof == new DateTime(1995, 11, 17));
+                    break;
+                case PriceHistoryOption.PreviousDayPrice:
+                    Assert.IsTrue(item.Asof == new DateTime(1995, 12, 29));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(option), option, null);
+            }
         }
 
 

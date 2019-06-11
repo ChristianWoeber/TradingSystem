@@ -134,7 +134,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                 if (date >= endDateTime || date >= DateTime.Today.GetBusinessDay(false))
                     return;
 
-                var candidates = _candidatesProvider.GetCandidates(date)?.Where(x => x.ScoringResult.Performance10 > 0 && x.ScoringResult.Performance30 >0).ToList();
+                var candidates = _candidatesProvider.GetCandidates(date, PriceHistoryOption.PreviousDayPrice)?.Where(x => x.ScoringResult.Performance10 > 0 && x.ScoringResult.Performance30 > 0).ToList();
                 var asof = candidates?.OrderByDescending(x => x.Record.Asof).FirstOrDefault()?.Record.Asof;
 
                 if (asof == null)
@@ -152,6 +152,11 @@ namespace HelperLibrary.Trading.PortfolioManager
                     continue;
                 }
 
+                //Das Datum wird vom PM implizit gesetzt
+                var portfolioAsofDateTime = _portfolioManager.PortfolioSettings.UsePreviousDayPricesForBacktest 
+                    ? date
+                    : asof;
+
                 //Hier nur die bestehenden Positionen evaluieren
                 if (date.DayOfWeek != _portfolioManager.PortfolioSettings.TradingDay)
                 {
@@ -162,10 +167,11 @@ namespace HelperLibrary.Trading.PortfolioManager
                         continue;
                     }
 
-                    RankCandidates(new List<ITradingCandidateBase>(), asof, ref date);
+                    RankCandidates(new List<ITradingCandidateBase>(), portfolioAsofDateTime, ref date);
                     continue;
                 }
-                RankCandidates(candidates, asof, ref date);
+
+                RankCandidates(candidates, portfolioAsofDateTime, ref date);
             }
         }
 
@@ -182,7 +188,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
             if (_portfolioManager.HasChanges)
             {
-               // _saveProvider.SaveScoring(_portfolioManager.TemporaryCandidates, _portfolioManager.TemporaryPortfolio);
+                // _saveProvider.SaveScoring(_portfolioManager.TemporaryCandidates, _portfolioManager.TemporaryPortfolio);
                 _portfolioManager.TemporaryPortfolio.SaveTransactions(_saveProvider);
                 _portfolioManager.TransactionsHandler.UpdateCache();
             }

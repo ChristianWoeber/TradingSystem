@@ -5,7 +5,6 @@ using HelperLibrary.Database.Models;
 using JetBrains.Annotations;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
-using Trading.UI.Wpf.Models;
 
 namespace Trading.UI.Wpf.ViewModels
 {

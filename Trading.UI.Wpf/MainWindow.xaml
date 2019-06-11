@@ -37,6 +37,11 @@
                         <controls:CandidatesControl />
                     </arts:SmartFlyoutItem.FlyoutContent>
                 </arts:SmartFlyoutItem>
+                <arts:SmartFlyoutItem HeaderText="Zeitfenster" Icon="UwpList" TextAppearance="Header2"  HeaderTextForeground="White" Width="870">
+                    <arts:SmartFlyoutItem.FlyoutContent>
+                        <controls:CandidatesControl />
+                    </arts:SmartFlyoutItem.FlyoutContent>
+                </arts:SmartFlyoutItem>
 
             </arts:SmartFlyout.Items>
             <arts:SmartFlyout.Content>
@@ -106,6 +111,7 @@
                                               Margin="5" 
                                               VerticalContentAlignment="Center" 
                                               HorizontalContentAlignment="Center"/>
+                      
                         <arts:SmartIconButton Icon="UwpCalculator"                                           
                                               Description="Rollierende Performance berechnen" 
                                               Command="{Binding CalculateRollingPeriodsCommand}" 
