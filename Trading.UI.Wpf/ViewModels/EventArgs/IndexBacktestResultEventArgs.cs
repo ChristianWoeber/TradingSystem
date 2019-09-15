@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using HelperLibrary.Trading.PortfolioManager;
+using Trading.Core.Backtest;
 
 namespace Trading.UI.Wpf.ViewModels.EventArgs
 {

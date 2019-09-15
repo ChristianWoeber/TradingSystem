@@ -37,11 +37,6 @@
                         <controls:CandidatesControl />
                     </arts:SmartFlyoutItem.FlyoutContent>
                 </arts:SmartFlyoutItem>
-                <arts:SmartFlyoutItem HeaderText="Zeitfenster" Icon="UwpList" TextAppearance="Header2"  HeaderTextForeground="White" Width="870">
-                    <arts:SmartFlyoutItem.FlyoutContent>
-                        <controls:CandidatesControl />
-                    </arts:SmartFlyoutItem.FlyoutContent>
-                </arts:SmartFlyoutItem>
 
             </arts:SmartFlyout.Items>
             <arts:SmartFlyout.Content>
@@ -113,10 +108,18 @@
                                               HorizontalContentAlignment="Center"/>
                       
                         <arts:SmartIconButton Icon="UwpCalculator"                                           
-                                              Description="Rollierende Performance berechnen" 
-                                              Command="{Binding CalculateRollingPeriodsCommand}" 
+                                              Description="Trade Statistics anzeigen" 
+                                              Command="{Binding TradeStatisticsCommand}" 
                                               Width="auto" 
                                               IconBrush="Gray"
+                                              Margin="5" 
+                                              VerticalContentAlignment="Center" 
+                                              HorizontalContentAlignment="Center"/>
+                        <arts:SmartIconButton Icon="UwpList"                                           
+                                              Description="Top/Flop Trades anzeigen" 
+                                              Command="{Binding ShowTradesCommand}" 
+                                              Width="auto" 
+                                              IconBrush="DarkViolet"
                                               Margin="5" 
                                               VerticalContentAlignment="Center" 
                                               HorizontalContentAlignment="Center"/>
@@ -125,6 +128,7 @@
 
                     <arts:SmartBusyOverlay Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                            BusyText="Erstelle Backtest"
+                                           ProgressRegion="{Binding ProgressRegion}"
                                            BusyAppearance="{Binding IsBusy, Converter={x:Static converter:SmartBusyRegionToBusyAppearanceConverter.Inst}}"></arts:SmartBusyOverlay>
                     <controls:MainChartControl Grid.Column="0" Grid.Row="1" />
 

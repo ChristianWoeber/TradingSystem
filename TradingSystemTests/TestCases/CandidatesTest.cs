@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HelperLibrary.Trading;
 using NUnit.Framework;
+using Trading.Core.Candidates;
+using Trading.Core.Scoring;
 using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Helper;
 

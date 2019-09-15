@@ -1,48 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Trading;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Trading.DataStructures.Interfaces;
-
-namespace HelperLibrary.Util.Converter
+﻿namespace HelperLibrary.Util.Converter
 {
-    public class TradingCandidateConverter : JsonConverter
-    {
-        public override bool CanWrite { get; } = false;
+    //public class TradingCandidateConverter : JsonConverter
+    //{
+    //    public override bool CanWrite { get; } = false;
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
+    //    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null)
-                return null;
-            // Load JObject from stream
-            var jsonObject = JObject.Load(reader);
+    //    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    //    {
+    //        if (reader.TokenType == JsonToken.Null)
+    //            return null;
+    //        // Load JObject from stream
+    //        var jsonObject = JObject.Load(reader);
 
-            var candidate = new TradingCandidate();
+    //        var candidate = new TradingCandidate();
 
-            var candidateBaseJToken = jsonObject["_tradingCandidateBase"];
+    //        var candidateBaseJToken = jsonObject["_tradingCandidateBase"];
 
-            var recordJToken = jsonObject["Record"];
-            var scoreJToken = jsonObject["ScoringResult"];
+    //        var recordJToken = jsonObject["Record"];
+    //        var scoreJToken = jsonObject["ScoringResult"];
 
-            var tradingRecord = new TradingRecord();
-            var scoringResult = new ConservativeScoringResult();
+    //        var tradingRecord = new TradingRecord();
+    //        var scoringResult = new ConservativeScoringResult();
 
-            serializer.Populate(recordJToken.CreateReader(), tradingRecord);
-            serializer.Populate(scoreJToken.CreateReader(), scoringResult);
+    //        serializer.Populate(recordJToken.CreateReader(), tradingRecord);
+    //        serializer.Populate(scoreJToken.CreateReader(), scoringResult);
 
-            return candidate;
-        }
+    //        return candidate;
+    //    }
 
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(IPortfolioValuation);
-        }
-    }
+    //    public override bool CanConvert(Type objectType)
+    //    {
+    //        return objectType == typeof(IPortfolioValuation);
+    //    }
+    //}
 }

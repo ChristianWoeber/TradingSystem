@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using HelperLibrary.Collections;
-using HelperLibrary.Parsing;
-using HelperLibrary.Util.Converter;
 using OfficeOpenXml;
+using Trading.Calculation.Collections;
+using Trading.Core.Converter;
 using Trading.DataStructures.Interfaces;
+using Trading.Parsing;
 using TradingSystemTests.Models;
 
 namespace TradingSystemTests.Helper

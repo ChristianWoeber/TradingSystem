@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using HelperLibrary.Calculations;
 using HelperLibrary.Trading.PortfolioManager.Settings;
@@ -264,7 +265,11 @@ namespace HelperLibrary.Trading.PortfolioManager
         public bool IsUnderTopPositions(int securityId, int count = 5)
         {
             if (!_performanceDictionary.TryGetValue(securityId, out var perValue))
-                throw new ArgumentException($"Achtung zu der SecurityId {securityId} konnte keine Performance gefunden werden");
+            {
+                Trace.TraceError($"Achtung zu der SecurityId {securityId} konnte keine Performance gefunden werden");
+                return false;
+                //throw new ArgumentException($"Achtung zu der SecurityId {securityId} konnte keine Performance gefunden werden");
+            }
 
             var index = _performanceDictionary.Values.ToList().IndexOf(perValue);
             return index <= count - 1;

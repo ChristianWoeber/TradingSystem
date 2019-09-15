@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{291D03A4-084D-4D25-90C5-1907569756D4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Trading.Core</RootNamespace>
+    <AssemblyName>Trading.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="JetBrains.Annotations, Version=2019.1.3.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\JetBrains.Annotations.2019.1.3\lib\net20\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Git\NuGetPackages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Backtest\BacktestHandler.cs" />
+    <Compile Include="Backtest\IIndexBackTestResult.cs" />
+    <Compile Include="Backtest\IndexResult.cs" />
+    <Compile Include="Candidates\Candidate.cs" />
+    <Compile Include="Candidates\CandidatesProvider.cs" />
+    <Compile Include="Candidates\TradingCandidate.cs" />
+    <Compile Include="Cash\CashEffectiveRange.cs" />
+    <Compile Include="Cash\CashManager.cs" />
+    <Compile Include="Cash\CashMetaInfo.cs" />
+    <Compile Include="Converter\JsonConverter.cs" />
+    <Compile Include="Converter\JsonUtils.cs" />
+    <Compile Include="Converter\PortfolioValuationConverter.cs" />
+    <Compile Include="Exposure\ExposureWatcher.cs" />
+    <Compile Include="Exposure\IExposureProvider.cs" />
+    <Compile Include="Extensions\DecimalExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Models\PortfolioValue.cs" />
+    <Compile Include="Models\ScoringTraceModel.cs" />
+    <Compile Include="Models\TradingRecord.cs" />
+    <Compile Include="Models\Transaction.cs" />
+    <Compile Include="Portfolio\IPortfolioManager.cs" />
+    <Compile Include="Portfolio\TemporaryPortfolio.cs" />
+    <Compile Include="PositionWatchService.cs" />
+    <Compile Include="Settings\PriceHistoryCollectionSettings.cs" />
+    <Compile Include="Portfolio\CurrentPortfolio.cs" />
+    <Compile Include="Portfolio\PortfolioManager.cs" />
+    <Compile Include="Portfolio\PortfolioManagerBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rebalancing.Rules\AllCandidatesAreUnchangedRule.cs" />
+    <Compile Include="Rebalancing.Rules\FirstCandidateIsNotInvesterdInRule.cs" />
+    <Compile Include="Rebalancing.Rules\HasBetterScoringRule.cs" />
+    <Compile Include="Rebalancing.Rules\IncreasedPositionsRule.cs" />
+    <Compile Include="Rebalancing.Rules\ScanCandidatesRules.cs" />
+    <Compile Include="Rebalancing.Rules\TransactionTypRule.cs" />
+    <Compile Include="Rebalancing\INeeedRebalancingRule.cs" />
+    <Compile Include="Rebalancing\IRebalanceContext.cs" />
+    <Compile Include="Rebalancing\IRebalanceRule.cs" />
+    <Compile Include="Rebalancing\RebalanceCollection.cs" />
+    <Compile Include="Rebalancing\RebalanceProvider.cs" />
+    <Compile Include="Rebalancing\RebalanceRulesService.cs" />
+    <Compile Include="Rebalancing\RebalanceScoringResult.cs" />
+    <Compile Include="Scoring\ScoringProvider.cs" />
+    <Compile Include="Scoring\ScoringResult.cs" />
+    <Compile Include="Settings\DefaultSettings.cs" />
+    <Compile Include="Settings\DefaultStopLossSettings.cs" />
+    <Compile Include="Models\Record.cs" />
+    <Compile Include="Models\StopLossMeta.cs" />
+    <Compile Include="Strategies\DefaultIncrementationStrategy.cs" />
+    <Compile Include="Transactions\ITransactionCalculation.cs" />
+    <Compile Include="Transactions\TransactionCalculationHandler.cs" />
+    <Compile Include="Transactions\TransactionsHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Trading.Calculation\Trading.Calculation.csproj">
+      <Project>{68564410-695D-436E-A12B-456F5870BB86}</Project>
+      <Name>Trading.Calculation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Trading.DataStructures\Trading.DataStructures.csproj">
+      <Project>{53bb7efc-1b0d-4dfa-be74-5ff13bf088ef}</Project>
+      <Name>Trading.DataStructures</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Trading.Parsing\Trading.Parsing.csproj">
+      <Project>{463f055a-786d-4e0f-9571-34bc6791bf61}</Project>
+      <Name>Trading.Parsing</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

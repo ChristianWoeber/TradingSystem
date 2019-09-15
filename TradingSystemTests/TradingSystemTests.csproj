@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\..\Git\NuGetPackages\NUnit3TestAdapter.3.15.1\build\net35\NUnit3TestAdapter.props" Condition="Exists('..\..\..\..\Git\NuGetPackages\NUnit3TestAdapter.3.15.1\build\net35\NUnit3TestAdapter.props')" />
   <Import Project="..\..\..\..\Git\NuGetPackages\NUnit.3.12.0\build\NUnit.props" Condition="Exists('..\..\..\..\Git\NuGetPackages\NUnit.3.12.0\build\NUnit.props')" />
-  <Import Project="..\..\..\..\Git\NuGetPackages\NUnit3TestAdapter.3.13.0\build\net35\NUnit3TestAdapter.props" Condition="Exists('..\..\..\..\Git\NuGetPackages\NUnit3TestAdapter.3.13.0\build\net35\NUnit3TestAdapter.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -40,15 +40,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EPPlus, Version=4.5.3.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\Git\NuGetPackages\EPPlus.4.5.3.1\lib\net40\EPPlus.dll</HintPath>
+    <Reference Include="EPPlus, Version=4.5.3.2, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\EPPlus.4.5.3.2\lib\net40\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\Git\NuGetPackages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\Git\NuGetPackages\NLog.4.6.4\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\..\..\..\Git\NuGetPackages\NLog.4.6.7\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\Git\NuGetPackages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
@@ -64,6 +64,9 @@
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -137,13 +140,21 @@
     <None Include="Resources\TransactionsHistoryTest.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj">
-      <Project>{3696bc6c-2421-4eaf-b7d8-a26a74ac7656}</Project>
-      <Name>HelperLibrary</Name>
+    <ProjectReference Include="..\Trading.Calculation\Trading.Calculation.csproj">
+      <Project>{68564410-695d-436e-a12b-456f5870bb86}</Project>
+      <Name>Trading.Calculation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Trading.Core\Trading.Core.csproj">
+      <Project>{291d03a4-084d-4d25-90c5-1907569756d4}</Project>
+      <Name>Trading.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Trading.DataStructures\Trading.DataStructures.csproj">
       <Project>{53bb7efc-1b0d-4dfa-be74-5ff13bf088ef}</Project>
       <Name>Trading.DataStructures</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Trading.Parsing\Trading.Parsing.csproj">
+      <Project>{463F055A-786D-4E0F-9571-34BC6791BF61}</Project>
+      <Name>Trading.Parsing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +173,8 @@
     <None Include="Resources\BestCandidates_19.01.2000.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\AllCandidates_CleanUpCash05.01.2000.txt" />
+    <Content Include="Resources\WriteToFileTest.txt" />
     <None Include="Resources\AllCandidates_11.10.2000.txt" />
     <None Include="Resources\AllCandidates_08.03.2000.txt" />
     <Content Include="Resources\AllCandidates_16.02.2000.txt" />
@@ -175,7 +188,7 @@
     <PropertyGroup>
       <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Verwenden Sie die Wiederherstellung von NuGet-Paketen, um die fehlenden Dateien herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\..\Git\NuGetPackages\NUnit3TestAdapter.3.13.0\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\Git\NuGetPackages\NUnit3TestAdapter.3.13.0\build\net35\NUnit3TestAdapter.props'))" />
     <Error Condition="!Exists('..\..\..\..\Git\NuGetPackages\NUnit.3.12.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\Git\NuGetPackages\NUnit.3.12.0\build\NUnit.props'))" />
+    <Error Condition="!Exists('..\..\..\..\Git\NuGetPackages\NUnit3TestAdapter.3.15.1\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\Git\NuGetPackages\NUnit3TestAdapter.3.15.1\build\net35\NUnit3TestAdapter.props'))" />
   </Target>
 </Project>

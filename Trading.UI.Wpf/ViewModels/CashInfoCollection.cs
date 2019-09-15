@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using HelperLibrary.Trading.PortfolioManager.Cash;
+using Trading.Core.Cash;
 
 namespace Trading.UI.Wpf.ViewModels
 {

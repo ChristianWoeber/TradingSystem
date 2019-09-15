@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using HelperLibrary.Database.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Trading.DataStructures.Interfaces;
@@ -36,10 +35,12 @@ namespace HelperLibrary.Util.Converter
                 return null;
             // Load JObject from stream
 
-            var jsonObject = JObject.Load(reader);
-            var valuation = new PortfolioValuation();
-            serializer.Populate(jsonObject.CreateReader(), valuation);
-            return valuation;
+            //var jsonObject = JObject.Load(reader);
+            //var valuation = new PortfolioValuation();
+            //serializer.Populate(jsonObject.CreateReader(), valuation);
+            //return valuation;
+            //TODO:
+            return null;
         }
 
         public override bool CanConvert(Type objectType)

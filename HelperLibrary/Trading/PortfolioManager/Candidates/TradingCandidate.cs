@@ -1,6 +1,7 @@
 ﻿using System;
 using HelperLibrary.Trading.PortfolioManager.Rebalancing;
 using HelperLibrary.Trading.PortfolioManager.Settings;
+using HelperLibrary.Trading.PortfolioManager.Strategies;
 using Newtonsoft.Json;
 using Trading.DataStructures.Interfaces;
 using Trading.DataStructures.Enums;
@@ -34,6 +35,7 @@ namespace HelperLibrary.Trading
             IsInvested = isInvested;
             PortfolioAsof = adjustmentProvider.PortfolioAsof;
             RebalanceScore = new RebalanceScoringResult(tradingCandidateBase.ScoringResult);
+            IncrementationStrategyProvider = new DefaultIncrementationStrategy(this,_adjustmentProvider);
 
             Record = tradingCandidateBase.Record;
             ScoringResult = tradingCandidateBase.ScoringResult;
@@ -47,8 +49,6 @@ namespace HelperLibrary.Trading
                 CurrentPosition = transactionsHandler.CurrentPortfolio[SecurityId];
 
             PerformanceUnderlying = _adjustmentProvider.PositionWatcher.GetUnderlyingPerformance(SecurityId);
-
-
         }
 
         /// <summary>
@@ -143,6 +143,7 @@ namespace HelperLibrary.Trading
         /// <summary>
         /// Gibt on ob ich die aktuelle Position erhöhen darf
         /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool CanBeIncremented
         {
             get
@@ -150,7 +151,7 @@ namespace HelperLibrary.Trading
                 //gibt an ob sich die Position unter den Top 5 Performern, gemessen am Total Return des Position, befindet
                 var isUnderTopPositions = _adjustmentProvider.PositionWatcher.IsUnderTopPositions(SecurityId);
                 var meta = _adjustmentProvider.PositionWatcher.GetStopLossMeta(this);
-                if (Record.AdjustedPrice >= meta.High.Price && isUnderTopPositions)
+                if (Record.AdjustedPrice >= meta?.High.Price && isUnderTopPositions)
                     return true;
                 return false;
             }
@@ -180,6 +181,11 @@ namespace HelperLibrary.Trading
         /// Gibt an ob die Position unter dem Limit ist (die exekution des stopss kann aber aufgrund von lockups noch nach hinten verschoben werden)
         /// </summary>
         public bool IsBelowStopp { get; set; }
+
+        /// <summary>
+        /// Das Interface das die Property bereitsstellt die angibt ob ein Kandiate zum jeweiligen Zeitpunkt aufgestockt werden darf vom Handelssystem
+        /// </summary>
+        public IPositionIncrementationStrategy IncrementationStrategyProvider { get; }
 
         /// <summary>
         /// Der Score wonach die Kandidaten im RebelanceProvider sortiert werden

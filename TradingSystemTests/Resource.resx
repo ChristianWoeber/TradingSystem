@@ -139,6 +139,9 @@
   <data name="AllCandidates_19_01_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AllCandidates_19.01.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="AllCandidates_CleanUpCash05_01_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AllCandidates_CleanUpCash05.01.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="BestCandidates_02_02_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\BestCandidates_02.02.2000.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -192,5 +195,8 @@
   </data>
   <data name="Transactions_05_01_2000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Transactions_05.01.2000.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="WriteToFileTest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\writetofiletest.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

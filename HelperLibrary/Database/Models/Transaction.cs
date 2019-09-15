@@ -20,14 +20,14 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// die Ticket Fee pro Trade
         /// </summary>
-        [InputMapping(KeyWords = new[] { "Fee", nameof(TicketFee) }, SortIndex = 10)]
+        [InputMapping(KeyWords = new[] { nameof(TicketFee) }, SortIndex = 10)]
         [Column(Storage = "TICKET_FEE")]
         public decimal TicketFee { get; set; }
 
         /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt
         /// </summary>
-        [InputMapping(KeyWords = new[] { "DateTime", nameof(TransactionDateTime) }, SortIndex = 1)]
+        [InputMapping(KeyWords = new[] { nameof(TransactionDateTime) }, SortIndex = 1)]
         [Column(Storage = "TRANSACTION_DATETIME")]
         public DateTime TransactionDateTime { get; set; }
 
@@ -35,7 +35,7 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Der zweite primary Key des Tables - Die Security Id
         /// </summary>
-        [InputMapping(KeyWords = new[] { "Id", nameof(SecurityId) }, SortIndex = 2)]
+        [InputMapping(KeyWords = new[] { nameof(SecurityId) }, SortIndex = 2)]
         [Column(Storage = "SECURITY_ID")]
         public int SecurityId { get; set; }
 
@@ -51,14 +51,14 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Der Gegenwert in EUR - Berechnet mit dem zuletzt verfügbaren Preis
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(TargetAmountEur), "Amount" }, SortIndex = 4)]
+        [InputMapping(KeyWords = new[] { nameof(TargetAmountEur) }, SortIndex = 4)]
         [Column(Storage = "AMOUNT_EUR")]
         public decimal TargetAmountEur { get; set; }
 
         /// <summary>
         /// Der Typ der Transaktion (Opening,Closing,Changed) <see cref="Trading.DataStructures.Enums.TransactionType"/>
         /// </summary>
-        [InputMapping(KeyWords = new[] { "Type", nameof(TransactionType) }, SortIndex = 5)]
+        [InputMapping(KeyWords = new[] { nameof(TransactionType) }, SortIndex = 5)]
         [Column(Storage = "TRANSACTION_TYPE")]
         public TransactionType TransactionType { get; set; }
 
@@ -82,7 +82,7 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Das Zielgewicht der Position zum Stichtag im Portfolio
         /// </summary>
-        [InputMapping(KeyWords = new[] { "target", nameof(TargetWeight) }, SortIndex = 7)]
+        [InputMapping(KeyWords = new[] { nameof(TargetWeight) }, SortIndex = 7)]
         [Column(Storage = "TARGET_WEIGHT")]
         public decimal TargetWeight { get; set; }
 
@@ -90,14 +90,14 @@ namespace HelperLibrary.Database.Models
         /// <summary>
         /// Das effektive Gewicht der Position zum Stichtag, sprich das effektive gewicht der einzelnen Transaktion
         /// </summary>
-        [InputMapping(KeyWords = new[] { "Effective", nameof(EffectiveWeight) }, SortIndex = 8)]
+        [InputMapping(KeyWords = new[] { nameof(EffectiveWeight) }, SortIndex = 8)]
         [Column(Storage = "EFFECTIVE_WEIGHT")]
         public decimal EffectiveWeight { get; set; }
 
         /// <summary>
         /// Der effektive Bertrag der Position, bei Verkäufen ist dieser negativ
         /// </summary>
-        [InputMapping(KeyWords = new[] { "Effective Amount", nameof(EffectiveAmountEur) }, SortIndex = 9)]
+        [InputMapping(KeyWords = new[] { nameof(EffectiveAmountEur) }, SortIndex = 9)]
         [Column(Storage = "EFFECTIVE_AMOUNTEUR")]
         public decimal EffectiveAmountEur { get; set; }
 
@@ -120,7 +120,19 @@ namespace HelperLibrary.Database.Models
 
         public string UniqueKey => _uniqueKey ?? (_uniqueKey = UniqueKeyProvider.CreateUniqueKey(this));
 
-
+        /// <summary>
+        /// Einen Dummy Close Transaction als Hotfix
+        /// </summary>
+        /// <param name="endDateTime">das Datum der Transaktion</param>
+        /// <param name="opening">die Opening Transaction</param>
+        /// <returns></returns>
+        public static Transaction CreateCloseDummy(DateTime endDateTime, Transaction opening)
+        {
+            //ich übernehme die Transactionsdetails des openings und ändere nur das Datum
+            var trans = opening;
+            trans.TransactionDateTime = endDateTime;
+            return trans;
+        }
     }
 
 

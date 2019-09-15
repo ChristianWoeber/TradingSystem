@@ -15,7 +15,7 @@ namespace HelperLibrary.Trading
             _scoringProvider = scoring;
         }
 
-        public IEnumerable<ITradingCandidateBase> GetCandidates(DateTime inputDate,PriceHistoryOption option = PriceHistoryOption.PreviousItem)
+        public IEnumerable<ITradingCandidateBase> GetCandidates(DateTime inputDate, PriceHistoryOption option = PriceHistoryOption.PreviousItem)
         {
             //init Liste mit candidaten
             var listWithCandidates = new List<Candidate>();
@@ -28,16 +28,21 @@ namespace HelperLibrary.Trading
                     throw new ArgumentException("PriceHistory darf nicht null sein! ");
                 }
 
+                //hole den record aus der PriceHistory
+                var record = priceHistory.Get(inputDate, option);
+                //Wenn der null ist gibt es ihn nicht und ich gehe zum nächsten
+                if (record == null)
+                    continue;
+                //Namen setzen
+                record.Name = priceHistory.Settings.Name;
+
                 //den Score rechnen
-                var score = _scoringProvider.GetScore(priceHistory.SecurityId, inputDate);
+                var score = _scoringProvider.GetScore(priceHistory.SecurityId, option == PriceHistoryOption.PreviousDayPrice ? record.Asof : inputDate);
 
                 //wenn der score nicht valide ist den nächsten Kandidaten versuchen
                 if (!score.IsValid)
                     continue;
-
-                //add candidate und Namen setzen
-                var record = priceHistory.Get(inputDate, option);
-                record.Name = priceHistory.Settings.Name;
+                //adden
                 listWithCandidates.Add(new Candidate(record, score));
             }
 

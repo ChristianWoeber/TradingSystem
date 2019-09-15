@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data.Linq.Mapping;
-using HelperLibrary.Util.Atrributes;
+using Trading.Parsing.Attributes;
 
 namespace HelperLibrary.Yahoo
 {

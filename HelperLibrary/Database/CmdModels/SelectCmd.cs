@@ -1,5 +1,4 @@
-﻿using System;
-using HelperLibrary.Database.Interfaces;
+﻿using HelperLibrary.Database.Interfaces;
 
 namespace HelperLibrary.Database
 {

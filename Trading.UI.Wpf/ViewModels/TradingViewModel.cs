@@ -11,26 +11,30 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Common.Lib.Data.Attributes;
+using Common.Lib.Data.Enums;
 using Common.Lib.Extensions;
 using Common.Lib.UI.WPF.Core.Controls.Core;
 using Common.Lib.UI.WPF.Core.Controls.Dialog;
 using Common.Lib.UI.WPF.Core.Input;
 using Common.Lib.UI.WPF.Core.Primitives;
 using CreateTestDataConsole;
-using HelperLibrary.Collections;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Extensions;
-using HelperLibrary.Parsing;
-using HelperLibrary.Trading;
-using HelperLibrary.Trading.PortfolioManager;
-using HelperLibrary.Trading.PortfolioManager.Cash;
-using HelperLibrary.Trading.PortfolioManager.Exposure;
-using HelperLibrary.Trading.PortfolioManager.Settings;
-using HelperLibrary.Trading.PortfolioManager.Transactions;
 using JetBrains.Annotations;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
+using Trading.Calculation.Collections;
+using Trading.Core.Backtest;
+using Trading.Core.Candidates;
+using Trading.Core.Cash;
+using Trading.Core.Exposure;
+using Trading.Core.Models;
+using Trading.Core.Portfolio;
+using Trading.Core.Scoring;
+using Trading.Core.Settings;
+using Trading.Core.Transactions;
+using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
+using Trading.Parsing;
 using Trading.UI.Wpf.Models;
 using Trading.UI.Wpf.Utils;
 using Trading.UI.Wpf.ViewModels.EventArgs;
@@ -38,7 +42,7 @@ using Trading.UI.Wpf.Windows;
 
 namespace Trading.UI.Wpf.ViewModels
 {
-    public class TradingViewModel : INotifyPropertyChanged, ISmartProgessRegion
+    public class TradingViewModel : INotifyPropertyChanged, ISmartBusyRegion
     {
         #region Private Members
 
@@ -71,11 +75,56 @@ namespace Trading.UI.Wpf.ViewModels
             MoveCursorToNextStoppDayCommand = new RelayCommand(() => MoveCursorToNextStoppDayEvent?.Invoke(this, System.EventArgs.Empty));
             ShowSelectedPositionCommand = new RelayCommand(ShowNewSelectedPositionWindow);
             ShowSelectedCandidateCommand = new RelayCommand(ShowSelectedCandidateWindow);
+            ShowSelectedTradeCommand = new RelayCommand(OnShowSelectedTradeWindow);
             SaveBacktestCommand = new RelayCommand(OnSaveBacktest);
-            CalculateRollingPeriodsCommand = new RelayCommand(OnCalculateRollingPeriods);
+            TradeStatisticsCommand = new RelayCommand(OnCalculateTradeStatistics);
+            ShowTradesCommand = new RelayCommand((o) => OnShowTrades(), (o) => TransactionsRepo.IsInitialized);
         }
 
-        private async void OnCalculateRollingPeriods()
+        public ObservableCollection<TradeViewModel> Trades { get; } = new ObservableCollection<TradeViewModel>();
+
+        private void OnShowTrades()
+        {
+            if (Trades.Count == 0)
+            {
+                foreach (var transactionGroup in TransactionsRepo.GetAllTransactions().GroupBy(x => x.SecurityId))
+                {
+                    var count = 0;
+                    var transactions = transactionGroup.ToList();
+                    while (count != transactions.Count)
+                    {
+                        var trades = CreateTradesFromTransactions(transactions, ref count);
+                        Trades.Add(new TradeViewModel(new Trade(trades, EndDateTime)));
+                    }
+                }
+            }
+
+            var win = new TradesWindow { DataContext = this };
+            win.Show();
+        }
+
+        private List<Transaction> CreateTradesFromTransactions(List<Transaction> transactionSource, ref int count)
+        {
+            var trades = new List<Transaction>();
+            for (var i = count; i < transactionSource.Count; i++)
+            {
+                var transaction = transactionSource[i];
+                count++;
+                if (transaction.TransactionType != TransactionType.Close)
+                {
+                    trades.Add(transaction);
+                    continue;
+                }
+
+                //bin hier beim close
+                trades.Add(transaction);
+                break;
+            }
+
+            return trades;
+        }
+
+        private async void OnCalculateTradeStatistics()
         {
             var fileDlg = new CommonOpenFileDialog()
             {
@@ -84,17 +133,16 @@ namespace Trading.UI.Wpf.ViewModels
             };
             var dlgResult = fileDlg.ShowDialog();
             if (dlgResult != CommonFileDialogResult.Ok)
-                await Task.CompletedTask;
+                return;
 
             //unzippen
             var filePath = UnZipToTempDirectory(fileDlg.FileName);
-
 
             //das File aus dem Temp verzeichnis parsen und priceHistoryColleciion erstellen
             var valuations =
                  SimpleTextParser.GetListOfTypeFromFilePath<PortfolioValuation>(Path.Combine(filePath,
                      "PortfolioValuations.csv"));
-            var priceHistory = (PriceHistoryCollection)PriceHistoryCollection.Create(valuations.Select(v =>
+            var priceHistory = PriceHistoryCollection.Create(valuations.Select(v =>
                new TradingRecord
                {
                    AdjustedPrice = v.PortfolioValue,
@@ -120,6 +168,14 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
+        private async void OnShowSelectedTradeWindow(object obj)
+        {
+            if (!(obj is TradeViewModel model))
+                return;
+
+            await ShowChartWindowAsync(model.SecurityId ?? -1, model.OpenDateTime.Value);
+        }
+
         private async void ShowSelectedCandidateWindow()
         {
             if (SelectedCandidate == null)
@@ -140,7 +196,12 @@ namespace Trading.UI.Wpf.ViewModels
             if (SelectedPosition == null)
                 return;
 
-            if (!_scoringProvider.PriceHistoryStorage.TryGetValue(SelectedPosition.SecurityId, out var priceHistoryCollection))
+            await ShowChartWindowAsync(SelectedPosition.SecurityId, SelectedPosition.TransactionDateTime);
+        }
+
+        private async Task ShowChartWindowAsync(int securityId, DateTime? date = null)
+        {
+            if (!_scoringProvider.PriceHistoryStorage.TryGetValue(securityId, out var priceHistoryCollection))
             {
                 //wenn es noch keine History zu dem Kandidaten gibt lade ich diesen dynamisch nach
                 if (Globals.IsTestMode)
@@ -148,26 +209,26 @@ namespace Trading.UI.Wpf.ViewModels
                     await Task.Run(() =>
                     {
                         //namen des Files erstellen
-                        var name = $"{NameCatalog[SelectedPosition.SecurityId]}_{ SelectedPosition.SecurityId}.csv";
+                        var name = $"{NameCatalog[securityId]}_{securityId}.csv";
                         var filename = Path.Combine(Globals.PriceHistoryDirectory, name);
                         //die records parsen
                         var history = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(filename);
-                        Application.Current.Dispatcher.Invoke(() =>
+                        Application.Current.Dispatcher?.Invoke(() =>
                         {
                             //die Pricehistory erstellen und storen im dictionary
-                            priceHistoryCollection = PriceHistoryCollection.Create(history, new PriceHistorySettings { Name = name });
-                            _scoringProvider.PriceHistoryStorage.Add(SelectedPosition.SecurityId, priceHistoryCollection);
+                            priceHistoryCollection =
+                                PriceHistoryCollection.Create(history, new PriceHistorySettings { Name = name });
+                            _scoringProvider.PriceHistoryStorage.Add(SelectedPosition?.SecurityId ?? securityId, priceHistoryCollection);
                         });
                     });
                 }
                 else
                     return;
-            };
+            }
 
-            var win = new ChartWindow(SelectedPosition.SecurityId, ChartDate);
-            await win.CreateFints(priceHistoryCollection, NameCatalog[SelectedPosition.SecurityId]);
+            var win = new ChartWindow(securityId, date ?? ChartDate);
+            await win.CreateFints(priceHistoryCollection, NameCatalog[securityId]);
             win.Show();
-
         }
 
         public TradingViewModel(List<ITransaction> transactions, IScoringProvider scoringProvider) : this()
@@ -176,7 +237,7 @@ namespace Trading.UI.Wpf.ViewModels
             Init(transactions);
         }
 
-        public TradingViewModel(ScoringProvider scoringProvider) : this()
+        public TradingViewModel(IScoringProvider scoringProvider) : this()
         {
             _scoringProvider = scoringProvider;
         }
@@ -197,7 +258,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         #region Commands
 
-        public ICommand CalculateRollingPeriodsCommand { get; }
+        public ICommand TradeStatisticsCommand { get; }
 
         public ICommand RunNewIndexBacktestCommand { get; }
 
@@ -213,8 +274,11 @@ namespace Trading.UI.Wpf.ViewModels
 
         public ICommand ShowSelectedCandidateCommand { get; }
 
+        public ICommand ShowSelectedTradeCommand { get; }
 
         public ICommand SaveBacktestCommand { get; }
+
+        public ICommand ShowTradesCommand { get; }
 
         #endregion
 
@@ -256,8 +320,9 @@ namespace Trading.UI.Wpf.ViewModels
         private async void OnRunBacktest()
         {
             //Pm erstellen für den Backtest
-            using (SmartBusyRegion.Start(this))
+            using (var region = SmartBusyRegion.Start(this, true))
             {
+                ProgressRegion = region.ProgessRegion;
                 //Clean up
                 var files = Directory.GetFiles(Settings.LoggingPath);
                 foreach (var file in files.Where(x => x.EndsWith(".csv") || x.EndsWith(".json")))
@@ -281,7 +346,7 @@ namespace Trading.UI.Wpf.ViewModels
 
                 //Backtest
                 _cancellationSource = new CancellationTokenSource();
-                await backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
+                await backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token, region.ProgessRegion);
             }
 
             //create output
@@ -299,7 +364,7 @@ namespace Trading.UI.Wpf.ViewModels
             AveragePortfolioSize = await CalculateAveragePortfolioHoldings();
             PortfolioTurnOver = TransactionsCountPerWeek / AveragePortfolioSize;
 
-            var resultWindow = new ResultWindow { DataContext = this };
+            var resultWindow = new TradeStatisticsWindow { DataContext = this };
             BacktestCompletedEvent?.Invoke(this, new BacktestResultEventArgs(valuations, TransactionsRepo.GetAllTransactions(), Settings));
             resultWindow.Show();
         }
@@ -357,7 +422,7 @@ namespace Trading.UI.Wpf.ViewModels
             if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
                 return;
 
-            var nameDialog = SmartDialog.CreateCommentDefaultDialog(Settings);
+            var nameDialog = SmartDialog.CreateCommentDialog(Settings);
             if (nameDialog.ShowDialog() == false)
                 return;
 
@@ -452,7 +517,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         #region Helpers
 
-        public static Dictionary<int, string> NameCatalog => _nameCatalog ?? CreateCatalog();
+        public static Dictionary<int, string> NameCatalog => _nameCatalog ?? (_nameCatalog = CreateCatalog());
 
         private static Dictionary<int, string> CreateCatalog()
         {
@@ -472,15 +537,13 @@ namespace Trading.UI.Wpf.ViewModels
         private IEnumerable<TransactionViewModel> _stopps;
         private IEnumerable<ITradingCandidateBase> _candidates;
         private CandidatesProvider _candidatesProvider;
-        private List<Transaction> _transactions;
         private TransactionViewModel _selectedPosition;
         private ITradingCandidateBase _selectedCandidate;
-        private double _value;
-        private double _maximum;
         private int _transactionsCountTotal;
         private decimal _portfolioTurnOver;
         private decimal _averagePortfolioSize;
         private static Dictionary<int, string> _nameCatalog;
+        private SmartProgressRegion _progressRegion;
 
         public void UpdateCash(DateTime toDateTime)
         {
@@ -717,31 +780,19 @@ namespace Trading.UI.Wpf.ViewModels
 
         #endregion
 
-        public double Value
+
+        public SmartProgressRegion ProgressRegion
         {
-            get => _value;
+            get => _progressRegion;
             set
             {
-                if (value.Equals(_value))
+                if (Equals(value, _progressRegion))
                     return;
-                _value = value;
+                _progressRegion = value;
                 OnPropertyChanged();
-                ProgressValueChanged?.Invoke(this, Value);
             }
         }
 
-        public double Maximum
-        {
-            get => _maximum;
-            set
-            {
-                if (value.Equals(_maximum))
-                    return;
-                _maximum = value;
-                OnPropertyChanged();
-                MaximumValueChanged?.Invoke(this, Maximum);
-            }
-        }
 
         public int TransactionsCountTotal
         {
@@ -787,9 +838,52 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
+    }
 
 
-        public event EventHandler<double> ProgressValueChanged;
-        public event EventHandler<double> MaximumValueChanged;
+    public class TradeViewModel : INotifyPropertyChanged
+    {
+        private readonly Trade _trade;
+
+        public TradeViewModel(Trade trade)
+        {
+            _trade = trade;
+            Name = TradingViewModel.NameCatalog[trade.Opening.SecurityId];
+        }
+
+        [SmartDataGridColumnProperty("SecurityId", true, ColumnSortIndex = 6)]
+        public int? SecurityId => _trade.Opening?.SecurityId ?? -1;
+
+        [SmartDataGridColumnProperty("Wertpapier", true, ColumnSortIndex = 0)]
+        public string Name { get; }
+
+        [SmartDataGridColumnProperty("OpenDate", true, StringFormat = "d", ColumnSortIndex = 1)]
+        public DateTime? OpenDateTime => _trade.Opening?.TransactionDateTime;
+
+        [SmartDataGridColumnProperty("Dip", true, StringFormat = "n", ColumnSortIndex = 2)]
+        public int HoldingPeriode => _trade.HoldingPeriodeInDays;
+
+        [SmartDataGridColumnProperty("TotalReturn", true, StringFormat = "p2", ColumnSortIndex = 3, SortDirection = SmartDataGridSortDirection.Descending)]
+        public decimal TotalReturn => _trade.TotalReturn;
+
+        [SmartDataGridColumnProperty("average Weight", true, StringFormat = "p2", ColumnSortIndex = 4)]
+        public decimal AverageWeight => _trade.AveragePortfolioWeight;
+
+        [SmartDataGridColumnProperty("IsNotValid", true, ColumnType = SmartDataGridColumnType.Image, ColumnSortIndex = 5)]
+        public bool IsNotValid => !_trade.IsValid;
+
+
+
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
-using HelperLibrary.Util.Atrributes;
 using Trading.DataStructures.Interfaces;
+using Trading.Parsing.Attributes;
 
 namespace HelperLibrary.Database.Models
 {

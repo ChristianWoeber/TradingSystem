@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelperLibrary.Database.Interfaces;
+﻿using HelperLibrary.Database.Interfaces;
 
 namespace HelperLibrary.Database.CmdModels
 {

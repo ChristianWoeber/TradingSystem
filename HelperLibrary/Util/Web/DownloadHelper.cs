@@ -1,12 +1,9 @@
-﻿using HelperLibrary.Database;
-using HelperLibrary.Database.Enums;
+﻿using HelperLibrary.Database.Enums;
 using HelperLibrary.Interfaces;
 using HelperLibrary.Yahoo;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace HelperLibrary.Util.Web
 {

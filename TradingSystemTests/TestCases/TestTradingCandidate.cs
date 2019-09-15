@@ -41,6 +41,11 @@ namespace TradingSystemTests.TestCases
         public TransactionType TransactionType { get; set; }
         public bool IsBelowStopp { get; set; }
         public bool HasBetterScoring { get; }
+
+        /// <summary>
+        /// Das Interface das die Property bereitsstellt die angibt ob ein Kandiate zum jeweiligen Zeitpunkt aufgestockt werden darf vom Handelssystem
+        /// </summary>
+        public IPositionIncrementationStrategy IncrementationStrategyProvider { get; }
         public IRebalanceScoringResult RebalanceScore { get; }
         public decimal CalculatedScore { get; }
 

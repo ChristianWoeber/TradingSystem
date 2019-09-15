@@ -1,0 +1,1193 @@
+{
+  "$type": "System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib",
+  "$values": [
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 3.118446,
+          "SecurityId": 405359,
+          "AdjustedPrice": 3.118446,
+          "Name": "TELEPERFORMANCE"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.7877011761757281727206000824,
+          "Performance90": 0.4750614244565351190329648687,
+          "Performance30": 0.0022482014388489208633093525,
+          "Performance10": 0.0216057118713253460709400669,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.331544275955388,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 23.42,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 405359,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.7877011761757281727206000824,
+        "Performance90": 0.4750614244565351190329648687,
+        "Performance30": 0.0022482014388489208633093525,
+        "Performance10": 0.0216057118713253460709400669,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.331544275955388,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 23.42,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 3.118446,
+        "SecurityId": 405359,
+        "AdjustedPrice": 3.118446,
+        "Name": "TELEPERFORMANCE"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 3.118446,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "TELEPERFORMANCE",
+      "Score": 23.42,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.7877011761757281727206000824,
+          "Performance90": 0.4750614244565351190329648687,
+          "Performance30": 0.0022482014388489208633093525,
+          "Performance10": 0.0216057118713253460709400669,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.331544275955388,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 23.42,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 23.42
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 13.189028,
+          "SecurityId": 428530,
+          "AdjustedPrice": 13.189028,
+          "Name": "BB BIOTECH AG-REG"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.9918741240903714956119667943,
+          "Performance90": 0.3800808245392352402366875838,
+          "Performance30": 0.0725129292242809814734403774,
+          "Performance10": 0.0044566107839238460636546046,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.447701684977888,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 20.58,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 428530,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.9918741240903714956119667943,
+        "Performance90": 0.3800808245392352402366875838,
+        "Performance30": 0.0725129292242809814734403774,
+        "Performance10": 0.0044566107839238460636546046,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.447701684977888,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 20.58,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 13.189028,
+        "SecurityId": 428530,
+        "AdjustedPrice": 13.189028,
+        "Name": "BB BIOTECH AG-REG"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 13.189028,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "BB BIOTECH AG-REG",
+      "Score": 20.58,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.9918741240903714956119667943,
+          "Performance90": 0.3800808245392352402366875838,
+          "Performance30": 0.0725129292242809814734403774,
+          "Performance10": 0.0044566107839238460636546046,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.447701684977888,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 20.58,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 20.58
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 226.839996337891,
+          "SecurityId": 400027,
+          "AdjustedPrice": 226.839996337891,
+          "Name": "MUENCHENER RUECKVER AG-REG"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.369711317098996913731117769,
+          "Performance90": 0.2451366844072499399958553107,
+          "Performance30": 0.2654435263036270117548505151,
+          "Performance10": 0.003921069507505369210374974,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.478765375519251,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 13.14,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 400027,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.369711317098996913731117769,
+        "Performance90": 0.2451366844072499399958553107,
+        "Performance30": 0.2654435263036270117548505151,
+        "Performance10": 0.003921069507505369210374974,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.478765375519251,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 13.14,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 226.839996337891,
+        "SecurityId": 400027,
+        "AdjustedPrice": 226.839996337891,
+        "Name": "MUENCHENER RUECKVER AG-REG"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 226.839996337891,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "MUENCHENER RUECKVER AG-REG",
+      "Score": 13.14,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.369711317098996913731117769,
+          "Performance90": 0.2451366844072499399958553107,
+          "Performance30": 0.2654435263036270117548505151,
+          "Performance10": 0.003921069507505369210374974,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.478765375519251,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 13.14,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 13.14
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 33.7750875,
+          "SecurityId": 403730,
+          "AdjustedPrice": 33.7750875,
+          "Name": "AES CORP"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.444178495762711864406779661,
+          "Performance90": 0.276733238354440589437952753,
+          "Performance30": 0.1788214947272430165183737247,
+          "Performance10": 0.0125648532918772052233435649,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.629066484760441,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 9.44,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 403730,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.444178495762711864406779661,
+        "Performance90": 0.276733238354440589437952753,
+        "Performance30": 0.1788214947272430165183737247,
+        "Performance10": 0.0125648532918772052233435649,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.629066484760441,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 9.44,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 33.7750875,
+        "SecurityId": 403730,
+        "AdjustedPrice": 33.7750875,
+        "Name": "AES CORP"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 33.7750875,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "AES CORP",
+      "Score": 9.44,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.444178495762711864406779661,
+          "Performance90": 0.276733238354440589437952753,
+          "Performance30": 0.1788214947272430165183737247,
+          "Performance10": 0.0125648532918772052233435649,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.629066484760441,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 9.44,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 9.44
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 9.702,
+          "SecurityId": 414013,
+          "AdjustedPrice": 9.702,
+          "Name": "FREEPORT-MCMORAN INC"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.3904060010842959282230630054,
+          "Performance90": 0.2128395911027432805918630894,
+          "Performance30": 0.2748940677966101694915254237,
+          "Performance10": 0.2064181347527647974882939214,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.668916688551861,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 8.82,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 414013,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.3904060010842959282230630054,
+        "Performance90": 0.2128395911027432805918630894,
+        "Performance30": 0.2748940677966101694915254237,
+        "Performance10": 0.2064181347527647974882939214,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.668916688551861,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 8.82,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 9.702,
+        "SecurityId": 414013,
+        "AdjustedPrice": 9.702,
+        "Name": "FREEPORT-MCMORAN INC"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 9.702,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "FREEPORT-MCMORAN INC",
+      "Score": 8.82,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.3904060010842959282230630054,
+          "Performance90": 0.2128395911027432805918630894,
+          "Performance30": 0.2748940677966101694915254237,
+          "Performance10": 0.2064181347527647974882939214,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.668916688551861,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 8.82,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 8.82
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 7.15037388896942,
+          "SecurityId": 414238,
+          "AdjustedPrice": 7.15037388896942,
+          "Name": "NATIXIS"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.4404295233255499650213512452,
+          "Performance90": 0.1287141524416075215155258992,
+          "Performance30": 0.0251816248489626074727059199,
+          "Performance10": 0.0034505689753992232770738976,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.415620879927235,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 8.62,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 414238,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.4404295233255499650213512452,
+        "Performance90": 0.1287141524416075215155258992,
+        "Performance30": 0.0251816248489626074727059199,
+        "Performance10": 0.0034505689753992232770738976,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.415620879927235,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 8.62,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 7.15037388896942,
+        "SecurityId": 414238,
+        "AdjustedPrice": 7.15037388896942,
+        "Name": "NATIXIS"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 7.15037388896942,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "NATIXIS",
+      "Score": 8.62,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.4404295233255499650213512452,
+          "Performance90": 0.1287141524416075215155258992,
+          "Performance30": 0.0251816248489626074727059199,
+          "Performance10": 0.0034505689753992232770738976,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.415620879927235,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 8.62,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 8.62
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 4.82,
+          "SecurityId": 408676,
+          "AdjustedPrice": 4.82,
+          "Name": "RELX PLC"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": -0.1830158757820260355854521374,
+          "Performance90": 0.2545761078998073217726396917,
+          "Performance30": 0.1945725570136323098483883297,
+          "Performance10": 0.0335545316254767521329835314,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.429589869309026,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 7.24,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 408676,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": -0.1830158757820260355854521374,
+        "Performance90": 0.2545761078998073217726396917,
+        "Performance30": 0.1945725570136323098483883297,
+        "Performance10": 0.0335545316254767521329835314,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.429589869309026,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 7.24,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 4.82,
+        "SecurityId": 408676,
+        "AdjustedPrice": 4.82,
+        "Name": "RELX PLC"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 4.82,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "RELX PLC",
+      "Score": 7.24,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": -0.1830158757820260355854521374,
+          "Performance90": 0.2545761078998073217726396917,
+          "Performance30": 0.1945725570136323098483883297,
+          "Performance10": 0.0335545316254767521329835314,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.429589869309026,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 7.24,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 7.24
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 1.28852262,
+          "SecurityId": 412620,
+          "AdjustedPrice": 1.28852262,
+          "Name": "ACTIVISION BLIZZARD INC"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.5728269648974437918711100545,
+          "Performance90": 0.0456455277974313527776444509,
+          "Performance30": 0.0066060171378958891699067608,
+          "Performance10": 0.1072078486652289123008160258,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.582610635128585,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 6.07,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 412620,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.5728269648974437918711100545,
+        "Performance90": 0.0456455277974313527776444509,
+        "Performance30": 0.0066060171378958891699067608,
+        "Performance10": 0.1072078486652289123008160258,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.582610635128585,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 6.07,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 1.28852262,
+        "SecurityId": 412620,
+        "AdjustedPrice": 1.28852262,
+        "Name": "ACTIVISION BLIZZARD INC"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 1.28852262,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "ACTIVISION BLIZZARD INC",
+      "Score": 6.07,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.5728269648974437918711100545,
+          "Performance90": 0.0456455277974313527776444509,
+          "Performance30": 0.0066060171378958891699067608,
+          "Performance10": 0.1072078486652289123008160258,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.582610635128585,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 6.07,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 6.07
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 5.115,
+          "SecurityId": 414348,
+          "AdjustedPrice": 5.115,
+          "Name": "BBA AVIATION PLC"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.0797979797979797979797979798,
+          "Performance90": 0.1944134078212290502793296089,
+          "Performance30": 0.0358527131782945736434108527,
+          "Performance10": 0.0075400565504241281809613572,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.440800059495053,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 5.88,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 414348,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.0797979797979797979797979798,
+        "Performance90": 0.1944134078212290502793296089,
+        "Performance30": 0.0358527131782945736434108527,
+        "Performance10": 0.0075400565504241281809613572,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.440800059495053,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 5.88,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 5.115,
+        "SecurityId": 414348,
+        "AdjustedPrice": 5.115,
+        "Name": "BBA AVIATION PLC"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 5.115,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "BBA AVIATION PLC",
+      "Score": 5.88,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.0797979797979797979797979798,
+          "Performance90": 0.1944134078212290502793296089,
+          "Performance30": 0.0358527131782945736434108527,
+          "Performance10": 0.0075400565504241281809613572,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.440800059495053,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 5.88,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 5.88
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 122.91476,
+          "SecurityId": 432231,
+          "AdjustedPrice": 122.91476,
+          "Name": "DASSAULT AVIATION SA"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.4182072048883513802258711695,
+          "Performance90": 0.117558024128739625850080057,
+          "Performance30": 0.0295918592684194653512359445,
+          "Performance10": 0.0104266603391150768198034321,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.695064729176398,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 4.29,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 432231,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": 0.4182072048883513802258711695,
+        "Performance90": 0.117558024128739625850080057,
+        "Performance30": 0.0295918592684194653512359445,
+        "Performance10": 0.0104266603391150768198034321,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.695064729176398,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 4.29,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 122.91476,
+        "SecurityId": 432231,
+        "AdjustedPrice": 122.91476,
+        "Name": "DASSAULT AVIATION SA"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 122.91476,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "DASSAULT AVIATION SA",
+      "Score": 4.29,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": 0.4182072048883513802258711695,
+          "Performance90": 0.117558024128739625850080057,
+          "Performance30": 0.0295918592684194653512359445,
+          "Performance10": 0.0104266603391150768198034321,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.695064729176398,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 4.29,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 4.29
+      },
+      "IsTemporarySell": false
+    },
+    {
+      "$type": "HelperLibrary.Trading.TradingCandidate, HelperLibrary",
+      "_tradingCandidateBase": {
+        "$type": "HelperLibrary.Trading.Candidate, HelperLibrary",
+        "Record": {
+          "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+          "Asof": "2000-01-04T00:00:00",
+          "Price": 8.57006730766296,
+          "SecurityId": 421228,
+          "AdjustedPrice": 8.57006730766296,
+          "Name": "REPUBLIC SERVICES INC"
+        },
+        "ScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": -0.3513018438117957370284715002,
+          "Performance90": 0.3239113839386990815472377635,
+          "Performance30": 0.0172904043779050550555857675,
+          "Performance10": 0.0115412609078109302111904902,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.73049238832824,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 1.77,
+          "AbsoluteGainAndLossMetaInfo": null
+        }
+      },
+      "_transactionsHandler": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Transactions.TransactionsHandler, HelperLibrary",
+        "_currentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        },
+        "CurrentPortfolio": {
+          "$type": "HelperLibrary.Trading.PortfolioManager.CurrentPortfolio, HelperLibrary",
+          "$values": []
+        }
+      },
+      "_adjustmentProvider": {
+        "type": "IPortfolioValuation",
+        "PortfolioAsof": "2000-01-05T00:00:00",
+        "PortfolioValue": 100000.0,
+        "AllocationToRisk": 0.0
+      },
+      "CurrentPosition": null,
+      "SecurityId": 421228,
+      "PortfolioAsof": "2000-01-05T00:00:00",
+      "LastTransaction": null,
+      "ScoringResult": {
+        "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+        "Asof": "2000-01-05T00:00:00",
+        "IsValid": true,
+        "Performance250": -0.3513018438117957370284715002,
+        "Performance90": 0.3239113839386990815472377635,
+        "Performance30": 0.0172904043779050550555857675,
+        "Performance10": 0.0115412609078109302111904902,
+        "MaxDrawdown": 0.0,
+        "Volatility": 0.73049238832824,
+        "IsNewLow": false,
+        "LowMetaInfo": null,
+        "Score": 1.77,
+        "AbsoluteGainAndLossMetaInfo": null
+      },
+      "Record": {
+        "$type": "HelperLibrary.Database.Models.TradingRecord, HelperLibrary",
+        "Asof": "2000-01-04T00:00:00",
+        "Price": 8.57006730766296,
+        "SecurityId": 421228,
+        "AdjustedPrice": 8.57006730766296,
+        "Name": "REPUBLIC SERVICES INC"
+      },
+      "IsInvested": false,
+      "IsTemporary": false,
+      "HasStopp": false,
+      "LastScoringResult": null,
+      "TargetWeight": 0.05,
+      "CurrentWeight": 0.0,
+      "AveragePrice": 8.57006730766296,
+      "Performance": 0.0,
+      "PerformanceUnderlying": 0.0,
+      "CanBeIncremented": false,
+      "StopLossMeta": null,
+      "Name": "REPUBLIC SERVICES INC",
+      "Score": 1.77,
+      "TransactionType": 1,
+      "IsBelowStopp": false,
+      "RebalanceScore": {
+        "$type": "HelperLibrary.Trading.PortfolioManager.Rebalancing.RebalanceScoringResult, HelperLibrary",
+        "_performanceScoringResult": {
+          "$type": "HelperLibrary.Trading.ConservativeScoringResult, HelperLibrary",
+          "Asof": "2000-01-05T00:00:00",
+          "IsValid": true,
+          "Performance250": -0.3513018438117957370284715002,
+          "Performance90": 0.3239113839386990815472377635,
+          "Performance30": 0.0172904043779050550555857675,
+          "Performance10": 0.0115412609078109302111904902,
+          "MaxDrawdown": 0.0,
+          "Volatility": 0.73049238832824,
+          "IsNewLow": false,
+          "LowMetaInfo": null,
+          "Score": 1.77,
+          "AbsoluteGainAndLossMetaInfo": null
+        },
+        "Score": 1.77
+      },
+      "IsTemporarySell": false
+    }
+  ]
+}

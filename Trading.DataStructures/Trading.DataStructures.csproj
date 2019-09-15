@@ -36,6 +36,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,7 +59,9 @@
     <Compile Include="Interfaces\IDailyReturnMetaInfo.cs" />
     <Compile Include="Interfaces\IExposureReceiver.cs" />
     <Compile Include="Interfaces\IHistogrammCollection.cs" />
+    <Compile Include="Interfaces\IIncrementable.cs" />
     <Compile Include="Interfaces\ILowMetaInfo.cs" />
+    <Compile Include="Interfaces\IMovingVolaMetaInfo.cs" />
     <Compile Include="Interfaces\IPeriodeResult.cs" />
     <Compile Include="Interfaces\IPositionWatchService.cs" />
     <Compile Include="Interfaces\IPriceHistoryCollectionSettings.cs" />
@@ -83,6 +88,9 @@
     <Compile Include="Interfaces\ITransactionCalculation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\UniqueKeyProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

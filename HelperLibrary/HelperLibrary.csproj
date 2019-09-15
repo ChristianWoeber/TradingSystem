@@ -35,15 +35,15 @@
       <HintPath>..\pckages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="JetBrains.Annotations, Version=11.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\packages\JetBrains.Annotations.11.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+    <Reference Include="JetBrains.Annotations, Version=2019.1.3.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\JetBrains.Annotations.2019.1.3\lib\net20\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\Git\NuGetPackages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\Git\NuGetPackages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,26 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Calculations\AbsoluteLossesAndGainsMetaInfo.cs" />
-    <Compile Include="Calculations\CalculationContext.cs" />
-    <Compile Include="Calculations\CalculationContext.LastItemDictionaryBase.cs" />
-    <Compile Include="Calculations\DailyReturnMetaInfo.cs" />
-    <Compile Include="Calculations\DrawdownItem.cs" />
-    <Compile Include="Calculations\LowMetaInfo.cs" />
-    <Compile Include="Calculations\MaxDrawdown.cs" />
-    <Compile Include="Calculations\MovingVolaMetaInfo.cs" />
-    <Compile Include="Calculations\PeriodeResult.cs" />
-    <Compile Include="Collections\PriceHistoryCollection.cs" />
     <Compile Include="Database\CallCmd.cs" />
-    <Compile Include="Database\Models\PortfolioValue.cs" />
     <Compile Include="Database\Models\ScoringTraceModel.cs" />
-    <Compile Include="Database\Models\TradingRecord.cs" />
-    <Compile Include="Database\Models\Transaction.cs" />
-    <Compile Include="Calculations\CalculationHandler.cs" />
-    <Compile Include="Calculations\Quote.cs" />
-    <Compile Include="Calculations\ReturnCalculation.cs" />
-    <Compile Include="Collections\BinarySearchCollections.cs" />
-    <Compile Include="Collections\BinarySearchOption.cs" />
     <Compile Include="Database\CmdModels\DeleteCmd.cs" />
     <Compile Include="Database\CmdModels\EqualCmd.cs" />
     <Compile Include="Database\CmdModels\FieldsCmd.cs" />
@@ -118,50 +100,12 @@
     <Compile Include="Interfaces\IParser.cs" />
     <Compile Include="Interfaces\IPlugin.cs" />
     <Compile Include="Interfaces\IQuote.cs" />
-    <Compile Include="Trading\PortfolioManager\Candidates\Candidate.cs" />
-    <Compile Include="Trading\PortfolioManager\BacktestHandler.cs" />
-    <Compile Include="Trading\PortfolioManager\PositionWatchService.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\INeeedRebalancingRule.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\IRebalanceContext.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceCollection.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\AllCandidatesAreUnchangedRule.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\FirstCandidateIsNotInvesterdInRule.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\HasBetterScoringRule.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\IncreasedPositionsRule.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\IRebalanceRule.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceScoringResult.cs" />
-    <Compile Include="Trading\PortfolioManager\Cash\CashEffectiveRange.cs" />
-    <Compile Include="Trading\PortfolioManager\Cash\CashManager.cs" />
-    <Compile Include="Trading\PortfolioManager\Cash\CashMetaInfo.cs" />
-    <Compile Include="Trading\PortfolioManager\CurrentPortfolio.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\ScanCandidatesRules.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\Rules\TransactionTypRule.cs" />
-    <Compile Include="Trading\PortfolioManager\Settings\DefaultStopLossSettings.cs" />
-    <Compile Include="Trading\PortfolioManager\Exposure\ExposureWatcher.cs" />
-    <Compile Include="Trading\PortfolioManager\Exposure\IExposureProvider.cs" />
-    <Compile Include="Trading\PortfolioManager\Exposure\IExposureReceiver.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceProvider.cs" />
-    <Compile Include="Trading\PortfolioManager\Rebalancing\RebalanceRulesService.cs" />
-    <Compile Include="Trading\PortfolioManager\Settings\Record.cs" />
-    <Compile Include="Trading\PortfolioManager\Settings\StopLossMeta.cs" />
-    <Compile Include="Trading\PortfolioManager\Transactions\TransactionCalculationHandler.cs" />
-    <Compile Include="Trading\PortfolioManager\Transactions\TransactionsHandler.cs" />
-    <Compile Include="Trading\Scoring\ScoringResult.cs" />
-    <Compile Include="Parsing\ParserFactory.cs" />
     <Compile Include="Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="Trading\PortfolioManager\Candidates\CandidatesProvider.cs" />
-    <Compile Include="Trading\PortfolioManager\Settings\DefaultSettings.cs" />
-    <Compile Include="Trading\PortfolioManager\PortfolioManager.cs" />
-    <Compile Include="Trading\PortfolioManager\PortfolioManagerBase.cs" />
-    <Compile Include="Trading\PortfolioManager\TemporaryPortfolio.cs" />
-    <Compile Include="Trading\Scoring\ScoringProvider.cs" />
-    <Compile Include="Trading\PortfolioManager\Candidates\TradingCandidate.cs" />
-    <Compile Include="Util\Atrributes\InputMapping.cs" />
     <Compile Include="Util\Converter\JsonConverter.cs" />
     <Compile Include="Util\Converter\JsonUtils.cs" />
     <Compile Include="Util\Converter\PortfolioValuationConverter.cs" />
@@ -195,13 +139,20 @@
       <Project>{53bb7efc-1b0d-4dfa-be74-5ff13bf088ef}</Project>
       <Name>Trading.DataStructures</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Trading.Parsing\Trading.Parsing.csproj">
+      <Project>{463f055a-786d-4e0f-9571-34bc6791bf61}</Project>
+      <Name>Trading.Parsing</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Newtonsoft.Json.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Parsing\" />
+    <Folder Include="Util\Atrributes\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -183,8 +183,6 @@ namespace HelperLibrary.Trading.PortfolioManager.Transactions
             decimal GetPrice(ITransaction transaction) => transaction.EffectiveAmountEur / transaction.Shares;
         }
 
-
-
         public ITransaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
         {
             if (transactionType == null && getLatest)

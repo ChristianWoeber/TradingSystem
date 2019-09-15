@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HelperLibrary.Extensions
 {
@@ -156,11 +152,8 @@ namespace HelperLibrary.Extensions
         /// <returns></returns>
         public static DateTime GetBusinessDay(this DateTime date, bool next = true)
         {
-            var modifier = 1;
-            if (!next)
-                modifier = modifier * -1;
-
-            var tempDate = date.AddDays(1 * modifier);
+            var modifier = next ? 1 : -1;
+            var tempDate = date.AddDays(next ? 1 * modifier : 0);
 
             switch (tempDate.DayOfWeek)
             {
@@ -182,7 +175,7 @@ namespace HelperLibrary.Extensions
                     if (!next)
                         break;
                     else
-                        return tempDate.AddDays(2 * modifier);
+                        return tempDate.AddDays(1 * modifier);
             }
             return tempDate;
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using HelperLibrary.Database.Interfaces;
 
 namespace HelperLibrary.Database

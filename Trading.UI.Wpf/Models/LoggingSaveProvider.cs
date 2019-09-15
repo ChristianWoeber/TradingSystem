@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Parsing;
-using HelperLibrary.Trading.PortfolioManager;
-using HelperLibrary.Trading.PortfolioManager.Cash;
-using Trading.DataStructures.Enums;
+using Trading.Core.Cash;
+using Trading.Core.Models;
+using Trading.Core.Portfolio;
 using Trading.DataStructures.Interfaces;
+using Trading.Parsing;
 
 namespace Trading.UI.Wpf.Models
 {
@@ -49,24 +47,24 @@ namespace Trading.UI.Wpf.Models
 
         private void OnStoppLossExecuted(object sender, PortfolioManagerEventArgs args)
         {
-            SimpleTextParser.AppendToFile(args.Transaction, _stoppLossPath);
+            SimpleTextParser.AppendToFile<Transaction>(args.Transaction, _stoppLossPath);
         }
 
         private void OnCashChangedEvent(object sender, DateTime e)
         {
-            SimpleTextParser.AppendToFile(new CashMetaInfo(e, _pm.CashHandler.Cash), _cashPath);
+            SimpleTextParser.AppendToFile<CashMetaInfo>(new CashMetaInfo(e, _pm.CashHandler.Cash), _cashPath);
         }
 
 
         private void OnPortfolioAsofChanged(object sender, DateTime e)
         {
-            SimpleTextParser.AppendToFile(new PortfolioValuation { AllocationToRisk = _pm.AllocationToRisk, PortfolioAsof = e, PortfolioValue = _pm.PortfolioValue }, _portfolioValuationPath);
+            SimpleTextParser.AppendToFile<PortfolioValuation>(new PortfolioValuation { AllocationToRisk = _pm.AllocationToRisk, PortfolioAsof = e, PortfolioValue = _pm.PortfolioValue }, _portfolioValuationPath);
         }
 
 
         public void Save(IEnumerable<ITransaction> items)
         {
-            SimpleTextParser.AppendToFile(items.Cast<Transaction>().Where(x => x.IsTemporary && x.Cancelled != 1), _transactionsPath);
+            SimpleTextParser.AppendToFile<Transaction>(items.Cast<Transaction>().Where(x => x.IsTemporary && x.Cancelled != 1), _transactionsPath);
         }
 
         /// <summary>
@@ -77,7 +75,7 @@ namespace Trading.UI.Wpf.Models
         public void SaveScoring(Dictionary<int, ITradingCandidate> temporaryCandidatesDictionary, ITemporaryPortfolio temporaryPortfolio)
         {
             var completePath = Path.Combine(_loggingPath, nameof(ScoringTraceModel) + ".csv");
-            SimpleTextParser.AppendToFile(CreateScoringTraceModels(temporaryCandidatesDictionary, temporaryPortfolio), completePath);
+            SimpleTextParser.AppendToFile<ScoringTraceModel>(CreateScoringTraceModels(temporaryCandidatesDictionary, temporaryPortfolio), completePath);
         }
 
         /// <summary>

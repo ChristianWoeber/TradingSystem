@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using HelperLibrary.Database.Models;
+using Trading.Core.Models;
 
 namespace Trading.UI.Wpf.ViewModels.EventArgs
 {

@@ -5,15 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HelperLibrary.Extensions;
-using HelperLibrary.Parsing;
-using HelperLibrary.Trading.PortfolioManager;
-using HelperLibrary.Trading.PortfolioManager.Exposure;
-using HelperLibrary.Trading.PortfolioManager.Settings;
-using HelperLibrary.Util.Atrributes;
 using NUnit.Framework;
+using Trading.Core.Backtest;
+using Trading.Core.Exposure;
+using Trading.Core.Extensions;
+using Trading.Core.Settings;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
+using Trading.Parsing;
+using Trading.Parsing.Attributes;
 
 namespace TradingSystemTests.TestCases
 {
@@ -31,7 +31,7 @@ namespace TradingSystemTests.TestCases
         public DummyPortfolioSettings()
         {
             IndicesDirectory = @"D:\Work\Private\Git\HelperLibrary\TradingSystemTests\Resources";
-          
+
         }
     }
 
@@ -153,7 +153,7 @@ namespace TradingSystemTests.TestCases
             var ret = dicList.TryGetValue(_settings.MinimumAllocationToRisk, out var minimumItems);
 
             Assert.IsTrue(!ret, "Achtung keine Items mit mimum Exposre in der TimeRange gefunden");
-            Assert.IsTrue(minimumItems==null, "Achtung keine Items mit mimum Exposre in der TimeRange gefunden");
+            Assert.IsTrue(minimumItems == null, "Achtung keine Items mit mimum Exposre in der TimeRange gefunden");
 
         }
 
@@ -167,7 +167,7 @@ namespace TradingSystemTests.TestCases
 
             if (_output.Count == 0)
             {
-                SimpleTextParser.AppendToFile(_allocationToRiskWatcher.EnumLows().Select(x => new MovingAveragePrint(x.Item1, x.Item2.MovingAverage)), Path.Combine(path, fileName));
+                SimpleTextParser.AppendToFile(_allocationToRiskWatcher.EnumLows().Select(x => new MovingAveragePrint(x.dateTime, x.metaInfo.MovingAverage)), Path.Combine(path, fileName));
                 Process.Start(completePath);
             }
             else

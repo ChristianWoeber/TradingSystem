@@ -7,10 +7,9 @@ using System.Windows;
 using System.Windows.Media;
 using Arts.Financial;
 using Arts.WCharting;
-using HelperLibrary.Database.Models;
+using Trading.Core.Models;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
-using Trading.UI.Wpf.Utils;
 using Trading.UI.Wpf.ViewModels;
 
 namespace Trading.UI.Wpf.Windows

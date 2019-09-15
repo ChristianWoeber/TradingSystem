@@ -75,11 +75,10 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
         bool IsBelowStopp { get; set; }
 
-        ///// <summary>
-        ///// gibt an ob der aktuelle Candidate ein besser Scoring im vergleich zu letzten hatte
-        /////  gibt an ob der aktuelle Score höher ist als der letzte
-        ///// </summary>
-        //bool HasBetterScoring { get; }
+        /// <summary>
+        /// Das Interface das die Property bereitsstellt die angibt ob ein Kandiate zum jeweiligen Zeitpunkt aufgestockt werden darf vom Handelssystem
+        /// </summary>
+        IPositionIncrementationStrategy IncrementationStrategyProvider { get; }
 
         /// <summary>
         /// Das Result des Calculated Scores für das Rebalancing
@@ -89,7 +88,7 @@ namespace Trading.DataStructures.Interfaces
         /// <summary>
         /// Gibt an ob es sich um einen temporären Verkauf handelt, sprich der Candidate schon im temporären Portfolio ist und beretis abgeschichtet wurde
         /// </summary>
-        bool IsTemporarySell { get;  }
+        bool IsTemporarySell { get; }
 
         /// <summary>
         /// die aktuelle Wertentwicklung der Position

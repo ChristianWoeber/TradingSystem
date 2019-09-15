@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.IO.Compression;
-
-namespace Trading.UI.Wpf.Utils
+﻿namespace Trading.UI.Wpf.Utils
 {
     public static class FileHelper
     {

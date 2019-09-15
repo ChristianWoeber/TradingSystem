@@ -1,8 +1,8 @@
 ﻿using System;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Trading.PortfolioManager.Settings;
-using HelperLibrary.Trading.PortfolioManager.Transactions;
 using NUnit.Framework;
+using Trading.Core.Models;
+using Trading.Core.Settings;
+using Trading.Core.Transactions;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Models;

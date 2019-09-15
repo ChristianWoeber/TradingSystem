@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using HelperLibrary.Extensions;
+using Trading.Core.Extensions;
 using Trading.DataStructures.Interfaces;
 
 namespace Trading.UI.Wpf.Models

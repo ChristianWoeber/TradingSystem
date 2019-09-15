@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Trading.DataStructures.Enums;
@@ -121,5 +122,51 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
         /// <returns></returns>
         IEnumerable<IEnumerable<IHistogrammCollection>> EnumHistogrammClasses();
+
+        /// <summary>
+        /// Gibt tur zurück wenn die LastVolatirly Info gefunden wurde und stellt die Metainfo dazu über das
+        /// IMovingVolaMetaInfo Interface bereit
+        /// </summary>
+        /// <param name="currentDate"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        bool TryGetLastVolatilityInfo(DateTime currentDate, out IMovingVolaMetaInfo info);
+
+        /// <summary>
+        /// fügt den daily Return in die Collection hinzu
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        void AddDailyReturn(ITradingRecord from, ITradingRecord to);
+
+        /// <summary>
+        /// berechnet den laufenden arithmetischen Durchschnitt beim einfüllen der objekte in die collection
+        /// </summary>
+        /// <param name="record"></param>
+        void CalcRunningArithmeticMean(ITradingRecord record);
+
+        /// <summary>
+        /// berechnet die laufenden lows auf basis der Einstellung in den Settings der PriceHistory Collection
+        /// </summary>
+        /// <param name="tradingRecord"></param>
+        void CalcMovingLows(ITradingRecord tradingRecord);
+
+        /// <summary>
+        /// berechnet die Volatilität beim Einfügen der Records in die Collection
+        /// </summary>
+        /// <param name="tradingRecord"></param>
+        void CalcMovingVola(ITradingRecord tradingRecord);
+
+        /// <summary>
+        /// berechnet die absoluten Verluste und Gewinne (netted quasi positive dailyReturns und negative)
+        /// </summary>
+        /// <param name="record"></param>
+        void CalcAbsoluteLossesAndGains(ITradingRecord record);
+
+        /// <summary>
+        /// enumeriert die kvps der LowMetainfo Collecton als ValueTuples
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<(DateTime dateTime, ILowMetaInfo metaInfo)> EnumLows();
     }
 }

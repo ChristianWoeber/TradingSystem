@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Parsing;
+using Trading.Core.Models;
 using Trading.DataStructures.Interfaces;
+using Trading.Parsing;
 
 namespace TradingSystemTests.Models
 {

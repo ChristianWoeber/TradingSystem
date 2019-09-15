@@ -41,6 +41,8 @@ namespace HelperLibrary.Trading.PortfolioManager.Cash
 
         public void CleanUpCash(List<ITradingCandidate> temporaryCandidates)
         {
+            //TODO: IM CASH MANAGER wird manchmal der TransactionState falhsc manipuliert!! das muss dringend gefixed und getestet werden
+
             if (temporaryCandidates == null)
                 throw new ArgumentNullException(nameof(temporaryCandidates));
 

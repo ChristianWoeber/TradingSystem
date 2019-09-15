@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using HelperLibrary.Calculations;
@@ -58,6 +59,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Exposure
         public ExposureWatcher(IExposureSettings settings)
         {
             _receiver = settings;
+            if (string.IsNullOrWhiteSpace(settings.IndicesDirectory))
+            {
+                Trace.TraceError("Achtung es wurde kein Pfad für die History der Indizes angegeben");
+                return;
+            }
             var files = Directory.GetFiles(settings.IndicesDirectory);
         
             var tradingRecords = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(settings.IndexType == IndexType.SandP500 

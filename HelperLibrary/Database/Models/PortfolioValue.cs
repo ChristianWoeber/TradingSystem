@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.Linq.Mapping;
-using HelperLibrary.Trading.PortfolioManager;
 using HelperLibrary.Util.Atrributes;
 using Trading.DataStructures.Interfaces;
 

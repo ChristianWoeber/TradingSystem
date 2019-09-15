@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HelperLibrary.Database.Models;
+using Trading.Core.Models;
 using Trading.UI.Wpf.Models;
 
 namespace Trading.UI.Wpf.ViewModels

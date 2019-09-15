@@ -21,4 +21,5 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
         decimal AllocationToRisk { get; set; }
     }
+   
 }

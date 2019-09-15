@@ -40,16 +40,6 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="currentWorstInvestedCandidate"></param>
         void AdjustTradingCandidateSell(decimal currentWeight, ITradingCandidate currentWorstInvestedCandidate);
 
-        ///// <summary>
-        ///// der Aktuelle Wert des Portfolios
-        ///// </summary>
-        //decimal PortfolioValue { get; }
-
-        ///// <summary>
-        ///// Das aktuelle Asof Datum des Portfoliomanagers
-        ///// </summary>
-        //DateTime PortfolioAsof { get; set; }
-
 
         /// <summary>
         /// die Aktuelle Auslastung

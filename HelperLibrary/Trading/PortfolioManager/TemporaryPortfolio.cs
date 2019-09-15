@@ -164,7 +164,7 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public void IncrementCash(ITransaction transaction)
         {
-            //TODO: alle aufrufe nach dem aktuellen score und aktuellem Record nur einmal machen => eventuell ein Repo mit Singelton ??
+           
             if (transaction.TransactionDateTime != _adjustmentProvider.PortfolioAsof)
             {
                 var record = _adjustmentProvider.ScoringProvider.GetTradingRecord(transaction.SecurityId, _adjustmentProvider.PortfolioAsof);

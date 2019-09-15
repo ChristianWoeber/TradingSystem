@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using HelperLibrary.Collections;
-using HelperLibrary.Extensions;
-using HelperLibrary.Parsing;
-using HelperLibrary.Trading.PortfolioManager.Exposure;
-using HelperLibrary.Trading.PortfolioManager.Settings;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Trading.Calculation.Collections;
+using Trading.Calculation.Extensions;
+using Trading.Core.Extensions;
+using Trading.Core.Settings;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
+using Trading.Parsing;
 using TradingSystemTests.Models;
 
 namespace TradingSystemTests.TestCases

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Extensions;
+using Trading.Core.Extensions;
+using Trading.Core.Models;
 using Trading.DataStructures.Enums;
 
 namespace Trading.UI.Wpf.ViewModels
@@ -12,19 +12,20 @@ namespace Trading.UI.Wpf.ViewModels
         private static Dictionary<int, List<Transaction>> _transactionsDictionary;
         private static IEnumerable<Transaction> _transactions;
 
-        private static bool _isInitialized;
+
+        public static bool IsInitialized { get; private set; }
 
         public static void Initialize(IEnumerable<Transaction> transactions)
         {
             _transactions = transactions;
             _transactionsDictionary = _transactions.ToDictionaryList(x => x.SecurityId);
-            _isInitialized = true;
+            IsInitialized = true;
         }
 
 
         public static IEnumerable<Transaction> GetTransactions(DateTime asof, int securityId)
         {
-            if (!_isInitialized)
+            if (!IsInitialized)
                 throw new ArgumentException("Bitte vorher das Repo initialiseren");
 
             if (!_transactionsDictionary.TryGetValue(securityId, out var transactions))
@@ -50,7 +51,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         public static IEnumerable<Transaction> GetAllTransactions()
         {
-            return _transactions;
+            return _transactions.OrderBy(x => x.TransactionDateTime);
         }
 
         public static int GetAllTransactionsCount()

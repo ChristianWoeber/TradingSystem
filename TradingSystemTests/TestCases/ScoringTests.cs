@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Versioning;
-using HelperLibrary.Collections;
-using HelperLibrary.Trading;
 using NUnit.Framework;
+using Trading.Calculation.Collections;
+using Trading.Core.Scoring;
 using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Helper;
 

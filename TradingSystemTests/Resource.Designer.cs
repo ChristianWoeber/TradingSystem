@@ -19,7 +19,7 @@ namespace TradingSystemTests {
     // -Klasse über ein Tool wie ResGen oder Visual Studio automatisch generiert.
     // Um einen Member hinzuzufügen oder zu entfernen, bearbeiten Sie die .ResX-Datei und führen dann ResGen
     // mit der /str-Option erneut aus, oder Sie erstellen Ihr VS-Projekt neu.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resource {
@@ -218,6 +218,25 @@ namespace TradingSystemTests {
         internal static string AllCandidates_19_01_2000 {
             get {
                 return ResourceManager.GetString("AllCandidates_19_01_2000", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {
+        ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib&quot;,
+        ///  &quot;$values&quot;: [
+        ///    {
+        ///      &quot;$type&quot;: &quot;HelperLibrary.Trading.TradingCandidate, HelperLibrary&quot;,
+        ///      &quot;_tradingCandidateBase&quot;: {
+        ///        &quot;$type&quot;: &quot;HelperLibrary.Trading.Candidate, HelperLibrary&quot;,
+        ///        &quot;Record&quot;: {
+        ///          &quot;$type&quot;: &quot;HelperLibrary.Database.Models.TradingRecord, HelperLibrary&quot;,
+        ///          &quot;Asof&quot;: &quot;2000-01-04T00:00:00&quot;,
+        ///          &quot;Price&quot;: 3.118446, [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string AllCandidates_CleanUpCash05_01_2000 {
+            get {
+                return ResourceManager.GetString("AllCandidates_CleanUpCash05_01_2000", resourceCulture);
             }
         }
         
@@ -583,6 +602,21 @@ namespace TradingSystemTests {
         internal static string TransactionsHistoryTest {
             get {
                 return ResourceManager.GetString("TransactionsHistoryTest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die TicketFee;TransactionDateTime;SecurityId;Shares;TargetAmountEur;TransactionType;Cancelled;TargetWeight;EffectiveWeight;EffectiveAmountEur
+        ///35;05.01.2000 00:00:00;39;343;10000.0;1;0;0.1;0.0997;9971.01
+        ///35;05.01.2000 00:00:00;16;253;10000.0;1;0;0.1;0.0999;9994.2586
+        ///35;05.01.2000 00:00:00;40;304;10000.0;1;0;0.1;0.1000;9996.5232
+        ///35;05.01.2000 00:00:00;11;153;10000.0;1;0;0.1;0.0998;9983.25
+        ///35;05.01.2000 00:00:00;14;497;10000.0;1;0;0.1;0.1000;9996.658
+        ///35;05.01.2000 00:00:00;1;131;10000.0;1;0;0.1;0.1000;9999.6 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string WriteToFileTest {
+            get {
+                return ResourceManager.GetString("WriteToFileTest", resourceCulture);
             }
         }
     }

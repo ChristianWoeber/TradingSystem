@@ -26,6 +26,15 @@ namespace Trading.DataStructures.Interfaces
 
 
         /// <summary>
+        /// The method that Gets a specific Record from its index
+        /// </summary>
+        /// <param name="index">the index</param>
+        /// <param name="option">the option</param>
+        /// <returns></returns>
+        ITradingRecord Get(int index, PriceHistoryOption option = PriceHistoryOption.PreviousItem);
+
+
+        /// <summary>
         /// The Count of the Items
         /// </summary>
         int Count { get; }
@@ -40,6 +49,15 @@ namespace Trading.DataStructures.Interfaces
         /// </summary>
         IPriceHistoryCollectionSettings Settings { get; }
 
+        /// <summary>
+        /// Der letzte Eintrag in der Collection
+        /// </summary>
+        ITradingRecord LastItem { get; }
+
+        /// <summary>
+        /// Der erste Eintrag in der Collection
+        /// </summary>
+        ITradingRecord FirstItem { get; }
 
         /// <summary>
         /// Gibt die Range des Angegebenen Zeitraums zurück
@@ -49,5 +67,32 @@ namespace Trading.DataStructures.Interfaces
         /// <param name="option"></param>
         /// <returns></returns>
         IEnumerable<ITradingRecord> Range(DateTime? from, DateTime? to, PriceHistoryOption option = PriceHistoryOption.PreviousItem);
+
+        /// <summary>
+        /// Gibt den täglich Return zum Datum des Records zurück
+        /// </summary>
+        /// <param name="indexLevel"></param>
+        /// <returns></returns>
+        decimal GetDailyReturn(ITradingRecord indexLevel);
+
+        /// <summary>
+        /// Enumeriert die Monats Ultimo Records
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<ITradingRecord> EnumMonthlyUltimoItems();
+
+        /// <summary>
+        /// Gibt die LowMetaInfo zum Stichtag zurück
+        /// </summary>
+        /// <param name="asof"></param>
+        /// <param name="lowMetaInfo"></param>
+        /// <returns></returns>
+        bool TryGetLowMetaInfo(DateTime asof, out ILowMetaInfo lowMetaInfo);
+
+        /// <summary>
+        /// Enumeriert die Lows
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<(DateTime dateTime, ILowMetaInfo metaInfo)> EnumLows();
     }
 }

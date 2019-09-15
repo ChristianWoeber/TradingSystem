@@ -2,8 +2,8 @@
 using System.IO;
 using System.Linq;
 using Arts.Financial;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Parsing;
+using Trading.Core.Models;
+using Trading.Parsing;
 
 namespace Trading.UI.Wpf.Utils
 {

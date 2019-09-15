@@ -14,7 +14,84 @@ using Transaction = HelperLibrary.Database.Models.Transaction;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
-    public class PortfolioManager : PortfolioManagerBase, IAdjustmentProvider
+    public interface IPortfolioManager : IAdjustmentProvider
+    {
+        /// <summary>
+        /// der Risk Watcher - kümmert sich um die Berechnung der maximalen Aktienquote
+        /// </summary>
+        IExposureProvider AllocationToRiskWatcher { get; set; }
+
+        /// <summary>
+        /// der Rebalance Provider - kümmert sich um das Rebalanced des Portfolios
+        /// </summary>
+        IRebalanceProvider RebalanceProvider { get; set; }
+
+        /// <summary>
+        /// die Klasse die sich um die Berechnungen der Transaktion kümmert, Shares, Amount EUR etc..
+        /// </summary>
+        TransactionCalculationHandler TransactionCaclulationProvider { get; }
+
+        /// <summary>
+        /// Das aktuelle Portfolio (alle Transaktionen die nicht geschlossen sind)
+        /// </summary>
+        IEnumerable<ITransaction> CurrentPortfolio { get; }
+
+        /// <summary>
+        /// Flag das angibt ob es im temporären Portdolio zu Änderungen gekommen ist
+        /// </summary>
+        bool HasChanges { get; }
+
+        /// <summary>
+        /// das Event das aufgerufen wird, wenn eine position ausgestoppt wurde
+        /// </summary>
+        event EventHandler<PortfolioManagerEventArgs> StoppLossExecuted;
+
+        /// <summary>
+        /// das Event das aufgerufen wird, wenn sich die Positonen ändert
+        /// </summary>
+        event EventHandler<PortfolioManagerEventArgs> PositionChangedEvent;
+
+        /// <summary>
+        /// Event das aufgerufen wird wenn sich das Asof Datum des PMs ändert
+        /// </summary>
+        event EventHandler<DateTime> PortfolioAsofChangedEvent;
+
+        /// <summary>
+        /// Hier werden die Candidaten die zur Verfügung stehen injected
+        /// </summary>
+        /// <param name="candidatesBase"></param>
+        /// <param name="asof">das Datum</param>
+        void PassInCandidates([NotNull]List<ITradingCandidateBase> candidatesBase, DateTime asof);
+
+        /// <summary>
+        /// Die Haupt einstiegs Methode in den Portfolio Manager, wo alle Regeln angewandt werden
+        /// </summary>
+        /// <param name="candidates"></param>
+        void ApplyPortfolioRules(List<ITradingCandidate> candidates);
+
+        /// <summary>
+        /// Anpassung des Kandidaten für das temporäre Portfolio und für die Transaktionserstellung
+        /// </summary>
+        /// <param name="currentWeight"></param>
+        /// <param name="candidate"></param>
+        void AdjustTradingCandidateBuy(decimal currentWeight, ITradingCandidate candidate);
+
+        /// <summary>
+        /// Registiert den Scoring Provider, der den Score berechnet
+        /// </summary>
+        /// <param name="scoringProvider"></param>
+        void RegisterScoringProvider(IScoringProvider scoringProvider);
+
+        /// <summary>
+        /// Berechnet den aktuellen Portfolio-Wert
+        /// </summary>
+        /// <returns></returns>
+        void CalculateCurrentPortfolioValue();
+
+
+    }
+
+    public class PortfolioManager : PortfolioManagerBase, IPortfolioManager
     {
         /// <summary>
         /// Default Constructor for Initializing Settings from Interfaces - Initializes default values if no arguments are passed in
@@ -45,12 +122,12 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// der Risk Watcher - kümmert sich um die Berechnung der maximalen Aktienquote
         /// </summary>
-        internal IExposureProvider AllocationToRiskWatcher { get; set; }
+        public IExposureProvider AllocationToRiskWatcher { get; set; }
 
         /// <summary>
         /// der Rebalance Provider - kümmert sich um das Rebalanced des Portfolios
         /// </summary>
-        internal IRebalanceProvider RebalanceProvider { get; set; }
+        public IRebalanceProvider RebalanceProvider { get; set; }
 
         /// <summary>
         /// das Event das aufgerufen wird, wenn eine position ausgestoppt wurde
@@ -60,12 +137,12 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// das Event das aufgerufen wird, wenn sich die Positonen änder
         /// </summary>
-        protected event EventHandler<PortfolioManagerEventArgs> PositionChangedEvent;
+        public event EventHandler<PortfolioManagerEventArgs> PositionChangedEvent;
 
         /// <summary>
         /// die Klasse die sich um die Berechnungen der Transaktion kümmert, Shares, Amount EUR etc..
         /// </summary>
-        protected TransactionCalculationHandler TransactionCaclulationProvider { get; }
+        public TransactionCalculationHandler TransactionCaclulationProvider { get; }
 
         /// <summary>
         /// Der CashHandler der sich um die berechnung des Cash-Wertes kümmert
@@ -173,7 +250,6 @@ namespace HelperLibrary.Trading.PortfolioManager
                 TemporaryPortfolio.Clear();
                 TemporaryCandidates.Clear();
 
-
                 //Wenn bereits Transaktionen getätigt wurden
                 if (!TransactionsHandler.CurrentPortfolio.HasItems(asof))
                 {
@@ -202,7 +278,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
 
             //Portfolio Regeln anwenden
-            ApplyPortfolioRules(candidates.OrderByDescending(x => x.ScoringResult).ToList());
+            ApplyPortfolioRules(candidates.OrderByDescending(x => x.ScoringResult).Cast<ITradingCandidate>().ToList());
         }
 
 
@@ -211,20 +287,21 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// </summary>
         public bool HasChanges => TemporaryPortfolio.HasChanges;
 
+        [Obsolete("Redundant sollte ja mit Allocation to Risk übereinstimmen")]
         public decimal CurrentAllocationToRisk => 1 - CashHandler.Cash / PortfolioValue;
 
-        protected override void ApplyPortfolioRules(List<TradingCandidate> candidates)
+        public override void ApplyPortfolioRules(List<ITradingCandidate> candidates)
         {
             // Wenn keine Kandidaten vorhanden sind, wir das Portfolio nicht geändert
             if (candidates.Count <= 0)
                 return;
 
             // Wenn keine Aktienquote zulässig ist returne ich ebenfalls
-            if (CurrentAllocationToRisk <= 0 && PortfolioSettings.MaximumAllocationToRisk <= 0)
+            if (AllocationToRisk <= 0 && PortfolioSettings.MaximumAllocationToRisk <= 0)
                 return;
 
             //liste mit den besten Kandiaten die, aktuelle verdrängen werden
-            var bestCandidatesNotInvestedIn = new List<TradingCandidate>();
+            var bestCandidatesNotInvestedIn = new List<ITradingCandidate>();
 
             //check Candidates
             foreach (var candidate in candidates)
@@ -237,7 +314,7 @@ namespace HelperLibrary.Trading.PortfolioManager
                     candidate.TransactionType = TransactionType.Unchanged;
 
                     //es wird nur an Handelstagen aufgestockt
-                    if (PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay && candidate.CanBeIncremented)
+                    if (PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay && candidate.IncrementationStrategyProvider.IsAllowedToBeIncremented())
                     {
                         //wird nur aufgestockt wenn er lang genug gehalten wurde
                         if (IsBelowMinimumHoldingPeriode(candidate))
@@ -301,7 +378,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             RebalanceProvider.RebalanceTemporaryPortfolio(bestCandidatesNotInvestedIn.Select(c => (ITradingCandidate)c).ToList(), candidates.Select(c => (ITradingCandidate)c).ToList());
         }
 
-        private void AdjustTradingCandidateBuy(decimal currentWeight, TradingCandidate candidate)
+        public void AdjustTradingCandidateBuy(decimal currentWeight, ITradingCandidate candidate)
         {
             //wird nicht mehr aufgestockt bereits am maximum
             //der nächst bessere Candidate wird berücksichtigt
@@ -471,7 +548,8 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
 
             //sonst die Anpassung übernehmen
-            candidate.TransactionType = TransactionType.Changed;
+            if (candidate.TransactionType != TransactionType.Open && candidate.TransactionType != TransactionType.Close)
+                candidate.TransactionType = TransactionType.Changed;
             //wenn es sich um eine bestehende Postion handelt dann einen neuen Verkauf planen sonst bestehnden Position manipulieren
             if (!candidate.IsTemporary)
                 AddToTemporaryPortfolio(candidate);
@@ -538,7 +616,9 @@ namespace HelperLibrary.Trading.PortfolioManager
             //    : newtargetWeight;
             candidate.TargetWeight = newtargetWeight;
             if (candidate.TransactionType == TransactionType.Unknown || candidate.TransactionType == TransactionType.Unchanged)
+            {
                 candidate.TransactionType = TransactionType.Changed;
+            }
             //sonst die Position abschichten
             if (adjustPosition)
                 AdjustTemoraryPosition(candidate);
@@ -568,7 +648,7 @@ namespace HelperLibrary.Trading.PortfolioManager
             //die aktuell geplante unveränderte Transaction
             var tempItem = TemporaryPortfolio.Get(candidate.Record.SecurityId);
 
-            //die Region reverted zuerst den Casheffect (rücklbuchung und erstellt dann einen neuen aktualisierten Eintrag)
+            //die Region reverted zuerst den Casheffect (rückbuchung und erstellt dann einen neuen aktualisierten Eintrag)
             using (new CashEffectiveRange(tempItem, TemporaryPortfolio))
             {
                 tempItem.TargetWeight = candidate.TargetWeight;
@@ -584,7 +664,6 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         public void AddToTemporaryPortfolio(ITradingCandidate candidate)
         {
-            //TODO: könnte hier den RebalanceScore und den PerformanceScore mit speichern
             //zur temporären Liste hinzufügen
             TemporaryCandidates.Add(candidate.Record.SecurityId, candidate);
             candidate.IsTemporary = true;
@@ -663,7 +742,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// Berechnet den aktuellen Portfolio-Wert
         /// </summary>
         /// <returns></returns>
-        protected override void CalculateCurrentPortfolioValue()
+        public override void CalculateCurrentPortfolioValue()
         {
             //deklaration der Summe der investierten Positionen, bewertet mit dem aktuellen Preis
             decimal sumInvested = 0;
@@ -721,6 +800,18 @@ namespace HelperLibrary.Trading.PortfolioManager
                 AllocationToRiskWatcher.CalculateMaximumExposure(temp);
                 temp = temp.AddDays(1);
             }
+        }
+
+        /// <summary>
+        /// die Methode soll alle bestehenden Positionen schließen
+        /// </summary>
+        public void CloseAllPositions()
+        {
+            foreach (var candidate in RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, this, true)))
+            {
+                AdjustToClosePosition(candidate);
+            }
+
         }
     }
 

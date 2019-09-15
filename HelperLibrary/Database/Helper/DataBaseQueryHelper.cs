@@ -6,7 +6,6 @@ using MySql.Data.MySqlClient;
 using HelperLibrary.Database.Enums;
 using HelperLibrary.Extensions;
 using System.Windows.Forms;
-using HelperLibrary.Database.Interfaces;
 using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Database
@@ -152,7 +151,7 @@ namespace HelperLibrary.Database
             }
         }
 
-        public static void UpdateOrStoreTransaction(Transaction transaction, bool testMode = false)
+        public static void UpdateOrStoreTransaction(ITransaction transaction, bool testMode = false)
         {
             if (testMode)
             {
@@ -167,7 +166,7 @@ namespace HelperLibrary.Database
         {
             using (SQLCmd.Connection = DataBaseFactory.Create(new MySqlConnection()))
             {
-                return SQLCmd.Call().Procedure("getCurrentPortfolio").QueryObjects<Transaction>();
+                return SQLCmd.Call().Procedure("getCurrentPortfolio").QueryObjects<ITransaction>();
             }
         }
 
@@ -191,17 +190,17 @@ namespace HelperLibrary.Database
             }
         }
 
-        public static Dictionary<int, List<TradingRecord>> SQLGetAllFirstAndLastItems(IEnumerable<object> secIds)
+        public static Dictionary<int, List<ITradingRecord>> SQLGetAllFirstAndLastItems(IEnumerable<object> secIds)
         {
-            var dic = new Dictionary<int, List<TradingRecord>>();
+            var dic = new Dictionary<int, List<ITradingRecord>>();
             foreach (var id in secIds)
             {
                 try
                 {
 
-                    var lastandFirst = SQLCmd.Call().Procedure("getSinglePriceHistoryFirstAndLastItem", id).QueryObjects<TradingRecord>();
+                    var lastandFirst = SQLCmd.Call().Procedure("getSinglePriceHistoryFirstAndLastItem", id).QueryObjects<ITradingRecord>();
                     if (!dic.ContainsKey((int)id))
-                        dic.Add((int)id, new List<TradingRecord>());
+                        dic.Add((int)id, new List<ITradingRecord>());
 
                     dic[(int)id].AddRange(lastandFirst);
 
@@ -224,14 +223,14 @@ namespace HelperLibrary.Database
                 {
                     var cmdDate = SQLCmd.Call().Procedure("getSinglePriceHistoryWithDateTime", secid, start);
 
-                    foreach (var item in cmdDate.QueryObjects<TradingRecord>())
+                    foreach (var item in cmdDate.QueryObjects<ITradingRecord>())
                         yield return item;
 
                 }
                 else
                 {
                     var cmd = SQLCmd.Call().Procedure("getSinglePriceHistory", secid);
-                    foreach (var item in cmd.QueryObjects<TradingRecord>())
+                    foreach (var item in cmd.QueryObjects<ITradingRecord>())
                         yield return item;
                 }
 
@@ -316,17 +315,17 @@ namespace HelperLibrary.Database
             return dic;
         }
 
-        public static Dictionary<int, List<TradingRecord>> GetDataTable()
+        public static Dictionary<int, List<ITradingRecord>> GetDataTable()
         {
-            var dic = new Dictionary<int, List<TradingRecord>>();
+            var dic = new Dictionary<int, List<ITradingRecord>>();
             using (SQLCmd.Connection = DataBaseFactory.Create(new MySqlConnection()))
             {
                 var cmd = SQLCmd.Select("Trading", "yahoo_data").Fields("ASOF", "SECURITY_ID", "CLOSE_PRICE", "ADJUSTED_CLOSE_PRICE");
 
-                foreach (var item in cmd.QueryObjects<TradingRecord>())
+                foreach (var item in cmd.QueryObjects<ITradingRecord>())
                 {
                     if (!dic.ContainsKey(item.SecurityId))
-                        dic.Add(item.SecurityId, new List<TradingRecord>());
+                        dic.Add(item.SecurityId, new List<ITradingRecord>());
 
                     dic[item.SecurityId].Add(item);
                 }
@@ -366,7 +365,7 @@ namespace HelperLibrary.Database
             }
         }
         // inserts the records into db or updates them
-        public static void InsertOrUpdateSingleSecurityDataHistory(List<TradingRecord> records, IProgress<double> progress, int secId)
+        public static void InsertOrUpdateSingleSecurityDataHistory(List<ITradingRecord> records, IProgress<double> progress, int secId)
         {
             using (SQLCmd.Connection = DataBaseFactory.Create(new MySqlConnection()))
             {
@@ -415,7 +414,7 @@ namespace HelperLibrary.Database
 
 
         // inserts the records into db or updates them
-        public static void InsertOrUpdateMultipleSecurityDataPrices(List<TradingRecord> records, IProgress<double> progress)
+        public static void InsertOrUpdateMultipleSecurityDataPrices(List<ITradingRecord> records, IProgress<double> progress)
         {
             using (SQLCmd.Connection = DataBaseFactory.Create(new MySqlConnection()))
             {

@@ -12,10 +12,6 @@ using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Trading.PortfolioManager
 {
-    //TODO: Regeln für das Aufstocken von Positionen implementieren
-    //frühestens nach x Tagen im Portfolio
-    //scoring muss besser sein um x%
-    //und es darf kein trendbruch vorliegen
 
     public class IndexResult : IIndexBackTestResult
     {
@@ -108,10 +104,10 @@ namespace HelperLibrary.Trading.PortfolioManager
             }
         }
 
-        public async Task RunBacktest(DateTime startDateTime, DateTime? endDateTime, CancellationToken? cancel = null)
+        public async Task RunBacktest(DateTime startDateTime, DateTime? endDateTime, CancellationToken? cancel = null, IProgress<double> progress = null)
         {
             _startDateTime = DateTime.Today.GetBusinessDay(false);
-            await Task.Factory.StartNew(() => Run(startDateTime, endDateTime), cancel ?? CancellationToken.None);
+            await Task.Factory.StartNew(() => Run(startDateTime, endDateTime, progress), cancel ?? CancellationToken.None);
         }
 
 
@@ -119,12 +115,19 @@ namespace HelperLibrary.Trading.PortfolioManager
 
         private DateTime? _lastNavDateTime;
 
-        private void Run(DateTime startDateTime, DateTime? endDateTime)
+        private void Run(DateTime startDateTime, DateTime? endDateTime, IProgress<double> progress = null)
         {
+            //TODO: Wenn der letzte Tag des Backtests erreicht ist sollten dann alle bestehenden Positionen geschlossen werden?
             var date = startDateTime;
             var end = endDateTime?.GetBusinessDay(false) ?? DateTime.Today;
+
             while (true)
             {
+                var runningDays = (date - startDateTime).Days;
+
+                if (runningDays > 0 && date < endDateTime)
+                    progress?.Report(runningDays / (double)(end - startDateTime).Days);
+
                 if (date.IsUltimo() || date.IsBusinessDayUltimo())
                     Trace.TraceInformation("aktuelles Datum: " + date.ToShortDateString());
                 if (date >= _startDateTime)
@@ -132,7 +135,13 @@ namespace HelperLibrary.Trading.PortfolioManager
 
                 //dann ist das Ende des Backtest erreicht
                 if (date >= endDateTime || date >= DateTime.Today.GetBusinessDay(false))
+                {
+                    _portfolioManager.CloseAllPositions();
+                    _portfolioManager.TemporaryPortfolio.SaveTransactions(_saveProvider);
+                    _portfolioManager.TransactionsHandler.UpdateCache();
+                    _portfolioManager.PortfolioAsof = date.AddDays(1);
                     return;
+                }
 
                 var candidates = _candidatesProvider.GetCandidates(date, PriceHistoryOption.PreviousDayPrice)?.Where(x => x.ScoringResult.Performance10 > 0 && x.ScoringResult.Performance30 > 0).ToList();
                 var asof = candidates?.OrderByDescending(x => x.Record.Asof).FirstOrDefault()?.Record.Asof;
@@ -153,12 +162,12 @@ namespace HelperLibrary.Trading.PortfolioManager
                 }
 
                 //Das Datum wird vom PM implizit gesetzt
-                var portfolioAsofDateTime = _portfolioManager.PortfolioSettings.UsePreviousDayPricesForBacktest 
+                var portfolioAsofDateTime = _portfolioManager.PortfolioSettings.UsePreviousDayPricesForBacktest
                     ? date
-                    : asof;
+                    : asof.Value;
 
                 //Hier nur die bestehenden Positionen evaluieren
-                if (date.DayOfWeek != _portfolioManager.PortfolioSettings.TradingDay)
+                if (portfolioAsofDateTime.DayOfWeek != _portfolioManager.PortfolioSettings.TradingDay)
                 {
                     if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
                     {

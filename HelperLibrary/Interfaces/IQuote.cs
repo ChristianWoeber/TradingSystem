@@ -1,11 +1,11 @@
-﻿using HelperLibrary.Database.Models;
-using System;
+﻿using System;
+using Trading.DataStructures.Interfaces;
 
 namespace HelperLibrary.Interfaces
 {
     public interface IQuote
     {
         DateTime Date { get; }
-        TradingRecord DataRecord { get; }
+        ITradingRecord DataRecord { get; }
     }
 }

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using HelperLibrary.Extensions;
-using HelperLibrary.Trading;
-using HelperLibrary.Trading.PortfolioManager;
-using HelperLibrary.Trading.PortfolioManager.Rebalancing;
-using HelperLibrary.Trading.PortfolioManager.Settings;
 using NUnit.Framework;
+using Trading.Core.Candidates;
+using Trading.Core.Cash;
+using Trading.Core.Extensions;
+using Trading.Core.Portfolio;
+using Trading.Core.Rebalancing;
+using Trading.Core.Scoring;
+using Trading.Core.Settings;
 using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Helper;
 
@@ -141,7 +143,7 @@ namespace TradingSystemTests.TestCases
 
             Assert.IsTrue(_portfolioManager.CashHandler.Cash > 0, "Achtung beim Rebalancing ist etwas schief gegangen");
 
-            Assert.IsTrue(_portfolioManager.CurrentAllocationToRisk >= minBoundryMinimum, "Achtung die Aktienquote ist nicht in Range");
+            Assert.IsTrue(_portfolioManager.AllocationToRisk >= minBoundryMinimum, "Achtung die Aktienquote ist nicht in Range");
             if (_portfolioManager.PortfolioSettings.MaximumAllocationToRisk <= _portfolioManager.PortfolioSettings.MinimumAllocationToRisk)
                 Assert.IsTrue(_portfolioManager.CurrentAllocationToRisk.IsBetween(minBoundryMinimum, minBoundryMaximum), "Achtung die Aktienquote ist nicht in Range");
 
@@ -202,6 +204,21 @@ namespace TradingSystemTests.TestCases
     public class AdjustmentProviderTests
     {
 
+    }
+
+    [TestFixture]
+    public class CashManagerTests
+    {
+        [TestCase("AllCandidates_CleanUpCash05.01.2000.txt")]
+        public void CashCleanUpTest(string filenanme)
+        {
+            var dummyPortfolioManager = new PortfolioManager(null, new ConservativePortfolioSettings());
+            var manager = new CashManager(dummyPortfolioManager);
+
+            var candidatesToTest = TestHelper.CreateTestCollectionFromJson<List<ITradingCandidate>>(filenanme);
+            manager.CleanUpCash(candidatesToTest);
+
+        }
     }
 
 }

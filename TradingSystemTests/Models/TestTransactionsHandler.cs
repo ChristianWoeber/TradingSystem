@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Trading.PortfolioManager;
+using Trading.Core.Models;
+using Trading.Core.Portfolio;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 

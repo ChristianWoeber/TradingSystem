@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using HelperLibrary.Database.Models;
 using HelperLibrary.Parsing;
+using HelperLibrary.Util.Converter;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 
@@ -38,11 +39,11 @@ namespace HelperLibrary.Trading.PortfolioManager.Rebalancing
 
         public void RebalanceTemporaryPortfolio(List<ITradingCandidate> bestCandidates, List<ITradingCandidate> allCandidates)
         {
-            if (allCandidates.Count > 0 && allCandidates[0].PortfolioAsof >= new DateTime(2001, 04, 26))
+            if (allCandidates.Count > 0 && allCandidates[0].PortfolioAsof >= new DateTime(2000, 01, 12))
             {
-                //var date = allCandidates[0].PortfolioAsof;
-                //JsonUtils.SerializeToFile(bestCandidates, $"BestCandidates_{date.ToShortDateString()}.txt");
-                //JsonUtils.SerializeToFile(allCandidates, $"AllCandidates_{date.ToShortDateString()}.txt");
+                var date = allCandidates[0].PortfolioAsof;
+                //JsonUtils.SerializeToFile(bestCandidates, $"BestCandidates_CleanUpCash{date.ToShortDateString()}.txt");
+               // JsonUtils.SerializeToFile(allCandidates, $"AllCandidates_CleanUpCash{date.ToShortDateString()}.txt");
             }
 
             //investierte Candidaten

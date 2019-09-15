@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Parsing;
 using NUnit.Framework;
+using Trading.Core.Models;
+using Trading.Parsing;
 
 namespace TradingSystemTests.TestCases
 {
@@ -59,5 +60,21 @@ namespace TradingSystemTests.TestCases
             Trace.TraceInformation($"Vergangene Zeit in Sekunden {sw.Elapsed.TotalSeconds} und in Minuten {sw.Elapsed.TotalMinutes}");
         }
 
+        [TestCase(1000)]
+        public void WriteToFileTest(int iterations)
+        {
+            var testdata = Resource.WriteToFileTest;
+
+            var transactions = SimpleTextParser.GetListOfType<Transaction>(testdata);
+            Assert.IsTrue(transactions.Count > 0 && transactions[0].TransactionDateTime > DateTime.MinValue);
+
+            //Write TO File Test
+            var testPath = Path.Combine(Path.GetTempPath(), "TestTransactions.csv");
+            SimpleTextParser.AppendToFile<Transaction>(transactions, testPath);
+
+
+            transactions = SimpleTextParser.GetListOfType<Transaction>(File.ReadAllText(testPath));
+            Assert.IsTrue(transactions.Count > 0 && transactions[0].TransactionDateTime > DateTime.MinValue);
+        }
     }
 }

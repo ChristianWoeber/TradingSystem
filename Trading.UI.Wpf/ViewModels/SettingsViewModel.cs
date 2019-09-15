@@ -366,6 +366,7 @@ namespace Trading.UI.Wpf.ViewModels
             CashPufferSizePercent = settings.CashPufferSizePercent;
             SelectedInterval = new TradingIntervalUtil(Interval);
             SelectedTradingDay = new TradingDay(TradingDay);
+            
         }
 
 

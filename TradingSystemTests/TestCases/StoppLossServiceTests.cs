@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using HelperLibrary.Collections;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Trading;
-using HelperLibrary.Trading.PortfolioManager.Exposure;
-using HelperLibrary.Trading.PortfolioManager.Settings;
 using NUnit.Framework;
+using Trading.Calculation.Collections;
+using Trading.Core.Models;
+using Trading.Core.Scoring;
+using Trading.Core.Settings;
 using Trading.DataStructures.Interfaces;
 using TradingSystemTests.Helper;
 

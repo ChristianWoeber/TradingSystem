@@ -10,6 +10,7 @@ namespace HelperLibrary.Trading.PortfolioManager
     /// </summary>
     public abstract class PortfolioManagerBase : IPortfolioValuation
     {
+        private DateTime _portfolioAsof;
         protected PortfolioManagerBase(IStopLossSettings stopLossSettings, IPortfolioSettings portfolioSettings, ITransactionsHandler handler)
         {
             StopLossSettings = stopLossSettings;
@@ -40,7 +41,6 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// </summary>
         public IScoringProvider ScoringProvider { get; set; }
 
-        private DateTime _portfolioAsof;
 
         /// <summary>
         /// Das Stichtag der Betrachtung
@@ -59,7 +59,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// <summary>
         /// die Methode die alle Regeln anweden soll
         /// </summary>
-        protected abstract void ApplyPortfolioRules(List<TradingCandidate> candidates);
+        public abstract void ApplyPortfolioRules(List<ITradingCandidate> candidates);
 
         /// <summary>
         /// die Methode zum Evaluieren des gesamten Portfolios
@@ -76,7 +76,7 @@ namespace HelperLibrary.Trading.PortfolioManager
         /// die Methode muss implementiert werden um den aktuellen Portfolio Wert zu berechnen
         /// </summary>
         /// <returns></returns>
-        protected abstract void CalculateCurrentPortfolioValue();
+        public abstract void CalculateCurrentPortfolioValue();
 
         /// <summary>
         /// Der Portfoliowert - wird initial mit 100 angemommen, sonfern kein Betrag gegeben ist

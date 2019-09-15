@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Net;
 using System.Threading.Tasks;
-using HelperLibrary.Collections;
-using HelperLibrary.Database.Models;
-using HelperLibrary.Parsing;
-using Nms.Expr.NBasic;
 using OfficeOpenXml;
+using Trading.Calculation.Collections;
+using Trading.Core.Models;
 using Trading.DataStructures.Interfaces;
-using Trading.UI.Wpf.Models;
+using Trading.Parsing;
 
 namespace Trading.UI.Wpf.Utils
 {

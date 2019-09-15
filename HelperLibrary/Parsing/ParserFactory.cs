@@ -346,25 +346,25 @@ namespace HelperLibrary.Parsing
         }
 
         // n=name, o=open, p = previous close, s = symbol// 
-        public static YahooDataRecordExtended GetSingleYahooLineHcMapping(string data)
-        {
-            var dataArray = data.Split(',', ';');
+        //public static YahooDataRecordExtended GetSingleYahooLineHcMapping(string data)
+        //{
+        //    var dataArray = data.Split(',', ';');
 
-            if (dataArray[2].Contains("N/A") || dataArray[4].Contains("N/A"))
-                return null;
+        //    if (dataArray[2].Contains("N/A") || dataArray[4].Contains("N/A"))
+        //        return null;
 
-            var name = Normalize(dataArray[0]);
-            var close = ParseDecimal(dataArray[2]);
-            var asof = ParseDateTime(dataArray[4]);
+        //    var name = Normalize(dataArray[0]);
+        //    var close = ParseDecimal(dataArray[2]);
+        //    var asof = ParseDateTime(dataArray[4]);
 
-            return new YahooDataRecordExtended
-            {
-                Name = name,
-                AdjustedPrice = close ?? Decimal.MinValue,
-                Price = close ?? Decimal.MinValue,
-                Asof = asof ?? DateTime.MinValue
-            };
-        }
+        //    return new YahooDataRecordExtended
+        //    {
+        //        Name = name,
+        //        AdjustedPrice = close ?? Decimal.MinValue,
+        //        Price = close ?? Decimal.MinValue,
+        //        Asof = asof ?? DateTime.MinValue
+        //    };
+        //}
 
         private static string Normalize(string input)
         {
@@ -423,7 +423,6 @@ namespace HelperLibrary.Parsing
         public static void AppendToFile<T>(IEnumerable<T> items, string path)
         {
             //Merke mir hier einmalig die PropertyInfos zu jedem Model
-
             if (!_propertyInfoCache.TryGetValue(typeof(T), out var properties))
             {
                 properties = typeof(T).GetProperties().Where(x => x.GetCustomAttribute<InputMapping>() != null)
@@ -484,8 +483,7 @@ namespace HelperLibrary.Parsing
             {
                 //ich hol mir die Header über die Linq aggregate Methode
                 //vorher auf den Name ein select
-                var header = mappings
-                    .Select(x => x.PropertyInfo.Name)
+                var header = mappings.GroupBy(x=>x.PropertyInfo).Select(p=>p.Key.Name)
                     .Aggregate((a, b) => a + DELIMITER + b);
 
                 writer.WriteLine(header);
