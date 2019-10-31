@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Trading.Calculation.Collections;
 using Trading.Calculation.Extensions;
 using Trading.Core.Extensions;
+using Trading.Core.Models;
 using Trading.Core.Settings;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
@@ -25,7 +26,7 @@ namespace TradingSystemTests.TestCases
             var settings = new DefaultPortfolioSettings();
             var json = JsonConvert.SerializeObject(settings);
 
-            Assert.IsTrue(json != null, "Achtung die Collection ist null");
+            Assert.IsTrue(json != null, "Achtung das serializierte json ist null");
             Assert.IsTrue(JsonConvert.DeserializeObject<DefaultPortfolioSettings>(json) != null);
         }
     }
@@ -129,7 +130,7 @@ namespace TradingSystemTests.TestCases
 
             var volatility = _history.Calc.GetVolatilityMonthly(_history.FirstItem.Asof);
 
-            Assert.IsTrue(Math.Abs(voltilityMonthly - (double)Math.Round(volatility, 4)) < 0.01, $"Achtung bei der Berechung der Voltilität ist ein Fehler aufgetreten: Soll-Wert: {voltilityMonthly:P}<> berechneter Wert{volatility:P}");
+            Assert.IsTrue(Math.Abs(voltilityMonthly - (double)Math.Round(volatility, 4)) < 0.02, $"Achtung bei der Berechung der Voltilität ist ein Fehler aufgetreten: Soll-Wert: {voltilityMonthly:P}<> berechneter Wert {volatility:P}");
         }
 
         [TestCase("AdidasHistory.txt", -0.7154)]
@@ -229,7 +230,75 @@ namespace TradingSystemTests.TestCases
             Assert.IsTrue(volaMetaInfo != null && volaMetaInfo.DailyVolatility > new decimal(0.49d));
         }
 
+        /// <summary>
+        /// Test Für eine History wo der  Erste Preis 1995 ist dann der nächste erst 1999
+        /// </summary>
+        /// <param name="dateString"></param>
+        [TestCase("08.12.2016")]
+        public void TryGetVolatilityTest(string dateString)
+        {
+            var data = SimpleTextParser.GetListOfType<TradingRecord>(Resource.EVOTEC_AG_430185);
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
 
+            Assert.IsTrue(_history.TryGetVolatilityInfo(DateTime.Parse(dateString), out var vola));
+            Assert.IsTrue(vola.DailyVolatility > 0);
+        }
+
+        /// <summary>
+        /// Test Für eine History wo der  Erste Preis 1995 ist dann der nächste erst 1999
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="dateString"></param>
+        [TestCase("ADVANCED_MICRO_DEVICES_404161", "27.03.2017")]
+        public void TryGetVolatilityResultTest(string filename, string dateString)
+        {
+            var data = CreateTradingRecordFromFileName(filename);
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
+
+            Assert.IsTrue(_history.TryGetVolatilityInfo(DateTime.Parse(dateString), out var vola));
+            Assert.IsTrue(vola.DailyVolatility > 0.6M && vola.DailyVolatility < 0.65M);
+
+            Assert.IsTrue(_history.Calc.TryGetLastVolatility(DateTime.Parse(dateString), out var volaDecimal));
+            Assert.IsTrue(volaDecimal > 0.6M && volaDecimal < 0.65M);
+        }
+
+        /// <summary>
+        /// Test Für eine History wo der  Erste Preis 1995 ist dann der nächste erst 1999
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="dateString"></param>
+        [TestCase("ADVANCED_MICRO_DEVICES_404161", "27.02.2017")]
+        [TestCase("ADVANCED_MICRO_DEVICES_404161", "08.04.2018")]
+        [TestCase("ADVANCED_MICRO_DEVICES_404161", "05.05.2000")]
+        public void TryGetLastLowInfoCountNewHighs(string filename, string dateString)
+        {
+            var data = CreateTradingRecordFromFileName(filename);
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
+
+            Assert.IsTrue(_history.TryGetLowMetaInfo(DateTime.Parse(dateString), out var lowMetaInfo));
+
+            if (dateString.Contains("2000") || dateString.Contains("2018"))
+                Assert.IsTrue(lowMetaInfo.NewHighsCount > 20);
+            if (dateString.Contains("2017"))
+                Assert.IsTrue(lowMetaInfo.NewHighsCount < 10);
+        }
+
+
+        /// <summary>
+        /// Test Für eine History wo der  Erste Preis 1995 ist dann der nächste erst 1999
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="dateString"></param>
+        [TestCase("ADVANCED_MICRO_DEVICES_404161", "09.01.2008")]
+        [TestCase("ADVANCED_MICRO_DEVICES_404161", "25.11.2008")]
+        public void TryGetLastLowInfoHasNewLow(string filename, string dateString)
+        {
+            var data = CreateTradingRecordFromFileName(filename);
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
+
+            Assert.IsTrue(_history.TryGetLowMetaInfo(DateTime.Parse(dateString), out var lowMetaInfo));
+            Assert.IsTrue(lowMetaInfo.HasNewLow);
+        }
 
 
         public static IEnumerable<TestQuote> CreateTestCollecton(string fileName)
@@ -263,6 +332,16 @@ namespace TradingSystemTests.TestCases
             }
         }
 
+        public static IEnumerable<TradingRecord> CreateTradingRecordFromFileName(string fileName)
+        {
+            var data = (string)Resource.ResourceManager.GetObject(Path.GetFileNameWithoutExtension(fileName) ?? throw new InvalidOperationException("Achtung kein File gefunden !! -- FileName:" + fileName));
+
+            if (data == null)
+                throw new MissingMemberException("Die Datei konnte nicht gefunden werden " + fileName);
+
+            return SimpleTextParser.GetListOfType<TradingRecord>(data);
+
+        }
 
         public static IEnumerable<TestQuote> CreateTestCollectonFromParser(string fileName)
         {
@@ -275,23 +354,6 @@ namespace TradingSystemTests.TestCases
         }
 
 
-        //public class PriceHistoryCalculationSettings : IPriceHistoryCollectionSettings
-        //{
-        //    public PriceHistoryCalculationSettings(int movingdays = 150, int volaLength = 250)
-        //    {
-        //        MovingAverageLengthInDays = movingdays;
-        //        MovingDaysVolatility = volaLength;
-        //    }
 
-        //    /// <summary>
-        //    /// die Länge des Moving Averages
-        //    /// </summary>
-        //    public int MovingAverageLengthInDays { get; set; }
-
-        //    /// <summary>
-        //    /// die "Länge" der Volatilität
-        //    /// </summary>
-        //    public int MovingDaysVolatility { get; set; }
-        //}
     }
 }

@@ -52,7 +52,6 @@ namespace TradingSystemTests.TestCases
                 TargetWeight = (decimal)0.33,
                 TargetAmountEur = 33000,
             };
-
         }
 
         [TestCase(true, 1.5, TransactionType.Open)]

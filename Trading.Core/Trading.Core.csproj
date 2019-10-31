@@ -67,9 +67,12 @@
     <Compile Include="Converter\JsonUtils.cs" />
     <Compile Include="Converter\PortfolioValuationConverter.cs" />
     <Compile Include="Exposure\ExposureWatcher.cs" />
+    <Compile Include="Exposure\FileExposureDataProvider.cs" />
+    <Compile Include="Exposure\IExposureDataProvider.cs" />
     <Compile Include="Exposure\IExposureProvider.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Models\PortfolioValue.cs" />
     <Compile Include="Models\ScoringTraceModel.cs" />

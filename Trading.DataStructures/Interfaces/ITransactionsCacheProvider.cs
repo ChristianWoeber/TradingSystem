@@ -14,7 +14,7 @@ namespace Trading.DataStructures.Interfaces
         Lazy<Dictionary<int, List<ITransaction>>> TransactionsCache { get; }
 
         /// <summary>
-        /// Methode um den Sopeicher upzudaten
+        /// Methode um den Speicher upzudaten
         /// </summary>
         void UpdateCache();
     }

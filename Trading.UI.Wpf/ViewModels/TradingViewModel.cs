@@ -11,8 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Common.Lib.Data.Attributes;
-using Common.Lib.Data.Enums;
 using Common.Lib.Extensions;
 using Common.Lib.UI.WPF.Core.Controls.Core;
 using Common.Lib.UI.WPF.Core.Controls.Dialog;
@@ -79,9 +77,21 @@ namespace Trading.UI.Wpf.ViewModels
             SaveBacktestCommand = new RelayCommand(OnSaveBacktest);
             TradeStatisticsCommand = new RelayCommand(OnCalculateTradeStatistics);
             ShowTradesCommand = new RelayCommand((o) => OnShowTrades(), (o) => TransactionsRepo.IsInitialized);
+            BlockSelectedCandidateFromBacktestCommand = new RelayCommand((o) => _backtestHandler.AddBlockedCandidate(SelectedCandidate.SecurityId), (o) => SelectedCandidate != null);
+            ShowTradingCandidatesCommand = new RelayCommand((o) => OnShowTradingCandidates(), (o) => Candidates != null);
+
         }
 
+
         public ObservableCollection<TradeViewModel> Trades { get; } = new ObservableCollection<TradeViewModel>();
+
+
+
+        private void OnShowTradingCandidates()
+        {
+            var win = new TradingCandidatesWindow() { DataContext = this };
+            win.Show();
+        }
 
         private void OnShowTrades()
         {
@@ -181,12 +191,12 @@ namespace Trading.UI.Wpf.ViewModels
             if (SelectedCandidate == null)
                 return;
 
-            if (!_scoringProvider.PriceHistoryStorage.TryGetValue(SelectedCandidate.Record.SecurityId, out var priceHistoryCollection))
+            if (!_scoringProvider.PriceHistoryStorage.TryGetValue(SelectedCandidate.SecurityId, out var priceHistoryCollection))
                 return;
 
-            var win = new ChartWindow(SelectedCandidate.Record.SecurityId, ChartDate);
+            var win = new ChartWindow(SelectedCandidate.SecurityId, ChartDate);
 
-            await win.CreateFints(priceHistoryCollection, NameCatalog[SelectedCandidate.Record.SecurityId], false);
+            await win.CreateFints(priceHistoryCollection, NameCatalog[SelectedCandidate.SecurityId], false);
 
             win.Show();
         }
@@ -270,6 +280,8 @@ namespace Trading.UI.Wpf.ViewModels
 
         public ICommand MoveCursorToNextStoppDayCommand { get; }
 
+        public ICommand ShowTradingCandidatesCommand { get; }
+
         public ICommand ShowSelectedPositionCommand { get; }
 
         public ICommand ShowSelectedCandidateCommand { get; }
@@ -279,6 +291,8 @@ namespace Trading.UI.Wpf.ViewModels
         public ICommand SaveBacktestCommand { get; }
 
         public ICommand ShowTradesCommand { get; }
+
+        public ICommand BlockSelectedCandidateFromBacktestCommand { get; }
 
         #endregion
 
@@ -308,7 +322,7 @@ namespace Trading.UI.Wpf.ViewModels
             using (SmartBusyRegion.Start(this))
             {
                 var indexOutput = new IndexResult { IndicesDirectory = Globals.IndicesBasePath };
-                var exposureWatcher = new ExposureWatcher(indexOutput);
+                var exposureWatcher = new ExposureWatcher(indexOutput, new FileExposureDataProvider(Globals.PriceHistoryDirectory));
                 var backtestHandler = new BacktestHandler(exposureWatcher);
                 _cancellationSource = new CancellationTokenSource();
                 await backtestHandler.RunIndexBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
@@ -342,11 +356,11 @@ namespace Trading.UI.Wpf.ViewModels
                 _candidatesProvider = new CandidatesProvider(_scoringProvider);
 
                 //backtestHandler erstellen
-                var backtestHandler = new BacktestHandler(_portfolioManager, _candidatesProvider, loggingProvider);
+                _backtestHandler = new BacktestHandler(_portfolioManager, _candidatesProvider, loggingProvider);
 
                 //Backtest
                 _cancellationSource = new CancellationTokenSource();
-                await backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token, region.ProgessRegion);
+                await _backtestHandler.RunBacktest(StartDateTime, EndDateTime, _cancellationSource.Token, region.ProgessRegion);
             }
 
             //create output
@@ -535,10 +549,11 @@ namespace Trading.UI.Wpf.ViewModels
 
         private IEnumerable<CashMetaInfo> _cash;
         private IEnumerable<TransactionViewModel> _stopps;
-        private IEnumerable<ITradingCandidateBase> _candidates;
+        private IEnumerable<TradingCandidateViewModel> _candidates;
         private CandidatesProvider _candidatesProvider;
+        private BacktestHandler _backtestHandler;
         private TransactionViewModel _selectedPosition;
-        private ITradingCandidateBase _selectedCandidate;
+        private TradingCandidateViewModel _selectedCandidate;
         private int _transactionsCountTotal;
         private decimal _portfolioTurnOver;
         private decimal _averagePortfolioSize;
@@ -608,18 +623,16 @@ namespace Trading.UI.Wpf.ViewModels
         }
 
 
-
-
         private string CreateKey(ITransaction transaction, DateTime asof)
         {
             return $"{asof:d}_{transaction.SecurityId}";
 
-            return $"{transaction.TransactionDateTime:d}_{asof:d}_{transaction.Shares}_{(int)transaction.TransactionType}_{transaction.SecurityId}";
+            //  return $"{transaction.TransactionDateTime:d}_{asof:d}_{transaction.Shares}_{(int)transaction.TransactionType}_{transaction.SecurityId}";
         }
 
         private void UpdateCandidates(DateTime asof)
         {
-            Candidates = _candidatesProvider.GetCandidates(asof);
+            Candidates = _candidatesProvider.GetCandidates(asof).Select((x, i) => new TradingCandidateViewModel(x, i));
         }
 
         private IScoringResult GetScore(ITransaction transaction, DateTime asof)
@@ -637,7 +650,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         #region Public Members
 
-        public ITradingCandidateBase SelectedCandidate
+        public TradingCandidateViewModel SelectedCandidate
         {
             get => _selectedCandidate;
             set
@@ -666,7 +679,7 @@ namespace Trading.UI.Wpf.ViewModels
         /// Die TradingCandidaten zum jeweiligen Handelstag
         /// </summary>
 
-        public IEnumerable<ITradingCandidateBase> Candidates
+        public IEnumerable<TradingCandidateViewModel> Candidates
         {
             get => _candidates;
             set
@@ -838,52 +851,6 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
-    }
 
-
-    public class TradeViewModel : INotifyPropertyChanged
-    {
-        private readonly Trade _trade;
-
-        public TradeViewModel(Trade trade)
-        {
-            _trade = trade;
-            Name = TradingViewModel.NameCatalog[trade.Opening.SecurityId];
-        }
-
-        [SmartDataGridColumnProperty("SecurityId", true, ColumnSortIndex = 6)]
-        public int? SecurityId => _trade.Opening?.SecurityId ?? -1;
-
-        [SmartDataGridColumnProperty("Wertpapier", true, ColumnSortIndex = 0)]
-        public string Name { get; }
-
-        [SmartDataGridColumnProperty("OpenDate", true, StringFormat = "d", ColumnSortIndex = 1)]
-        public DateTime? OpenDateTime => _trade.Opening?.TransactionDateTime;
-
-        [SmartDataGridColumnProperty("Dip", true, StringFormat = "n", ColumnSortIndex = 2)]
-        public int HoldingPeriode => _trade.HoldingPeriodeInDays;
-
-        [SmartDataGridColumnProperty("TotalReturn", true, StringFormat = "p2", ColumnSortIndex = 3, SortDirection = SmartDataGridSortDirection.Descending)]
-        public decimal TotalReturn => _trade.TotalReturn;
-
-        [SmartDataGridColumnProperty("average Weight", true, StringFormat = "p2", ColumnSortIndex = 4)]
-        public decimal AverageWeight => _trade.AveragePortfolioWeight;
-
-        [SmartDataGridColumnProperty("IsNotValid", true, ColumnType = SmartDataGridColumnType.Image, ColumnSortIndex = 5)]
-        public bool IsNotValid => !_trade.IsValid;
-
-
-
-        #region INotifyPropertyChanged
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #endregion
     }
 }

@@ -10,14 +10,33 @@
              d:DataContext="{d:DesignInstance viewModels:TradingViewModel}"
              d:DesignHeight="450" d:DesignWidth="900">
     <Grid>
-        <arts:SmartDataGrid ItemsSource="{Binding Candidates}" AutoGenerateColumns="False" HeaderFontSize="4" SelectedItem="{Binding SelectedCandidate}">
-            <arts:SmartDataGrid.Columns >
-                
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+    <arts:SmartTextBox Icon="Magnify" Watermark="Suche" Height="30" Width="300" 
+                       Margin="5 15" 
+                       HorizontalAlignment="Left"
+                       x:Name="SearchBox" 
+                       TextChangedDelay="750"></arts:SmartTextBox>
+
+        <arts:SmartDataGrid Grid.Row="1" ItemsSource="{Binding Candidates}"
+                            FilterText="{Binding ElementName=SearchBox, Path=Text, Mode=OneWay}"
+                            AutoGenerateColumns="False" 
+                            ShowRowNumbers="False"
+                            x:Name="SmartDataGridCandidates"
+                            HeaderFontSize="4" 
+                            SelectedItem="{Binding SelectedCandidate}">
+            <!--<arts:SmartDataGrid.Columns >
                 <arts:SmartDataGridColumn Binding="{Binding Record.SecurityId, Mode=OneWay}" 
+                                          IsFilterable="True"
                                           ColumnEditingItemsSource="{Binding Source={x:Static viewModels:TradingViewModel.NameCatalog}}"
                                           Header="Name"  />
                 <arts:SmartDataGridColumn Binding="{Binding Record.SecurityId, Mode=OneWay}" 
                                           Header="Id" 
+                                          IsFilterable="True"
                                           Visibility="Visible"/>
                 <arts:SmartDataGridColumn Binding="{Binding Record.Asof, StringFormat=d, Mode=OneWay}" 
                                           Header="Datum"/>
@@ -33,17 +52,28 @@
                 <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Performance250,Mode=OneWay, StringFormat=P}" 
                                           Header="Perf 250"
                                           SortDirection="Descending"/>
+                <arts:SmartDataGridColumn Binding="{Binding ScoringResult.Volatility, Mode=OneWay,StringFormat=P2}" 
+                                          Header="Vola"/>
                 <arts:SmartDataGridColumn Binding="{Binding ScoringResult.IsValid,Mode=OneWay, StringFormat=N}" 
                                           Header="Valid" ColumnType="Image"
                                           />
-            </arts:SmartDataGrid.Columns>
+            </arts:SmartDataGrid.Columns>-->
             <arts:SmartDataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Show Position in Chart"
                               Command="{Binding ShowSelectedCandidateCommand}" />
-
+                    <MenuItem Header="Kandidaten aus Backtest ausschließen"
+                              Command="{Binding BlockSelectedCandidateFromBacktestCommand}" />
                 </ContextMenu>
             </arts:SmartDataGrid.ContextMenu>
         </arts:SmartDataGrid>
+
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <arts:SmartTextBlock Margin="5 2" Text="Anzahl der Kandiaten: " Background="Transparent">
+                    <Run  Text="{Binding ElementName=SmartDataGridCandidates, Path=Items.Count, Mode=OneWay}"></Run>
+                </arts:SmartTextBlock>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </UserControl>

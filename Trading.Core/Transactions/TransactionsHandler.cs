@@ -152,7 +152,7 @@ namespace Trading.Core.Transactions
             if (pastTransactions.Count == 1 /*|| pastTransactions[0].Shares < 0*/)
                 return pastTransactions[0].EffectiveAmountEur / pastTransactions[0].Shares;
 
-        
+
             //var currentRecord = _scoringProvider.GetTradingRecord(secid, asof);
             return Math.Round(Math.Abs(CurrentPortfolio[secid].EffectiveAmountEur) / CurrentPortfolio[secid].Shares, 4);
 
@@ -187,7 +187,11 @@ namespace Trading.Core.Transactions
         public ITransaction GetSingle(int secId, TransactionType? transactionType, bool getLatest = true)
         {
             if (transactionType == null && getLatest)
-                return _cacheProvider.TransactionsCache.Value.TryGetValue(secId, out var transactionItems) ? transactionItems.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault() : null;
+            {
+                if (_cacheProvider == null)
+                    return null;
+                return _cacheProvider.TransactionsCache.Value.TryGetValue(secId, out var transactionItems) ? transactionItems?.OrderByDescending(x => x.TransactionDateTime).FirstOrDefault() : null;
+            }
             if (transactionType == null)
                 return CurrentPortfolio[secId];
             if (!getLatest)
@@ -209,7 +213,7 @@ namespace Trading.Core.Transactions
         /// <returns></returns>
         public IEnumerable<ITransaction> Get(int secId, bool activeOnly = false, Predicate<ITransaction> filter = null)
         {
-            if (!_cacheProvider.TransactionsCache.Value.TryGetValue(secId, out var transactionItems))
+            if (_cacheProvider == null || !_cacheProvider.TransactionsCache.Value.TryGetValue(secId, out var transactionItems))
                 return null;
 
             var transactionsSorted = transactionItems

@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateTestDataConsole", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingSystemTests", "TradingSystemTests\TradingSystemTests.csproj", "{DC06B12E-FCBB-4E6E-AABD-44F5EB32D5B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trading.UI.Wpf", "Trading.UI.Wpf\Trading.UI.Wpf.csproj", "{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trading.Backtesting.UI.Wpf", "Trading.UI.Wpf\Trading.Backtesting.UI.Wpf.csproj", "{CA473657-1F60-4A8D-A0DC-FAB115CDAA8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trading.Backtest.Data", "Trading.Backtest.Data\Trading.Backtest.Data.csproj", "{01E27471-DB85-47BC-B9C0-6C71765833D5}"
 EndProject

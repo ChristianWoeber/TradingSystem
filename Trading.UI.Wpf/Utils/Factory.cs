@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using OfficeOpenXml;
 using Trading.Calculation.Collections;
@@ -113,10 +114,11 @@ namespace Trading.UI.Wpf.Utils
                 var name = fileName.Substring(0, idx).Trim('_');
                 var id = Convert.ToInt32(fileName.Substring(idx, fileName.Length - idx).Trim('_'));
                 //die TradingRecords auslesen
-                var data = SimpleTextParser.GetItemsOfTypeFromFilePath<TradingRecord>(file);
+                var data = SimpleTextParser.GetItemsOfTypeFromFilePath<TradingRecord>(file).ToList();
                 //settings erstellen
                 var settings = new PriceHistorySettings { Name = name };
                 //im dictionary merken
+
                 dic.Add(id, PriceHistoryCollection.Create(data, settings));
 
                 //bei 100 einträge stoppen, dass reicht zum testen

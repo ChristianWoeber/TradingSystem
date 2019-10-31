@@ -15,6 +15,7 @@ namespace Trading.Core.Candidates
             _scoringProvider = scoring;
         }
 
+
         public IEnumerable<ITradingCandidateBase> GetCandidates(DateTime inputDate, PriceHistoryOption option = PriceHistoryOption.PreviousItem)
         {
             //init Liste mit candidaten
@@ -33,8 +34,10 @@ namespace Trading.Core.Candidates
                 //Wenn der null ist gibt es ihn nicht und ich gehe zum nächsten
                 if (record == null)
                     continue;
+
                 //Namen setzen
-                record.Name = priceHistory.Settings.Name;
+                if (!string.IsNullOrWhiteSpace(priceHistory.Settings?.Name))
+                    record.Name = priceHistory.Settings.Name;
 
                 //den Score rechnen
                 var score = _scoringProvider.GetScore(priceHistory.SecurityId, option == PriceHistoryOption.PreviousDayPrice ? record.Asof : inputDate);

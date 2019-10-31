@@ -123,6 +123,25 @@ namespace TradingSystemTests {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Asof;SecurityId;Price;AdjustedPrice
+        ///03.01.1995 00:00:00;404161;9.984675;9.984675
+        ///04.01.1995 00:00:00;404161;10.173225;10.173225
+        ///05.01.1995 00:00:00;404161;10.12095;10.12095
+        ///06.01.1995 00:00:00;404161;11.1527875;11.1527875
+        ///09.01.1995 00:00:00;404161;11.3461875;11.3461875
+        ///10.01.1995 00:00:00;404161;11.46214375;11.46214375
+        ///11.01.1995 00:00:00;404161;11.23388125;11.23388125
+        ///12.01.1995 00:00:00;404161;12.34165625;12.34165625
+        ///13.01.1995 00:00:00;404161;12.34485;12.34485
+        ///16.01.1995 00:00:00;404161;12.425 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string ADVANCED_MICRO_DEVICES_404161 {
+            get {
+                return ResourceManager.GetString("ADVANCED_MICRO_DEVICES_404161", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {
         ///  &quot;$type&quot;: &quot;System.Collections.Generic.List`1[[Trading.DataStructures.Interfaces.ITradingCandidate, Trading.DataStructures]], mscorlib&quot;,
         ///  &quot;$values&quot;: [
@@ -395,6 +414,24 @@ namespace TradingSystemTests {
             get {
                 object obj = ResourceManager.GetObject("EuroStoxx50Member", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Asof;SecurityId;Price;AdjustedPrice
+        ///29.10.1997 00:00:00;430185;5.4210073908;5.4210073908
+        ///10.11.1999 00:00:00;430185;6.6688483524;6.6688483524
+        ///11.11.1999 00:00:00;430185;9.77206481384;9.77206481384
+        ///12.11.1999 00:00:00;430185;8.62343534556;8.62343534556
+        ///15.11.1999 00:00:00;430185;8.3780101812;8.3780101812
+        ///16.11.1999 00:00:00;430185;8.03776069744;8.03776069744
+        ///17.11.1999 00:00:00;430185;8.3759365228;8.3759365228
+        ///18.11.1999 00:00:00;430185;9.4035070584;9.4035070584
+        ///19.11.1999 00:00:00;430185;10.5739753 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string EVOTEC_AG_430185 {
+            get {
+                return ResourceManager.GetString("EVOTEC_AG_430185", resourceCulture);
             }
         }
         

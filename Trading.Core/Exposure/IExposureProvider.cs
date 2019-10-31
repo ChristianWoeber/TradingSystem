@@ -34,6 +34,6 @@ namespace Trading.Core.Exposure
         /// Gibt das Exposure nach aussen
         /// </summary>
         /// <param name="start"></param>
-        IExposureSettings GetExposure();
+        IExposureSettings GetSettings();
     }
 }

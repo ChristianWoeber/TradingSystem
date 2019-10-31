@@ -48,5 +48,11 @@ namespace Trading.DataStructures.Interfaces
         /// Gibt an ob die aktienquote erhöht oder gesenkt werden darf
         /// </summary>
         bool CanMoveToNextStep { get; set; }
+
+        /// <summary>
+        /// der Count der Angibt wieviele Neue Hochs in der Periode erreicht werden konnten
+        /// und somit aussage kraft über die Trendstabilität widerspiegelt
+        /// </summary>
+        int NewHighsCount { get; set; }
     }
 }

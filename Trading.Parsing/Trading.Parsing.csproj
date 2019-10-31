@@ -45,6 +45,8 @@
     <Compile Include="Attributes\InputMapping.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />
     <Compile Include="Extensions\PropertyInfoExtensions.cs" />
+    <Compile Include="InputMapper.cs" />
+    <Compile Include="InputMappingCollection.cs" />
     <Compile Include="ParserFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -17,10 +17,13 @@ namespace Trading.Core.Backtest
     public class BacktestHandler : IDisposable
     {
         private readonly IExposureProvider _exposureProvider;
-        private readonly IIndexBackTestResult _output;
         private readonly CandidatesProvider _candidatesProvider;
         private readonly PortfolioManager _portfolioManager;
         private readonly ISaveProvider _saveProvider;
+        /// <summary>
+        /// Das Hashet dient zum speichern der geblockten Kandiaten, so können spezielle Kandidaten ausgeschlossen werden 
+        /// </summary>
+        private readonly HashSet<int> _blockedCandidates = new HashSet<int>();
 
         public BacktestHandler(IExposureProvider exposureProvider)
         {
@@ -50,7 +53,7 @@ namespace Trading.Core.Backtest
             {
                 _exposureProvider.CalculateMaximumExposure(start);
                 _exposureProvider.CalculateIndexResult(start);
-                IndexResults.Add(new IndexResult(_exposureProvider.GetExposure()));
+                IndexResults.Add(new IndexResult(_exposureProvider.GetSettings()));
                 start = start.AddDays(1);
             }
         }
@@ -65,6 +68,7 @@ namespace Trading.Core.Backtest
         private DateTime _startDateTime;
 
         private DateTime? _lastNavDateTime;
+
 
         private void Run(DateTime startDateTime, DateTime? endDateTime, IProgress<double> progress = null)
         {
@@ -94,7 +98,19 @@ namespace Trading.Core.Backtest
                     return;
                 }
 
-                var candidates = _candidatesProvider.GetCandidates(date, PriceHistoryOption.PreviousDayPrice)?.Where(x => x.ScoringResult.Performance10 > 0 && x.ScoringResult.Performance30 > 0).ToList();
+                var candidates = _candidatesProvider.GetCandidates(date, _portfolioManager.PortfolioSettings.UsePreviousDayPricesForBacktest
+                    ? PriceHistoryOption.PreviousDayPrice
+                    : PriceHistoryOption.PreviousItem)?.Where(x => x.ScoringResult.HasPositiveShortToMidTermPerformance).ToList();
+
+                if (candidates == null)
+                    continue;
+
+                //Geblockte Kandidaten entfernen
+                foreach (var candidateBase in candidates.Where(candidateBase => _blockedCandidates.Contains(candidateBase.Record.SecurityId)))
+                {
+                    candidates.Remove(candidateBase);
+                }
+
                 var asof = candidates?.OrderByDescending(x => x.Record.Asof).FirstOrDefault()?.Record.Asof;
 
                 if (asof == null)
@@ -168,6 +184,11 @@ namespace Trading.Core.Backtest
             {
                 File.Delete(file);
             }
+        }
+
+        public void AddBlockedCandidate(int securityId)
+        {
+            _blockedCandidates.Add(securityId);
         }
     }
 }

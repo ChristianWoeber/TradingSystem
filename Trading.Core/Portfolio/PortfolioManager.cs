@@ -28,7 +28,7 @@ namespace Trading.Core.Portfolio
             TransactionCaclulationProvider = new TransactionCalculationHandler(this, PortfolioSettings);
             TemporaryPortfolio = new TemporaryPortfolio(this);
             CashHandler.Cash = PortfolioSettings.InitialCashValue;
-            AllocationToRiskWatcher = new ExposureWatcher(PortfolioSettings);
+            AllocationToRiskWatcher = new ExposureWatcher(PortfolioSettings, new FileExposureDataProvider(PortfolioSettings.IndicesDirectory));
             RebalanceProvider = new RebalanceProvider(TemporaryPortfolio, this, PortfolioSettings);
             PositionWatcher = new PositionWatchService(StopLossSettings);
 
@@ -299,7 +299,7 @@ namespace Trading.Core.Portfolio
 
             //das Portfolio Rebalancen
             // RebalanceTemporaryPortfolio(bestCandidatesNotInvestedIn, candidates);
-            RebalanceProvider.RebalanceTemporaryPortfolio(bestCandidatesNotInvestedIn.Select(c => (ITradingCandidate)c).ToList(), candidates.Select(c => (ITradingCandidate)c).ToList());
+            RebalanceProvider.RebalanceTemporaryPortfolio(bestCandidatesNotInvestedIn.Select(c => c).ToList(), candidates.Select(c => c).ToList());
         }
 
         public void AdjustTradingCandidateBuy(decimal currentWeight, ITradingCandidate candidate)
@@ -454,8 +454,8 @@ namespace Trading.Core.Portfolio
 
         public bool AdjustTemporaryPortfolioToRiskBoundary(decimal missingPercent, ITradingCandidate candidate)
         {
-            //wenn der kandidat nicht im temporärebn portfolio ist, ist das Target weight nur das ergebnis des Scorings,
-            //sprich das wäre das terget weight bei ausrechend cash und nicht besseren Kandidaten!!!
+            //wenn der kandidat nicht im temporären portfolio ist, ist das Target weight nur das ergebnis des Scorings,
+            //sprich das wäre das target weight bei ausrechend cash und nicht besseren Kandidaten!!!
             var weightToAdjust = !candidate.IsTemporary ? candidate.CurrentWeight : candidate.TargetWeight;
             candidate.TargetWeight = weightToAdjust;
 
@@ -702,6 +702,11 @@ namespace Trading.Core.Portfolio
             //den aktuellen maximalen Wert berechnen
             AllocationToRiskWatcher.CalculateMaximumExposure(PortfolioAsof);
 
+            if (PortfolioAsof == new DateTime(2016, 12, 08))
+            {
+
+            }
+
             //log Value
             //SimpleTextParser.AppendToFile(new List<PortfolioValuation> {new PortfolioValuation(this) },PortfolioSettings.LoggingPath);
         }
@@ -733,6 +738,9 @@ namespace Trading.Core.Portfolio
         {
             foreach (var candidate in RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, this, true)))
             {
+                if (TemporaryCandidates.ContainsKey(candidate.SecurityId))
+                    continue;
+
                 AdjustToClosePosition(candidate);
             }
 

@@ -4,9 +4,26 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Trading.PortfolioManager.UI"
+        xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
+        xmlns:viewModels="clr-namespace:Trading.PortfolioManager.UI.Wpf.ViewModels"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance viewModels:PortfolioManagerViewModel}"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="1.5*"/>
+        </Grid.RowDefinitions>
+
+        <StatusBar Background="AliceBlue">
+            <StatusBarItem>
+                <arts:SmartIconButton Icon="FaPlay" Description="Handelssystem ausführen"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <arts:SmartIconButton Icon="UwpUpload" Description="Dummy Transaktionen laden"/>
+            </StatusBarItem>
+        </StatusBar>
+        <arts:SmartDataGrid ItemsSource="{Binding CurrentTransactions, Mode=OneWay}"></arts:SmartDataGrid>
     </Grid>
 </Window>

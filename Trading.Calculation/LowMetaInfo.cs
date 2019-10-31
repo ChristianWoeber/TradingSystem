@@ -13,7 +13,7 @@ namespace Trading.Calculation
         /// <summary>
         /// der erste Wert der Betrachtungsperiode
         /// </summary>
-        public ITradingRecord First { get; }
+        public ITradingRecord First { get; private set; }
 
         /// <summary>
         /// Das Low der Betrachtungsperiode
@@ -55,6 +55,11 @@ namespace Trading.Calculation
         /// </summary>
         public bool CanMoveToNextStep { get; set; }
 
+        /// <summary>
+        /// der Count der Angibt wieviele Neue Hochs in der Periode erreicht werden konnten
+        /// und somit aussage kraft über die Trendstabilität widerspiegelt
+        /// </summary>
+        public int NewHighsCount { get; set; }
 
         private LowMetaInfo()
         {
@@ -71,29 +76,44 @@ namespace Trading.Calculation
             CanMoveToNextStep = 1 - (first.AdjustedPrice / Last.AdjustedPrice) > 0;
         }
 
-        public LowMetaInfo(ITradingRecord first, ITradingRecord low, ITradingRecord last, List<ITradingRecord> periodeRecords, bool hasNewLow = true) : this()
+        public LowMetaInfo(ITradingRecord low, ITradingRecord last, List<ITradingRecord> periodeRecords, bool hasNewLow = true) : this()
         {
-            First = first;
             Low = low;
             Last = last;
             PeriodeRecords = periodeRecords;
+            First = PeriodeRecords[0];
             HasNewLow = hasNewLow;
             MovingAverage = Math.Round(PeriodeRecords.Select(x => x.AdjustedPrice).Average(), 6);
             CalcPerformance();
         }
 
-        public LowMetaInfo(ITradingRecord first, ITradingRecord low, ITradingRecord last, LowMetaInfo lastLowMetaInfo, bool hasNewLow) : this()
+        public LowMetaInfo(ITradingRecord low, ITradingRecord last, LowMetaInfo lastLowMetaInfo,
+            bool hasNewLow) : this()
         {
-            First = first;
             Low = low;
             Last = last;
-            PeriodeRecords = lastLowMetaInfo.PeriodeRecords;
+            PeriodeRecords = new List<ITradingRecord>(lastLowMetaInfo.PeriodeRecords);
             HasNewLow = hasNewLow;
+            First = lastLowMetaInfo.First;
+            NewHighsCount = lastLowMetaInfo.NewHighsCount;
+            High = lastLowMetaInfo.High;
             MovingAverage = Math.Round(PeriodeRecords.Select(x => x.AdjustedPrice).Average(), 6);
             MovingAverageDelta = 1 - lastLowMetaInfo.MovingAverage / MovingAverage;
             CalcPerformance();
         }
 
+        public LowMetaInfo(ITradingRecord first, ITradingRecord low, ITradingRecord last, LowMetaInfo lastLowMetaInfo, bool hasNewLow)
+        {
+            Low = low;
+            First = first;
+            Last = last;
+            PeriodeRecords = lastLowMetaInfo.PeriodeRecords;
+            HasNewLow = hasNewLow;
+            High = lastLowMetaInfo.High;
+            MovingAverage = Math.Round(PeriodeRecords.Select(x => x.AdjustedPrice).Average(), 6);
+            MovingAverageDelta = 1 - lastLowMetaInfo.MovingAverage / MovingAverage;
+            CalcPerformance();
+        }
 
         public override string ToString()
         {
@@ -102,15 +122,23 @@ namespace Trading.Calculation
 
         public void UpdatePeriodeRecords(ITradingRecord newLast)
         {
+            //Wenn das High am ersten Eintrag ist und somit aus dem Timeframe fallen würde
+            //muss ich es an dieser Stelle nachziehen und somit den 2-ten Record als neues High setzen
+            if (High.Asof == First.Asof)
+                High = PeriodeRecords[1];
+
             //removeOldestItem
             PeriodeRecords.RemoveAt(0);
             //addnew one
             PeriodeRecords.Add(newLast);
+            //den ersten Eintrag weiterschleifen
+            First = PeriodeRecords[0];
         }
 
-        public void UpdateHigh(ITradingRecord newHigh)
+        public void UpdateHigh(ITradingRecord newHigh, int countNewHighs)
         {
             High = newHigh ?? Last;
+            NewHighsCount = countNewHighs;
         }
     }
 }

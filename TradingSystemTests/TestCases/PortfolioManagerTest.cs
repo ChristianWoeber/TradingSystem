@@ -13,6 +13,7 @@ using Trading.Core.Extensions;
 using Trading.Core.Models;
 using Trading.Core.Portfolio;
 using Trading.Core.Scoring;
+using Trading.Core.Transactions;
 using Trading.DataStructures.Interfaces;
 using Trading.Parsing;
 using TradingSystemTests.Helper;
@@ -76,7 +77,7 @@ namespace TradingSystemTests.TestCases
 
             //Test Pm erstellen
             var pm = new PortfolioManager(null, null,
-                new TestTransactionsHandler(new List<Transaction>(),
+                new TransactionsHandler(new List<Transaction>(),
                 new TransactionsCacheProviderTest(() => LoadHistory(filename))));
 
             //scoring provider erstellen
@@ -121,7 +122,7 @@ namespace TradingSystemTests.TestCases
 
             //Test Pm erstelle
             var pm = new PortfolioManager(null, null,
-                new TestTransactionsHandler(null,
+                new TransactionsHandler(null,
                 new TransactionsCacheProviderTest(() => LoadHistory(filename))));
 
             //scoring provider erstellen

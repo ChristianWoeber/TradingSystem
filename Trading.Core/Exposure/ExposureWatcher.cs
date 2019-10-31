@@ -1,54 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using Trading.Calculation.Collections;
 using Trading.Core.Backtest;
-using Trading.Core.Extensions;
 using Trading.Core.Settings;
-using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
-using Trading.Parsing;
-using TradingRecord = Trading.Core.Models.TradingRecord;
 
 namespace Trading.Core.Exposure
 {
+    /// <summary>
+    /// Der Exposure Watcher bekommt die Settings und Dataprovider als dependency injected
+    /// auf diese Weise bleibt die klasse flexibel und es ist egal ob die Records die für das
+    /// bewerten der Allocation To Risk benötigt werden aus einer Filestruktur oder aus einer Datenbank kommen
+    /// </summary>
     public class ExposureWatcher : IExposureProvider
     {
-        private readonly IExposureSettings _receiver;
+        private readonly IExposureSettings _settings;
+        private readonly IExposureDataProvider _dataProvider;
         private readonly IPriceHistoryCollection _benchmark;
         private int _currentStep;
 
 
-        public IExposureSettings GetExposure()
+        public IExposureSettings GetSettings()
         {
-            return _receiver;
+            return _settings;
         }
 
-        public ExposureWatcher(IExposureSettings settings)
+        public ExposureWatcher(IExposureSettings settings, IExposureDataProvider dataProvider)
         {
-            _receiver = settings;
-            if (string.IsNullOrWhiteSpace(settings.IndicesDirectory))
-            {
-                Trace.TraceError("Achtung es wurde kein Pfad für die History der Indizes angegeben");
-                return;
-            }
-            var files = Directory.GetFiles(settings.IndicesDirectory);
+            _settings = settings;
+            _dataProvider = dataProvider;
 
-            var tradingRecords = SimpleTextParser.GetListOfTypeFromFilePath<TradingRecord>(settings.IndexType == IndexType.SandP500
-                ? files.FirstOrDefault(x => x.ContainsIc("S&P"))
-                : files.FirstOrDefault(x => x.ContainsIc(settings.IndexType.ToString())));
+            var tradingRecords = _dataProvider.GetExposureRecords();
+            if (tradingRecords == null)
+                throw new ArgumentNullException(nameof(tradingRecords), "Achtung es konnten keine Records gefunden werden");
 
             var calculationSettings = new PriceHistoryCollectionSettings(150, 0);
             _benchmark = PriceHistoryCollection.Create(tradingRecords, calculationSettings);
         }
 
         private decimal? _lastSimulationNav;
+
         public void CalculateIndexResult(DateTime asof)
         {
             if (_lastSimulationNav == null)
                 _lastSimulationNav = 100;
+
+            if (_benchmark.LastItem == null)
+                throw new ArgumentNullException(nameof(_benchmark.LastItem), "Achtung das LastItem der Prichistory is null! ");
+
             if (asof > _benchmark.LastItem.Asof)
                 return;
 
@@ -58,13 +57,13 @@ namespace Trading.Core.Exposure
             if (indexLevel == null)
                 return;
 
-            //wenn das  indexLevel.Asof < ist als das aktuelle muss ich 0 nehmen, (feiertage etc. da hat es keien veränderung gegeben)
+            //wenn das  indexLevel.Asof < ist als das aktuelle muss ich 0 nehmen, (feiertage etc. da hat es keine veränderung gegeben)
             var dailyReturn = indexLevel.Asof < asof ? 0 : _benchmark.GetDailyReturn(indexLevel);
-            ((IIndexBackTestResult)_receiver).Asof = asof;
-            ((IIndexBackTestResult)_receiver).IndexLevel = indexLevel.AdjustedPrice;
+            ((IIndexBackTestResult)_settings).Asof = asof;
+            ((IIndexBackTestResult)_settings).IndexLevel = indexLevel.AdjustedPrice;
             //der letzte NAV multipliziert mit der gewichteten dailyperformance => ist der neue NAV
-            ((IIndexBackTestResult)_receiver).SimulationNav = Math.Round(_lastSimulationNav.Value * (1 + dailyReturn * _receiver.MaximumAllocationToRisk), 4);
-            _lastSimulationNav = ((IIndexBackTestResult)_receiver).SimulationNav;
+            ((IIndexBackTestResult)_settings).SimulationNav = Math.Round(_lastSimulationNav.Value * (1 + dailyReturn * _settings.MaximumAllocationToRisk), 4);
+            _lastSimulationNav = ((IIndexBackTestResult)_settings).SimulationNav;
 
         }
 
@@ -104,8 +103,8 @@ namespace Trading.Core.Exposure
         {
             var maxRisk = (1 - (decimal)_currentStep / NumberOfSteps);
             //dannn setzte ich den aktuellen Wert
-            if (maxRisk >= _receiver.MinimumAllocationToRisk)
-                _receiver.MaximumAllocationToRisk = maxRisk;
+            if (maxRisk >= _settings.MinimumAllocationToRisk)
+                _settings.MaximumAllocationToRisk = maxRisk;
         }
 
         /// <summary>

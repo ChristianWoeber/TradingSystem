@@ -27,7 +27,7 @@ namespace Trading.Core.Models
         /// <summary>
         /// Der primary Key des Tables - Der Transaktions-Zeitpunkt
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(TransactionDateTime) }, SortIndex = 1)]
+        [InputMapping(KeyWords = new[] { nameof(TransactionDateTime), nameof(DateTime) }, SortIndex = 1)]
         [Column(Storage = "TRANSACTION_DATETIME")]
         public DateTime TransactionDateTime { get; set; }
 
@@ -51,14 +51,14 @@ namespace Trading.Core.Models
         /// <summary>
         /// Der Gegenwert in EUR - Berechnet mit dem zuletzt verfügbaren Preis
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(TargetAmountEur) }, SortIndex = 4)]
+        [InputMapping(KeyWords = new[] { nameof(TargetAmountEur), "AmountEur" }, SortIndex = 4)]
         [Column(Storage = "AMOUNT_EUR")]
         public decimal TargetAmountEur { get; set; }
 
         /// <summary>
         /// Der Typ der Transaktion (Opening,Closing,Changed) <see cref="Trading.DataStructures.Enums.TransactionType"/>
         /// </summary>
-        [InputMapping(KeyWords = new[] { nameof(TransactionType) }, SortIndex = 5)]
+        [InputMapping(KeyWords = new[] { nameof(TransactionType),"Type" }, SortIndex = 5)]
         [Column(Storage = "TRANSACTION_TYPE")]
         public TransactionType TransactionType { get; set; }
 

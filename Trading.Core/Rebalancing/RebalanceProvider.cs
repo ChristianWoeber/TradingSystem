@@ -38,7 +38,7 @@ namespace Trading.Core.Rebalancing
 
         public void RebalanceTemporaryPortfolio(List<ITradingCandidate> bestCandidates, List<ITradingCandidate> allCandidates)
         {
-            if (allCandidates.Count > 0 && allCandidates[0].PortfolioAsof >= new DateTime(2000, 01, 12))
+            if (allCandidates.Count > 0 && allCandidates[0].PortfolioAsof >= new DateTime(2016, 12, 08))
             {
                 var date = allCandidates[0].PortfolioAsof;
                 //JsonUtils.SerializeToFile(bestCandidates, $"BestCandidates_CleanUpCash{date.ToShortDateString()}.txt");
@@ -78,7 +78,7 @@ namespace Trading.Core.Rebalancing
                 return;
 
             //ich drehe hier den sortierung und gehe die Liste reversed durch, dadruch kann ich schon ins temporäre portfolio
-            //hinzugefügten Kandidaten einfach removen
+            //hinzugefügten und Kandidaten einfach removen
             var calculatedScoreCandidatesReversed = RebalanceScoringProvider.RebalanceCollection.OrderBy(x => x.RebalanceScore.Score).ToList();
 
             //zusätzlich merke ich mir hier den investitionsgrad der hinzugefügten

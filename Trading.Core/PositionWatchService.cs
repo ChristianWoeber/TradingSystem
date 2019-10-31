@@ -37,12 +37,6 @@ namespace Trading.Core
             if (!_limitDictionary.TryGetValue(candidate.Record.SecurityId, out var stopLossMeta))
                 throw new ArgumentException("An dieser Stelle muss es ein Limit geben");
 
-            if (((TradingCandidate)candidate).SecurityId == 413740 &&
-                candidate.PortfolioAsof >= new DateTime(2015, 01, 20))
-            {
-
-            }
-
             //akuteller Preis
             var currentPrice = candidate.Record.AdjustedPrice;
 
@@ -60,7 +54,7 @@ namespace Trading.Core
             var volatility = candidate.ScoringResult.Volatility;
 
             //dann ist die historie noch nocht lang genug
-            if (volatility == -1 || volatility == null)
+            if (volatility == -1 || volatility == null || volatility==0)
             {
                 //solange im Plus kein stop
                 if (candidate.Performance > 0)
@@ -87,6 +81,11 @@ namespace Trading.Core
 
             }
 
+            if (candidate.Record.Asof >= new DateTime(2015, 06, 22) && candidate.Record.SecurityId == 433011)
+            {
+
+            }
+
             //der Rückgabewert
             //wenn der aktuelle Preis <= ist dem letzten High abzüglich der Vola stopp ich
             //wenn der aktuelle Preis kleiner als der average Preis ist sprich ich im minus bin mit der Position abzüglichn der Volatilität
@@ -98,7 +97,7 @@ namespace Trading.Core
             else if (currentPrice <= stopLossMeta.High.Price * (1 - 4 * sigma) &&
                      currentPrice < candidate.AveragePrice * (1 - 2 * sigma))
             {
-                hasStop = true;
+                hasStop = false;
             }
             else if (currentPrice < stopLossMeta.PreviousLow.Price * (1 - 4 * sigma) &&
                      stopLossMeta.Opening.Asof != stopLossMeta.PreviousLow.Asof)

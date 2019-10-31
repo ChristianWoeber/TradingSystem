@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using Trading.Core.Backtest;
 using Trading.Core.Exposure;
@@ -17,15 +15,7 @@ using Trading.Parsing.Attributes;
 
 namespace TradingSystemTests.TestCases
 {
-    public class DummyTransactionsCacheprovider : ITransactionsCacheProvider
-    {
-        public Lazy<Dictionary<int, List<ITransaction>>> TransactionsCache { get; }
-        public void UpdateCache()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
+  
     public class DummyPortfolioSettings : DefaultPortfolioSettings
     {
         public DummyPortfolioSettings()
@@ -73,6 +63,8 @@ namespace TradingSystemTests.TestCases
 
     }
 
+
+
     [TestFixture]
     public class AllocationToRiskWatcherTest
     {
@@ -85,10 +77,10 @@ namespace TradingSystemTests.TestCases
             if (_allocationToRiskWatcher != null)
                 return;
             _settings = settings;
-            _allocationToRiskWatcher = new ExposureWatcher(_settings);
+            _allocationToRiskWatcher = new ExposureWatcher(_settings, new FileExposureDataProvider(_settings.IndicesDirectory));
             _output = new List<Tuple<DateTime, decimal>>();
         }
-        [TestCase("01.01.2000", true)]
+        [TestCase("01.01.2000", false)]
         [TestCase("01.09.2008", false)]
         public void CalculateMaximumExposureTest(string dateString, bool show)
         {
@@ -112,7 +104,7 @@ namespace TradingSystemTests.TestCases
                     daysToAdd = 2;
                 startDate = startDate.AddDays(daysToAdd);
             }
-            ShowFile("ExposureTest1.csv");
+            //ShowFile("ExposureTest1.csv");
 
             var dicList = _output.ToDictionaryList(x => x.Item2);
             var ret = dicList.TryGetValue(_settings.MinimumAllocationToRisk, out var minimumItems);
@@ -147,7 +139,7 @@ namespace TradingSystemTests.TestCases
                     daysToAdd = 2;
                 startDate = startDate.AddDays(daysToAdd);
             }
-            ShowFile("IndexSimulation.csv");
+            //ShowFile("IndexSimulation.csv");
 
             var dicList = _output.ToDictionaryList(x => x.Item2);
             var ret = dicList.TryGetValue(_settings.MinimumAllocationToRisk, out var minimumItems);

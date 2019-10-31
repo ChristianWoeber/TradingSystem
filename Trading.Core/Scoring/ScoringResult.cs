@@ -44,6 +44,11 @@ namespace Trading.Core.Scoring
         /// </summary>
         public ILowMetaInfo LowMetaInfo { get; set; }
 
+        /// <summary>
+        /// Gibt an ob es positive kurz und mittelfristige Performance gibt
+        /// </summary>
+        public bool HasPositiveShortToMidTermPerformance => Performance10 > 0 && Performance30 > 0;
+
         public int CompareTo(object obj)
         {
             return Score.CompareTo(((IScoringResult)obj).Score);
@@ -76,6 +81,8 @@ namespace Trading.Core.Scoring
         public bool IsNewLow { get; set; }
         public ILowMetaInfo LowMetaInfo { get; set; }
 
+        public bool HasPositiveShortToMidTermPerformance => Performance10 > 0 && Performance30 > 0;
+
         public decimal Score
         {
             get
@@ -89,22 +96,17 @@ namespace Trading.Core.Scoring
                 if (avgPerf == 0)
                     return 0;
 
+                //die Performace um die Vola "abzinsen"
                 var score = Math.Round((avgPerf * (1 - Volatility ?? 0.25M)) * 100, 2);
 
                 if (score <= 1)
                     return score;
 
-                //if (AbsoluteGainAndLossMetaInfo == null)
-                //    return 0;
                 //fall wenn bei der Vola ein schrott rauskommt
                 if (score > 200)
                     score = -1;
 
-                return score /**ManipulateScoreFromAbsoluteLoss()*/;
-
-                //return IsNewLow ? score / 2 : score;
-
-                //return Math.Round((avgPerf * (1 - Volatility)) * 100, 2);
+                return score;
             }
         }
 

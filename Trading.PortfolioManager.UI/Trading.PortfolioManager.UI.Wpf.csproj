@@ -97,9 +97,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Git\Libraries\Common.Lib\Common.Lib.Core\Common.Lib.Core.csproj">
+      <Project>{7d591765-3ae2-4629-be6e-ca18779bff2a}</Project>
+      <Name>Common.Lib.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Git\Libraries\Common.Lib\Common.Lib.UI.WPF.Core\Common.Lib.UI.WPF.Core.csproj">
+      <Project>{b8e58fab-0b66-4cf2-ae21-8eb2ee25100d}</Project>
+      <Name>Common.Lib.UI.WPF.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HelperLibrary\HelperLibrary.csproj">
       <Project>{3696bc6c-2421-4eaf-b7d8-a26a74ac7656}</Project>
       <Name>HelperLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Trading.Calculation\Trading.Calculation.csproj">
+      <Project>{68564410-695D-436E-A12B-456F5870BB86}</Project>
+      <Name>Trading.Calculation</Name>
     </ProjectReference>
     <ProjectReference Include="..\Trading.Core\Trading.Core.csproj">
       <Project>{291D03A4-084D-4D25-90C5-1907569756D4}</Project>
@@ -108,6 +120,10 @@
     <ProjectReference Include="..\Trading.DataStructures\Trading.DataStructures.csproj">
       <Project>{53bb7efc-1b0d-4dfa-be74-5ff13bf088ef}</Project>
       <Name>Trading.DataStructures</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Trading.Parsing\Trading.Parsing.csproj">
+      <Project>{463F055A-786D-4E0F-9571-34BC6791BF61}</Project>
+      <Name>Trading.Parsing</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

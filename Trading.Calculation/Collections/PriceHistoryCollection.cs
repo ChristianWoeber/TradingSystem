@@ -1,8 +1,8 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Trading.Calculation.Extensions;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;

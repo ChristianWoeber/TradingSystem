@@ -32,6 +32,7 @@ namespace TradingSystemTests.TestCases
             //die Candidatenliste zrückgeben lassen
             var candidates = candidatesProvider.GetCandidates(date);
 
+            //schauen ob Candidaten zurückgegeben wurdn
             Assert.IsTrue(candidates.Any());
         }
 

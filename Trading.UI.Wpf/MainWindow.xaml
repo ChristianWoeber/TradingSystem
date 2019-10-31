@@ -32,11 +32,11 @@
                             <controls:StopsControl/>
                         </arts:SmartFlyoutItem.FlyoutContent>
                     </arts:SmartFlyoutItem>
-                <arts:SmartFlyoutItem HeaderText="Candidates" Icon="UwpList" TextAppearance="Header2"  HeaderTextForeground="White" Width="870">
+                <!--<arts:SmartFlyoutItem HeaderText="Candidates" Icon="UwpList" TextAppearance="Header2"  HeaderTextForeground="White" Width="870">
                     <arts:SmartFlyoutItem.FlyoutContent>
                         <controls:CandidatesControl />
                     </arts:SmartFlyoutItem.FlyoutContent>
-                </arts:SmartFlyoutItem>
+                </arts:SmartFlyoutItem>-->
 
             </arts:SmartFlyout.Items>
             <arts:SmartFlyout.Content>
@@ -120,6 +120,15 @@
                                               Command="{Binding ShowTradesCommand}" 
                                               Width="auto" 
                                               IconBrush="DarkViolet"
+                                              Margin="5" 
+                                              VerticalContentAlignment="Center" 
+                                              HorizontalContentAlignment="Center"/>
+
+                        <arts:SmartIconButton Icon="UwpList"                                           
+                                              Description="Kandidaten-Übersicht anzeigen" 
+                                              Command="{Binding ShowTradingCandidatesCommand}" 
+                                              Width="auto" 
+                                              IconBrush="Blue"
                                               Margin="5" 
                                               VerticalContentAlignment="Center" 
                                               HorizontalContentAlignment="Center"/>

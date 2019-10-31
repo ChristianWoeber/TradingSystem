@@ -9,18 +9,18 @@ using System.Linq;
 using System.Xml.Serialization;
 using Trading.DataStructures.Interfaces;
 using Trading.Parsing.Attributes;
-using Trading.Parsing.Extensions;
 using System.IO.Compression;
+using System.IO.MemoryMappedFiles;
 
 namespace Trading.Parsing
 {
     public class SimpleTextParser
     {
-        private static readonly Dictionary<object, List<PropertyInfo>> _propertyInfoCache =
-            new Dictionary<object, List<PropertyInfo>>();
+        private static readonly Dictionary<Type, List<PropertyInfo>> _propertyInfoCache =
+            new Dictionary<Type, List<PropertyInfo>>();
 
-        private static readonly Dictionary<object, HashSet<InputMapper>> _inputMappingCache =
-            new Dictionary<object, HashSet<InputMapper>>();
+        private static readonly Dictionary<Type, InputMappingCollection> _inputMappingCache =
+            new Dictionary<Type, InputMappingCollection>();
 
         static SimpleTextParser()
         {
@@ -36,7 +36,7 @@ namespace Trading.Parsing
                     if (!_propertyInfoCache.TryGetValue(type, out _))
                     {
                         _propertyInfoCache.Add(type, new List<PropertyInfo>());
-                        _inputMappingCache.Add(type, new HashSet<InputMapper>());
+                        _inputMappingCache.Add(type, new InputMappingCollection());
                     }
                 }
                 foreach (var propertyInfo in type.GetProperties())
@@ -54,7 +54,7 @@ namespace Trading.Parsing
 
                     //alle keywords einfügen
                     foreach (var keyWord in attr.KeyWords)
-                        _inputMappingCache[type].Add(new InputMapper(keyWord, propertyInfo, attr.SortIndex));
+                        _inputMappingCache[type].Add(keyWord, new InputMapper(keyWord, propertyInfo, attr.SortIndex));
                 }
             }
         }
@@ -119,66 +119,51 @@ namespace Trading.Parsing
         private static IEnumerable<T> GetItemsOfType<T>(string path)
             where T : class
         {
+
             if (string.IsNullOrWhiteSpace(path))
                 yield break;
 
-            //gibt die Keywords zurcük
-            var keywords = GetOrAddKeywords<T>();
+            //gibt die input-mappers zurück
+            var inputMappingCollection = GetOrAddInputMappers<T>();
 
-            if (keywords == null)
+            if (inputMappingCollection == null)
                 throw new ArgumentException();
-
-            //eine Liste mit den gefunden Mappings
-            var foundKeys = new List<InputMapper>();
 
             using (var rd = File.OpenText(path))
             {
+                var rowIdx = -1;
                 string line;
+
                 while ((line = rd.ReadLine()) != null)
                 {
+                    rowIdx++;
+
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+
                     var fields = line.Split(';', '|')
                         .Select(x => x.Trim()).ToList();
 
                     //map header
-                    if (foundKeys.Count == 0)
+                    if (!inputMappingCollection.HasMappings)
                     {
-                        foreach (var k in keywords)
-                        {
-                            var match = fields.FirstOrDefault(x => x == k.KeyWord);
-                            if (string.IsNullOrWhiteSpace(match))
-                                continue;
-                            k.ArrayIndex = fields.IndexOf(match);
-                            foundKeys.Add(k);
-                        }
-
+                        CreateMapping<T>(fields, inputMappingCollection);
                         continue;
                     }
-                    //wenn kein Mapping fefunden wurde exception werfen
-                    if (foundKeys.Count == 0)
-                        throw new ArgumentException("Es konnte kein mapping hergestellt werden");
 
-                    // Create Obj //
-                    var obj = Activator.CreateInstance<T>();
-
-                    // Set Value of Mapped Properties
-                    foreach (var mappedField in foundKeys)
+                    //wenn die header string ungleich sind neu mappen
+                    if (rowIdx == 0 && inputMappingCollection.RowHeaderFromMatchingIndex != line)
                     {
-                        var value = fields[mappedField.ArrayIndex];
-
-                        //Wenn er null oder empty ist den default wert ins model schreiben und weitergehen
-                        if (value == "null" || string.IsNullOrEmpty(value))
-                        {
-                            mappedField.SetterFunc(obj, default(T));
-                            continue;
-                        }
-
-                        //den Property Type holen & auch NUllables berücksichtigen
-                        var propertyType = GetPropertyType(mappedField);
-                        //und danach den Wert im Model setzen
-                        SetPropertyValue(propertyType, mappedField, obj, value);
-                        //das object zurückgeben
-                        yield return obj;
+                        CreateMapping<T>(fields, inputMappingCollection);
+                        continue;
                     }
+
+                    //sonst wieder zu den values
+                    if (rowIdx == 0)
+                        continue;
+
+                    //das object zurückgeben
+                    yield return CreateAndPopulateValue<T>(inputMappingCollection, fields);
                 }
             }
         }
@@ -188,12 +173,12 @@ namespace Trading.Parsing
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static HashSet<InputMapper> GetOrAddKeywords<T>()
+        private static InputMappingCollection GetOrAddInputMappers<T>()
             where T : class
         {
-            HashSet<InputMapper> keywords;
             lock (_lockObj)
             {
+                InputMappingCollection inputMappers = null;
                 if (!_propertyInfoCache.TryGetValue(typeof(T), out var propertyInfos))
                 {
                     propertyInfos = typeof(T).GetProperties().ToList();
@@ -202,7 +187,7 @@ namespace Trading.Parsing
 
                 if (!_inputMappingCache.TryGetValue(typeof(T), out var output))
                 {
-                    keywords = new HashSet<InputMapper>();
+                    inputMappers = new InputMappingCollection();
                     //Get Keywords vis Reflection for Mapping//
                     foreach (var item in propertyInfos)
                     {
@@ -211,88 +196,120 @@ namespace Trading.Parsing
                             continue;
 
                         foreach (var key in attr.KeyWords)
-                            keywords.Add(new InputMapper(key, item, attr.SortIndex));
+                            inputMappers.Add(key, new InputMapper(key, item, attr.SortIndex));
                     }
 
-                    _inputMappingCache.Add(typeof(T), keywords);
+                    _inputMappingCache.Add(typeof(T), inputMappers);
                 }
-
-                keywords = output;
+                //Nur wenn der output nicht null ist setzen, sonst habe ich den type dynamisch hinzugefügt
+                if (output != null)
+                    inputMappers = output;
+                return inputMappers;
             }
 
-            return keywords;
         }
 
         public static List<T> GetListOfType<T>(string data) where T : class
         {
-            //Action<T, object> setterFunc = null;
             var lsReturn = new List<T>();
 
             if (string.IsNullOrWhiteSpace(data))
                 return new List<T>();
 
-            var keywords = GetOrAddKeywords<T>();
+            var inputMappingCollection = GetOrAddInputMappers<T>();
 
-            if (keywords == null)
+            if (inputMappingCollection == null)
                 throw new ArgumentException();
-
-            //eine Liste mit den gefunden Mappings
-            var foundKeys = new List<InputMapper>();
 
             using (var rd = new StringReader(data))
             {
+                var rowIdx = -1;
                 string line;
                 while ((line = rd.ReadLine()) != null)
                 {
+                    rowIdx++;
+
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+
                     var fields = line.Split(';', '|')
                         .Select(x => x.Trim()).ToList();
 
+                    //lock (_lockObj)
+                    //{
                     //map header
-                    if (foundKeys.Count == 0)
+                    if (!inputMappingCollection.HasMappings)
                     {
-                        foreach (var k in keywords)
-                        {
-                            var match = fields.FirstOrDefault(x => x == k.KeyWord);
-                            if (string.IsNullOrWhiteSpace(match))
-                                continue;
-                            k.ArrayIndex = fields.IndexOf(match);
-                            foundKeys.Add(k);
-                        }
-
+                        CreateMapping<T>(fields, inputMappingCollection);
                         continue;
                     }
 
-
-                    //wenn kein Mapping fefunden wurde exception werfen
-                    if (foundKeys.Count == 0)
-                        throw new ArgumentException("Es konnte kein mapping hergestellt werden");
-
-                    // Create Obj //
-                    var obj = Activator.CreateInstance<T>();
-
-                    // Set Value of Mapped Properties
-                    foreach (var mappedField in foundKeys)
+                    //wenn die header string ungleich sind neu mappen
+                    if (rowIdx == 0 && inputMappingCollection.RowHeaderFromMatchingIndex != line)
                     {
-                        //den Value holden
-                        var value = fields[mappedField.ArrayIndex];
-                        //Wenn er null oder empty ist den default wert ins model schreiben und weitergehen
-                        if (value == "null" || string.IsNullOrEmpty(value))
-                        {
-                            mappedField.SetterFunc(obj, default(T));
-                            continue;
-                        }
-
-                        //den Property Type holen & auch NUllables berücksichtigen
-                        var propertyType = GetPropertyType(mappedField);
-                        //und danach den Wert im Model setzen
-                        SetPropertyValue(propertyType, mappedField, obj, value);
+                        CreateMapping<T>(fields, inputMappingCollection);
+                        continue;
                     }
 
+                    //sonst wieder zu den values
+                    if (rowIdx == 0)
+                        continue;
+                    //}
+
+                    //erstellt das objekt und schreibt die Values hinein
+                    var obj = CreateAndPopulateValue<T>(inputMappingCollection, fields);
                     lsReturn.Add(obj);
                 }
             }
 
             return lsReturn;
+        }
+
+        private static void CreateMapping<T>(IList<string> fields, InputMappingCollection inputMappingCollection) where T : class
+        {
+            if (inputMappingCollection.HasMappings)
+            {
+                foreach (var value in inputMappingCollection.Values)
+                    value.MatchingIndex = null;
+            }
+
+            //Wenn die fileds null sind hol ich sie mir aus dem PropertyInfo Chache
+            foreach (var field in fields ?? (fields = _propertyInfoCache[typeof(T)].Select(x => x.Name).ToList()))
+            {
+                if (!inputMappingCollection.TryGetValue(field, out var mapper))
+                    continue;
+                mapper.MatchingIndex = fields.IndexOf(field);
+            }
+        }
+
+        private static T CreateAndPopulateValue<T>(InputMappingCollection inputMappingCollection, IReadOnlyList<string> fields) where T : class
+        {
+            //lock (_lockObj)
+            //{
+            // Create Obj //
+            var obj = Activator.CreateInstance<T>();
+
+            // Set Value of Mapped Properties
+            foreach (var mappedField in inputMappingCollection.EnumMatchedFields())
+            {
+                //den Value holden
+                var value = fields[mappedField.MatchingIndex.Value];
+
+                //Wenn er null oder empty ist den default wert ins model schreiben und weitergehen
+                if (value == "null" || string.IsNullOrEmpty(value))
+                {
+                    mappedField.SetterFunc(obj, default(T));
+                    continue;
+                }
+
+                //den Property Type holen & auch NUllables berücksichtigen
+                var propertyType = GetPropertyType(mappedField);
+                //und danach den Wert im Model setzen
+                SetPropertyValue(propertyType, mappedField, obj, value);
+            }
+
+            return obj;
+            //}
         }
 
         /// <summary>
@@ -311,12 +328,12 @@ namespace Trading.Parsing
 
             if (propertyType == typeof(DateTime))
             {
-                mappedField.SetterFunc(obj, Convert.ChangeType(value, propertyType, CultureInfo.CurrentCulture));
+                mappedField.SetterFunc(obj, Convert.ToDateTime(value, CultureInfo.CurrentCulture));
             }
 
             else if (propertyType == typeof(decimal))
             {
-                mappedField.SetterFunc(obj, Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture));
+                mappedField.SetterFunc(obj, Convert.ToDecimal(value, CultureInfo.InvariantCulture));
             }
             else if (propertyType.BaseType == typeof(Enum))
             {
@@ -343,26 +360,6 @@ namespace Trading.Parsing
             return nullableType != null ? nullableType : mappedField.PropertyInfo.PropertyType;
         }
 
-        // n=name, o=open, p = previous close, s = symbol// 
-        //public static YahooDataRecordExtended GetSingleYahooLineHcMapping(string data)
-        //{
-        //    var dataArray = data.Split(',', ';');
-
-        //    if (dataArray[2].Contains("N/A") || dataArray[4].Contains("N/A"))
-        //        return null;
-
-        //    var name = Normalize(dataArray[0]);
-        //    var close = ParseDecimal(dataArray[2]);
-        //    var asof = ParseDateTime(dataArray[4]);
-
-        //    return new YahooDataRecordExtended
-        //    {
-        //        Name = name,
-        //        AdjustedPrice = close ?? Decimal.MinValue,
-        //        Price = close ?? Decimal.MinValue,
-        //        Asof = asof ?? DateTime.MinValue
-        //    };
-        //}
 
         private static string Normalize(string input)
         {
@@ -412,13 +409,13 @@ namespace Trading.Parsing
 
         }
 
-        public static void AppendToFile<T>(T item, string path)
+        public static void AppendToFile<T>(T item, string path) where T : class
         {
             AppendToFile<T>(new List<T> { item }, path);
         }
 
 
-        public static void AppendToFile<T>(IEnumerable<T> items, string path)
+        public static void AppendToFile<T>(IEnumerable<T> items, string path) where T : class
         {
             //Merke mir hier einmalig die PropertyInfos zu jedem Model
             if (!_propertyInfoCache.TryGetValue(typeof(T), out var properties))
@@ -426,12 +423,14 @@ namespace Trading.Parsing
                 properties = typeof(T).GetProperties().Where(x => x.GetCustomAttribute<InputMapping>() != null)
                    .OrderBy(x => x.GetCustomAttribute<InputMapping>().SortIndex)
                    .ToList();
+                if (properties.Count == 0)
+                    throw new ArgumentNullException(nameof(AppendToFile), $"Es konnte kein Mapping im Typen {typeof(T)} gefunden werden");
                 _propertyInfoCache.Add(typeof(T), properties);
             }
 
             if (!_inputMappingCache.TryGetValue(typeof(T), out var mappings))
             {
-                mappings = new HashSet<InputMapper>();
+                mappings = new InputMappingCollection();
                 //Get Keywords vis Reflection for Mapping//
                 foreach (var item in properties ?? throw new ArgumentException("Achtung properties dürfen nicht null sein"))
                 {
@@ -440,7 +439,7 @@ namespace Trading.Parsing
                         continue;
 
                     foreach (var key in attr.KeyWords)
-                        mappings.Add(new InputMapper(key, item, attr.SortIndex));
+                        mappings.Add(key, new InputMapper(key, item, attr.SortIndex));
                 }
 
                 _inputMappingCache.Add(typeof(T), mappings);
@@ -462,41 +461,60 @@ namespace Trading.Parsing
             }
         }
 
-        private static void WriteLines<T>(IEnumerable<T> items, HashSet<InputMapper> mappings, StreamWriter writer)
+        private static void WriteLines<T>(IEnumerable<T> items, InputMappingCollection inputMappingCollection, StreamWriter writer)
         {
             foreach (var item in items)
             {
-                var row = mappings
-                    .Select(i => i.GetterFunc(item))
-                    .Select(ConvertValue)
-                    .Aggregate((a, b) => a + DELIMITER + b);
-
+                var row = inputMappingCollection.CreateRowFromValue(item, ConvertValue);
                 writer.WriteLine(row);
             }
         }
 
-        private static void WriteToFile<T>(IEnumerable<T> items, string path, HashSet<InputMapper> mappings)
+        private static void WriteToFile<T>(IEnumerable<T> items, string path, InputMappingCollection mappingsCollection) where T : class
         {
+            if (!mappingsCollection.HasMappings)
+            {
+                CreateMapping<T>(null, mappingsCollection);
+            }
+
             using (var writer = File.CreateText(path))
             {
                 //ich hol mir die Header über die Linq aggregate Methode
                 //vorher auf den Name ein select
-                var header = mappings.GroupBy(x=>x.PropertyInfo).Select(p=>p.Key.Name)
-                    .Aggregate((a, b) => a + DELIMITER + b);
+                var header = mappingsCollection.RowHeader ?? CreateHeaderFromFirstItem(items.FirstOrDefault(), mappingsCollection);
 
                 writer.WriteLine(header);
 
                 if (items == null)
                     return;
 
-                WriteLines(items, mappings, writer);
+                WriteLines(items, mappingsCollection, writer);
             }
+        }
+
+        private static string CreateHeaderFromFirstItem<T>(T item, InputMappingCollection mappingsCollection)
+        {
+            var prop = _propertyInfoCache[item.GetType()];
+
+            for (var i = 0; i < prop.Count; i++)
+            {
+                var p = prop[i];
+                if (p.GetValue(item) == null)
+                    continue;
+                if (!mappingsCollection.TryGetValue(p.Name, out var mapper))
+                    throw new ArgumentOutOfRangeException($"wurde nicht gefunden {p}");
+                mapper.MatchingIndex = i;
+            }
+
+            return mappingsCollection.RowHeader;
         }
 
         private static string ConvertValue(object value)
         {
             if (IsNumber(value))
+            {
                 return Convert.ToString(value, CultureInfo.InvariantCulture);
+            }
             if (IsEnum(value))
                 return Convert.ToString((int)Enum.ToObject(value.GetType(), value));
             return Convert.ToString(value, CultureInfo.CurrentCulture) ?? "null";
@@ -543,49 +561,3 @@ namespace Trading.Parsing
 
     }
 }
-
-
-//public class SetterFuncHelper<T>
-//{
-//    public SetterFuncHelper(InputMapper mappedField)
-//    {
-//        SetterFunc = mappedField.PropertyInfo.CreateSetter<T>();
-//        MappedIndex = mappedField.ArrayIndex;
-//    }
-
-//    public Action<T, object> SetterFunc { get; }
-
-//    public int MappedIndex { get; set; }
-//}
-
-public class InputMapper : Tuple<string, PropertyInfo>
-{
-    public InputMapper(string keyWord, PropertyInfo propertyInfo, int arrayIndex) : base(keyWord, propertyInfo)
-    {
-        ArrayIndex = arrayIndex;
-        SetterFunc = propertyInfo.CreateSetMethod();
-        GetterFunc = propertyInfo.CreateGetMethod();
-    }
-
-    public Func<object, object> GetterFunc { get; }
-
-    public Action<object, object> SetterFunc { get; }
-
-    /// <summary>
-    /// der Suchstring
-    /// </summary>
-    public string KeyWord => Item1;
-    /// <summary>
-    /// Die Propertyinfo
-    /// </summary>
-    public PropertyInfo PropertyInfo => Item2;
-    /// <summary>
-    /// der Index an dem das Feld gefunden wurde
-    /// </summary>
-    public int ArrayIndex { get; set; }
-
-}
-
-
-
-

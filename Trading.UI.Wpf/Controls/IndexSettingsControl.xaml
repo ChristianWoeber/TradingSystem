@@ -3,12 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Trading.UI.Wpf.Controls"
              xmlns:arts="http://arts.co.at/common/lib/wpf/controls"
              xmlns:viewModels="clr-namespace:Trading.UI.Wpf.ViewModels"
-             xmlns:portfolioManager="clr-namespace:HelperLibrary.Trading.PortfolioManager;assembly=HelperLibrary"
              xmlns:converter="clr-namespace:Trading.UI.Wpf.Converter"
-             xmlns:exposure="clr-namespace:HelperLibrary.Trading.PortfolioManager.Exposure;assembly=HelperLibrary"
              xmlns:enums="clr-namespace:Trading.DataStructures.Enums;assembly=Trading.DataStructures"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">

@@ -47,7 +47,7 @@ namespace Trading.Core.Scoring
             var performance10 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-10), date);
             var performance30 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-30), date);
             var performance90 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-90), date);
-            priceHistory.Calc.TryGetLastVolatility(date.AddDays(-250), out var volatility);
+            priceHistory.Calc.TryGetLastVolatilityInfo(date, out var volaInfo);
             priceHistory.Calc.TryGetLastAbsoluteLossAndGain(date, out var absoluteLossesAndGainsMetaInfo);
 
             //var maxDrawDown = priceHistory.Calc.GetMaximumDrawdown(date.AddDays(-250), date, CaclulationOption.Adjusted);
@@ -61,7 +61,7 @@ namespace Trading.Core.Scoring
                 Performance90 = performance90,
                 Performance250 = performance250,
                 //MaxDrawdown = maxDrawDown,
-                Volatility = volatility,
+                Volatility = volaInfo.DailyVolatility,
                 IsNewLow = priceHistory.Calc.DateIsNewLow(date),
                 AbsoluteGainAndLossMetaInfo = absoluteLossesAndGainsMetaInfo
 

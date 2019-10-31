@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using HelperLibrary.Database.Models;
 using JetBrains.Annotations;
 using Trading.Core.Models;
 using Trading.DataStructures.Enums;

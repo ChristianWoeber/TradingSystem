@@ -11,14 +11,14 @@ namespace Trading.Core.Backtest
 
         }
 
-        public IndexResult(IExposureSettings receiver)
+        public IndexResult(IExposureSettings exposureSettings)
         {
-            MaximumAllocationToRisk = receiver.MaximumAllocationToRisk;
-            MinimumAllocationToRisk = receiver.MinimumAllocationToRisk;
-            Asof = ((IIndexBackTestResult)receiver).Asof;
-            SimulationNav = ((IIndexBackTestResult)receiver).SimulationNav;
-            IndexLevel = ((IIndexBackTestResult)receiver).IndexLevel;
-            TradingDay = receiver.TradingDay;
+            MaximumAllocationToRisk = exposureSettings.MaximumAllocationToRisk;
+            MinimumAllocationToRisk = exposureSettings.MinimumAllocationToRisk;
+            Asof = ((IIndexBackTestResult)exposureSettings).Asof;
+            SimulationNav = ((IIndexBackTestResult)exposureSettings).SimulationNav;
+            IndexLevel = ((IIndexBackTestResult)exposureSettings).IndexLevel;
+            TradingDay = exposureSettings.TradingDay;
 
         }
 

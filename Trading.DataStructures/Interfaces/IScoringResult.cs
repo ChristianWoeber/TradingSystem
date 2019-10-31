@@ -48,5 +48,10 @@ namespace Trading.DataStructures.Interfaces
         /// die LowMetaInfo zu dem Stichtag
         /// </summary>
         ILowMetaInfo LowMetaInfo { get; set; }
+
+        /// <summary>
+        /// Gibt an ob es positive kurz und mittelfristige Performance gibt
+        /// </summary>
+        bool HasPositiveShortToMidTermPerformance { get;  }
     }
 }

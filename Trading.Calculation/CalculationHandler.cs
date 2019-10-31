@@ -156,24 +156,25 @@ namespace Trading.Calculation
             return (decimal)Math.Sqrt(variance / (items.Count - 1));
         }
 
-        public decimal CalcVolatility(IEnumerable<decimal> returns, CalculationOption opt)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="returns"></param>
+        /// <param name="opt"></param>
+        /// <param name="scaling">für monate 12, für wochen 50 und für tage 250</param>
+        /// <returns></returns>
+        public decimal CalcVolatility(IEnumerable<decimal> returns, CalculationOption opt, int scaling = 12)
         {
             var variance = 0d;
-            decimal averageReturn = 0;
-
             var monthlyReturns = returns.ToList();
-            for (var i = 0; i < monthlyReturns.Count - 1; i++)
-            {
-                var ret = monthlyReturns[i];
-                averageReturn = ret / (i + 1);
-            }
+            var averageReturn = monthlyReturns.Average(x => x);
 
             foreach (var ret in monthlyReturns)
             {
                 variance += Math.Pow((double)averageReturn - (double)ret, 2);
             }
 
-            return (decimal)Math.Sqrt(variance / (monthlyReturns.Count - 1)) * (decimal)Math.Sqrt(20);
+            return (decimal)Math.Sqrt(variance / (monthlyReturns.Count - 1)) * (decimal)Math.Sqrt(scaling);
         }
     }
 }
