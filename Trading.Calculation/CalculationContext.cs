@@ -182,20 +182,6 @@ namespace Trading.Calculation
 
         public IEnumerable<decimal> EnumMonthlyReturns()
         {
-            //ITradingRecord first = null;
-            //foreach (var record in _priceHistory.EnumMonthlyUltimoItems())
-            //{
-            //    if (first == null)
-            //    {
-            //        first = record;
-            //        continue;
-            //    }
-
-            //    yield return GetAbsoluteReturn(first.Asof, record.Asof);
-            //    first = record;
-
-            //}
-
             ////damit kann gleich nach MOnaten gruppiert werden mit dem Key "{MMYY}"
             foreach (var grp in _dailyReturns.GroupBy(x => new { x.Key.Month, x.Key.Year }))
                 yield return grp.Sum(y => y.Value.AbsoluteReturn);
@@ -377,30 +363,20 @@ namespace Trading.Calculation
         public void CalcMovingLows(ITradingRecord item)
         {
             //brauche erst rechnen ab dem Moment wo sich ein erstes Fenster ausgeht
-            if (_priceHistory.Count < _priceHistory.Settings.MovingAverageLengthInDays)
+            if (_priceHistory.Count < _priceHistory.Settings.MovingLowsLengthInDays)
                 return;
 
             try
             {
-                ITradingRecord high = null;
-                ITradingRecord low = null;
-                ITradingRecord first = null;
-                ITradingRecord last = null;
-                
-                var records = new List<ITradingRecord>();
-
                 //hol mir das letzte Item
                 if (_lowMetaInfos.TryGetLastItem(item.Asof.AddDays(-1), out var lastLowMetaInfo))
                 {
                     //das High aktualisieren
                     if (item.AdjustedPrice > lastLowMetaInfo.High?.AdjustedPrice)
                         lastLowMetaInfo.UpdateHigh(item, lastLowMetaInfo.NewHighsCount++);
-                    
-                    //manipulation des letzten Eintrags
-                    lastLowMetaInfo.UpdatePeriodeRecords(item);
 
-                    //das Item von vor 150 Tagen
-                    //var newFirst = _priceHistory.Get(item.Asof.AddDays(-_priceHistory.Settings.MovingAverageLengthInDays));
+                    //manipulation des letzten Eintrags
+                    lastLowMetaInfo.UpdateLowMetaInfo(item);
 
                     //wenn der aktuelle Preis höher ist als der vorherige kann es kein neues low geben
                     if (item.AdjustedPrice > lastLowMetaInfo.Last.AdjustedPrice)
@@ -417,11 +393,23 @@ namespace Trading.Calculation
                         _lowMetaInfos.Add(item.Asof, new LowMetaInfo(lastLowMetaInfo.Low, item, lastLowMetaInfo, false));
                         return;
                     }
+                    else
+                    {
+                        //der preis ist gefallen und es gibt ein neues Low
+                        _lowMetaInfos.Add(item.Asof, new LowMetaInfo(item, item, lastLowMetaInfo, true));
+                        return;
+                    }
                 }
+                ITradingRecord high = null;
+                ITradingRecord low = null;
+                ITradingRecord first = null;
+                ITradingRecord last = null;
+
+                var records = new List<ITradingRecord>();
 
                 var countNewHighs = 0;
                 //neu berechnen
-                foreach (var record in _priceHistory.Range(item.Asof.AddDays(-_priceHistory.Settings.MovingAverageLengthInDays), item.Asof))
+                foreach (var record in _priceHistory.Range(item.Asof.AddDays(-_priceHistory.Settings.MovingLowsLengthInDays), item.Asof))
                 {
                     records.Add(record);
 

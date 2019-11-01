@@ -4,9 +4,9 @@ namespace Trading.Calculation.Collections
 {
     public class PriceHistorySettings : IPriceHistoryCollectionSettings
     {
-        public PriceHistorySettings(int movingAverageLengthInDays = 0, int movingDaysVolatility = 250, int movingDaysAbsoluteLosses = 60)
+        public PriceHistorySettings(int movingAverageLengthInDays = 150, int movingDaysVolatility = 250, int movingDaysAbsoluteLosses = 60)
         {
-            MovingAverageLengthInDays = movingAverageLengthInDays;
+            MovingLowsLengthInDays = movingAverageLengthInDays;
             MovingDaysVolatility = movingDaysVolatility;
             //deaktiviert da sehr performance intensiv, werden aktuell auch nicht benötigt
             MovingDaysAbsoluteLossesGains = 0;
@@ -15,7 +15,7 @@ namespace Trading.Calculation.Collections
         /// <summary>
         /// die Länge des Moving Averages
         /// </summary>
-        public int MovingAverageLengthInDays { get; set; }
+        public int MovingLowsLengthInDays { get; set; }
 
         /// <summary>
         /// die "Länge" der Volatilität

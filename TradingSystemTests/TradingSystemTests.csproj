@@ -114,6 +114,7 @@
     <None Include="Resources\SetIntialTransactionsTest.csv" />
     <None Include="Resources\Transactions_05.01.2000.csv" />
     <None Include="Resources\Transactions_19.01.2000.csv" />
+    <None Include="Resources\WIRECARD AG_428924.csv" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">

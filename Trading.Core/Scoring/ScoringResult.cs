@@ -21,7 +21,7 @@ namespace Trading.Core.Scoring
         public decimal Performance10 { get; set; }
         public decimal? Volatility { get; set; }
 
-        public decimal Score
+        public virtual decimal Score
         {
             get
             {

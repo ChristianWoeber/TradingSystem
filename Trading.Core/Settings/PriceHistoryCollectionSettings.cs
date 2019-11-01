@@ -6,7 +6,7 @@ namespace Trading.Core.Settings
     {
         public PriceHistoryCollectionSettings(int movingAverageLengthInDays = 150, int movingDaysVolatility = 250, int movingDaysAbsoluteLosses = 60)
         {
-            MovingAverageLengthInDays = movingAverageLengthInDays;
+            MovingLowsLengthInDays = movingAverageLengthInDays;
             MovingDaysVolatility = movingDaysVolatility;
             MovingDaysAbsoluteLossesGains = movingDaysAbsoluteLosses;
         }
@@ -14,7 +14,7 @@ namespace Trading.Core.Settings
         /// <summary>
         /// die Länge des Moving Averages in Tagen
         /// </summary>
-        public int MovingAverageLengthInDays { get; set; }
+        public int MovingLowsLengthInDays { get; set; }
 
         /// <summary>
         /// der Betrachtungszeitraum der Vola in Tagen

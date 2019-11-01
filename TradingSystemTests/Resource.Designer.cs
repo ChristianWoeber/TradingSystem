@@ -643,6 +643,25 @@ namespace TradingSystemTests {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Asof;SecurityId;Price;AdjustedPrice
+        ///24.10.2000 00:00:00;428924;11.458615;11.458615
+        ///25.10.2000 00:00:00;428924;11.3322937;11.3322937
+        ///26.10.2000 00:00:00;428924;11.4603381;11.4603381
+        ///27.10.2000 00:00:00;428924;11.4344916;11.4344916
+        ///30.10.2000 00:00:00;428924;11.0549621;11.0549621
+        ///31.10.2000 00:00:00;428924;10.347093;10.347093
+        ///01.11.2000 00:00:00;428924;10.196208;10.196208
+        ///02.11.2000 00:00:00;428924;12.7671347;12.7671347
+        ///03.11.2000 00:00:00;428924;12.18955;12.18955
+        ///06.11.2000 00:00:00;428924;11.99462 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string WIRECARD_AG_428924 {
+            get {
+                return ResourceManager.GetString("WIRECARD_AG_428924", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die TicketFee;TransactionDateTime;SecurityId;Shares;TargetAmountEur;TransactionType;Cancelled;TargetWeight;EffectiveWeight;EffectiveAmountEur
         ///35;05.01.2000 00:00:00;39;343;10000.0;1;0;0.1;0.0997;9971.01
         ///35;05.01.2000 00:00:00;16;253;10000.0;1;0;0.1;0.0999;9994.2586

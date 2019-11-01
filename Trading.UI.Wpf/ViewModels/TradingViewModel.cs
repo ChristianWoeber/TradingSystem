@@ -27,14 +27,12 @@ using Trading.Core.Cash;
 using Trading.Core.Exposure;
 using Trading.Core.Models;
 using Trading.Core.Portfolio;
-using Trading.Core.Scoring;
 using Trading.Core.Settings;
 using Trading.Core.Transactions;
 using Trading.DataStructures.Enums;
 using Trading.DataStructures.Interfaces;
 using Trading.Parsing;
 using Trading.UI.Wpf.Models;
-using Trading.UI.Wpf.Utils;
 using Trading.UI.Wpf.ViewModels.EventArgs;
 using Trading.UI.Wpf.Windows;
 
@@ -80,6 +78,12 @@ namespace Trading.UI.Wpf.ViewModels
             BlockSelectedCandidateFromBacktestCommand = new RelayCommand((o) => _backtestHandler.AddBlockedCandidate(SelectedCandidate.SecurityId), (o) => SelectedCandidate != null);
             ShowTradingCandidatesCommand = new RelayCommand((o) => OnShowTradingCandidates(), (o) => Candidates != null);
 
+        }
+
+
+        public TradingViewModel(IScoringProvider scoringProvider) : this()
+        {
+            _scoringProvider = scoringProvider;
         }
 
 
@@ -241,16 +245,6 @@ namespace Trading.UI.Wpf.ViewModels
             win.Show();
         }
 
-        public TradingViewModel(List<ITransaction> transactions, IScoringProvider scoringProvider) : this()
-        {
-            _scoringProvider = scoringProvider;
-            Init(transactions);
-        }
-
-        public TradingViewModel(IScoringProvider scoringProvider) : this()
-        {
-            _scoringProvider = scoringProvider;
-        }
 
         #endregion
 

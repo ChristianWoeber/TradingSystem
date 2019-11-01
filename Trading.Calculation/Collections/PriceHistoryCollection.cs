@@ -132,7 +132,7 @@ namespace Trading.Calculation.Collections
             //}
 
             //überprüfen ob der Collection settings mitgegeben wurden und danach die berechnnugen ausführen
-            if (Settings?.MovingAverageLengthInDays > 0)
+            if (Settings?.MovingLowsLengthInDays > 0)
             {
                 _calculationContext.CalcMovingLows(item);
             }

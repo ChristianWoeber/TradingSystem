@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -44,7 +45,7 @@ namespace Trading.UI.Wpf
             //    : new ScoringProvider(BootStrapperFactory.CreatePriceHistoryFromSingleFiles(Globals.PriceHistoryDirectory));
 
 
-            var scoringProvider = new ScoringProvider(BootStrapperFactory.CreatePriceHistoryFromSingleFiles(Globals.PriceHistoryDirectory));
+            var scoringProvider = new NewHighsCountScoringProvider(BootStrapperFactory.CreatePriceHistoryFromSingleFiles(Globals.PriceHistoryDirectory));
 
             //main window erstellen
             var mainwindow = new MainWindow { DataContext = new TradingViewModel(scoringProvider) };
@@ -103,6 +104,109 @@ namespace Trading.UI.Wpf
             }
 
             return new ScoringProvider(priceHistroyCollection);
+        }
+    }
+
+    public class NewHighsCountScoringProvider : IScoringProvider
+    {
+        public NewHighsCountScoringProvider(Dictionary<int, IPriceHistoryCollection> createPriceHistoryFromSingleFiles)
+        {
+            PriceHistoryStorage = createPriceHistoryFromSingleFiles;
+        }
+
+        /// <summary>
+        /// Storage of alle price histories, key => id, value the IPriceHistoryCollection
+        /// </summary>
+        public IDictionary<int, IPriceHistoryCollection> PriceHistoryStorage { get; }
+
+        /// <summary>
+        /// The Method that Returns the Scoring Result
+        /// </summary>
+        /// <param name="secId">the id of the security</param>
+        /// <param name="date">the start date for the Calculations</param>
+        public IScoringResult GetScore(int secId, DateTime date)
+        {
+            if (!PriceHistoryStorage.TryGetValue(secId, out var priceHistory))
+                return new NewHighsCountScoringResult();
+
+            //Das Datum des NAVs der in der PriceHistoryCollection gefunden wurde
+            var priceHistoryRecordAsOf = priceHistory.Get(date)?.Asof;
+            if (priceHistoryRecordAsOf == null)
+                return new NewHighsCountScoringResult();
+
+            //die 250 Tages Performance
+            var performance250 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-250), date);
+
+            //Wenn keine Berechungn der 250 Tages Performance möglich ist, returne ich false
+            if (performance250 == -1)
+                return new NewHighsCountScoringResult();
+
+            //Alle Berechnungnen durchführen
+            var performance10 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-10), date);
+            var performance30 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-30), date);
+            var performance90 = priceHistory.Calc.GetAbsoluteReturn(date.AddDays(-90), date);
+            if (!priceHistory.Calc.TryGetLastVolatilityInfo(date, out var volaInfo))
+                return new NewHighsCountScoringResult();
+            if (!priceHistory.TryGetLowMetaInfo(date, out var lowMetaInfo))
+                return new NewHighsCountScoringResult();
+
+            // Das Ergebnis returnen
+            return new NewHighsCountScoringResult
+            {
+                Asof = priceHistoryRecordAsOf.Value,
+                Performance10 = performance10,
+                Performance30 = performance30,
+                Performance90 = performance90,
+                Performance250 = performance250,
+                //MaxDrawdown = maxDrawDown,
+                Volatility = volaInfo.DailyVolatility,
+                LowMetaInfo = lowMetaInfo
+            };
+        }
+
+        /// <summary>
+        /// Returns then ITradingRecord at the given Date
+        /// </summary>
+        /// <param name="securityId">the security id</param>
+        /// <param name="asof">The Datetime of the record</param>
+        /// <returns></returns>
+        public ITradingRecord GetTradingRecord(int securityId, DateTime asof)
+        {
+            return !PriceHistoryStorage.TryGetValue(securityId, out var priceHistoryCollection)
+                ? null
+                : priceHistoryCollection.Get(asof);
+        }
+    }
+
+    public class NewHighsCountScoringResult : ScoringResult
+    {
+        public NewHighsCountScoringResult() : base()
+        {
+
+        }
+
+        /// <summary>der Score der sich aus den Berechnungen ergibt</summary>
+        public override decimal Score
+        {
+            get
+            {
+                if (LowMetaInfo == null)
+                    return 0;
+
+                // Ich gewichte die Performance,
+                // die aktuellsten Daten haben die größten Gewichte
+                //ich ziehe auch noch den maxdrawdown in der Periode ab
+                var avgPerf = Performance10 * (decimal)0.20
+                              + Performance30 * (decimal)0.30
+                              + Performance90 * (decimal)0.40
+                              + Performance250 * (decimal)0.10;
+
+                var increaseFactor = 1 + LowMetaInfo.NewHighsCount * 0.1M;
+                var newHighsAdjusted = avgPerf * increaseFactor;
+
+                //danach zinse ich quais die vola ab wenn null dann nehm ich als default 20%
+                return Math.Round(newHighsAdjusted * (1 - Volatility ?? 0.35M) * 100, 2);
+            }
         }
     }
 }

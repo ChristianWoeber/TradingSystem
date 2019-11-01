@@ -43,7 +43,7 @@ namespace Trading.Calculation
         /// <summary>
         /// Der Moving Average Periode
         /// </summary>
-        public decimal MovingAverage { get; }
+        public decimal MovingAverage { get; private set; }
 
         /// <summary>
         /// Die Veränderung des Moving Averages
@@ -95,10 +95,14 @@ namespace Trading.Calculation
             PeriodeRecords = new List<ITradingRecord>(lastLowMetaInfo.PeriodeRecords);
             HasNewLow = hasNewLow;
             First = lastLowMetaInfo.First;
+
+            if (hasNewLow && lastLowMetaInfo.NewHighsCount > 0)
+                lastLowMetaInfo.NewHighsCount--;
+
             NewHighsCount = lastLowMetaInfo.NewHighsCount;
             High = lastLowMetaInfo.High;
-            MovingAverage = Math.Round(PeriodeRecords.Select(x => x.AdjustedPrice).Average(), 6);
-            MovingAverageDelta = 1 - lastLowMetaInfo.MovingAverage / MovingAverage;
+            MovingAverage = lastLowMetaInfo.MovingAverage;
+            MovingAverageDelta = lastLowMetaInfo.MovingAverageDelta;
             CalcPerformance();
         }
 
@@ -120,12 +124,19 @@ namespace Trading.Calculation
             return $"NewLow: {HasNewLow} LowDate: {Low.Asof.ToShortDateString()} lastDate: {Last.Asof.ToShortDateString()} firstDate: {First.Asof.ToShortDateString()}";
         }
 
-        public void UpdatePeriodeRecords(ITradingRecord newLast)
+        public void UpdateLowMetaInfo(ITradingRecord newLast)
         {
             //Wenn das High am ersten Eintrag ist und somit aus dem Timeframe fallen würde
             //muss ich es an dieser Stelle nachziehen und somit den 2-ten Record als neues High setzen
             if (High.Asof == First.Asof)
                 High = PeriodeRecords[1];
+
+            var oldMovingAverage = MovingAverage;
+            //den moving average mitschleifen
+            MovingAverage -= PeriodeRecords[0].AdjustedPrice / 150;
+            MovingAverage += newLast.AdjustedPrice / 150;
+
+            MovingAverageDelta = 1 - oldMovingAverage / MovingAverage;
 
             //removeOldestItem
             PeriodeRecords.RemoveAt(0);

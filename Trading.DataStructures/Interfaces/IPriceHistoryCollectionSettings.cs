@@ -8,7 +8,7 @@
         /// <summary>
         /// die Länge des Moving Averages
         /// </summary>
-        int MovingAverageLengthInDays { get; set; }
+        int MovingLowsLengthInDays { get; set; }
 
         /// <summary>
         /// die "Länge" der Volatilität

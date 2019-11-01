@@ -9,6 +9,7 @@ namespace Trading.Parsing
         private string _rowHeader;
         private List<InputMapper> _matchedFields;
         private string _rowHeaderFromIndex;
+        private static volatile object _lockObj = new object();
 
         public InputMappingCollection(string delimiter = ";") : base(StringComparer.OrdinalIgnoreCase)
         {
@@ -33,8 +34,28 @@ namespace Trading.Parsing
         /// <summary>
         /// Gitb den RowHeader au Basis des MatchingIdex zurück
         /// </summary>
-        public string RowHeaderFromMatchingIndex => _rowHeaderFromIndex ?? (_rowHeaderFromIndex = _matchedFields.OrderBy(x => x.MatchingIndex).Select(x => x.KeyWord)
-            .Aggregate((a, b) => a + Delimiter + b));
+        public string RowHeaderFromMatchingIndex
+        {
+            get
+            {
+                if (_rowHeaderFromIndex == null)
+                {
+                    lock (_lockObj)
+                    {
+                        //return _rowHeaderFromIndex ?? (_rowHeaderFromIndex = _matchedFields.OrderBy(x => x.MatchingIndex)
+                        //           .Select(x => x.KeyWord)
+                        //           .Aggregate((a, b) => a + Delimiter + b));
+
+                        _rowHeaderFromIndex = _matchedFields.OrderBy(x => x.MatchingIndex)
+                                   .Select(x => x.KeyWord)
+                                 .Aggregate((a, b) => a + Delimiter + b);
+                        return _rowHeaderFromIndex;
+                    }
+
+                }
+                return _rowHeaderFromIndex;
+            }
+        }
 
         /// <summary>
         /// Enumeriert alle bereits sortierten und gemappten Felder 

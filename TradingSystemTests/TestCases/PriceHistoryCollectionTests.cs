@@ -300,6 +300,60 @@ namespace TradingSystemTests.TestCases
             Assert.IsTrue(lowMetaInfo.HasNewLow);
         }
 
+        [TestCase("WIRECARD_AG_428924")]
+        public void WireCardNoExceptionTest(string filename)
+        {
+            var data = CreateTradingRecordFromFileName(filename);
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
+
+            Assert.IsTrue(_history.TryGetLowMetaInfo(_history.LastItem.Asof, out var lowMetaInfo));
+
+        }
+
+        [TestCase()]
+        public void CountNewHighsAndLowTest()
+        {
+            var data = CreateTestRecordsFromCode();
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
+
+            Assert.IsTrue(_history.TryGetLowMetaInfo(_history.LastItem.Asof, out var lowMetaInfo));
+            Assert.IsTrue(lowMetaInfo.NewHighsCount == 0);
+
+            Assert.IsTrue(_history.TryGetLowMetaInfo(new DateTime(2019,06,1),  out var lowMetaInfoPeak));
+            Assert.IsTrue(lowMetaInfoPeak.NewHighsCount == 148);
+        }
+
+        private IEnumerable<ITradingRecord> CreateTestRecordsFromCode()
+        {
+            ITradingRecord lastRecord = new TradingRecord() { Asof = new DateTime(2019, 01, 01), AdjustedPrice = 100, Price = 100, Name = "Test", SecurityId = 1 };
+
+            for (var i = 0; i < 300; i++)
+            {
+                var record = i < 151
+                    ? AdjustRecord(lastRecord)
+                    : AdjustRecord(lastRecord, false);
+                yield return record;
+                lastRecord = record;
+            }
+
+        }
+
+        private ITradingRecord AdjustRecord(ITradingRecord lastRecord, bool improve = true)
+        {
+            var record = new TradingRecord(lastRecord) { Asof = lastRecord.Asof.AddDays(1) };
+            if (improve)
+            {
+                record.AdjustedPrice *= 1.01M;
+                record.Price *= 1.01M;
+            }
+            else
+            {
+                record.AdjustedPrice *= 0.99M;
+                record.Price *= 0.99M;
+            }
+            return record;
+        }
+
 
         public static IEnumerable<TestQuote> CreateTestCollecton(string fileName)
         {
