@@ -54,7 +54,7 @@ namespace PriceHistoriesConsole
                 //die Id
                 var id = Convert.ToInt32(fileName.Substring(idx, fileName.Length - idx).Trim('_'));
                 //die TradingRecords auslesen
-                var data = SimpleTextParser.GetItemsOfTypeFromFilePath<TradingRecord>(file).ToList();
+                var data = SimpleTextParser.GetItemsOfTypeFromFilePath<TradingRecord>(file);
                 //settings erstellen
                 var settings = new PriceHistorySettings { Name = name };
                 //im dictionary merken

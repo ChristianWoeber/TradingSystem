@@ -644,6 +644,26 @@ namespace TradingSystemTests {
         
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Asof;SecurityId;Price;AdjustedPrice
+        ///08.02.1983 00:00:00;401758;6.2455;6.2455
+        ///09.02.1983 00:00:00;401758;6.1762184;6.1762184
+        ///10.02.1983 00:00:00;401758;6.1625;6.1625
+        ///11.02.1983 00:00:00;401758;6.304775;6.304775
+        ///14.02.1983 00:00:00;401758;6.74685856;6.74685856
+        ///15.02.1983 00:00:00;401758;6.7000875;6.7000875
+        ///16.02.1983 00:00:00;401758;6.562875;6.562875
+        ///17.02.1983 00:00:00;401758;6.54936128;6.54936128
+        ///18.02.1983 00:00:00;401758;6.47328941;6.47328941
+        ///22.02.1983 00:00:00;401758;6.2755616;6.2755616
+        ///23.02 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string UNIVERSAL_HEALTH_SERVICES_B_401758 {
+            get {
+                return ResourceManager.GetString("UNIVERSAL_HEALTH_SERVICES_B_401758", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Asof;SecurityId;Price;AdjustedPrice
         ///24.10.2000 00:00:00;428924;11.458615;11.458615
         ///25.10.2000 00:00:00;428924;11.3322937;11.3322937
         ///26.10.2000 00:00:00;428924;11.4603381;11.4603381

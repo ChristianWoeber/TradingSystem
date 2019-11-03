@@ -125,12 +125,6 @@ namespace Trading.Calculation.Collections
             //das arithmetische Mittel bereits beim Einfügern mit berechnen
             _calculationContext.CalcRunningArithmeticMean(item);
 
-            //die montlichen Ultimo Returns
-            //if (_calculationContext.LastUltimoRecord.Asof.Month < item.Asof.Month || _calculationContext.LastUltimoRecord.Asof.Year < item.Asof.Year)
-            //{
-            //    _calculationContext.AddMonthlyUltimoReturn(_items.Get(_items.Count - 2, BinarySearchOption.GetLastIfNotFound)?.Value);
-            //}
-
             //überprüfen ob der Collection settings mitgegeben wurden und danach die berechnnugen ausführen
             if (Settings?.MovingLowsLengthInDays > 0)
             {

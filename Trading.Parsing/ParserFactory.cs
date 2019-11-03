@@ -129,7 +129,7 @@ namespace Trading.Parsing
             if (inputMappingCollection == null)
                 throw new ArgumentException();
 
-            using (var rd = File.OpenText(path))
+            using (var rd = new StreamReader(path))
             {
                 var rowIdx = -1;
                 string line;

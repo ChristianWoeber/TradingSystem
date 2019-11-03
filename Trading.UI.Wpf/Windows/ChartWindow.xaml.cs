@@ -81,8 +81,8 @@ namespace Trading.UI.Wpf.Windows
 
 
             ChartControl.Data.Add(securityFints);
-            ChartControl.Cursors[0].CursorDate = _chartDate;
-            ChartControl.Cursors[1].CursorDate = _chartDate.AddDays(150);
+            ChartControl.Cursors[2].CursorDate = _chartDate;
+            ChartControl.Cursors[1].CursorDate = _chartDate.AddDays(-150);
             ChartControl.ViewBeginDate = _chartDate.AddYears(-1);
             ChartControl.ViewEndDate = _chartDate.AddYears(1);
         }

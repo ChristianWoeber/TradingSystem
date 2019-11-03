@@ -267,8 +267,8 @@ namespace TradingSystemTests.TestCases
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="dateString"></param>
-        [TestCase("ADVANCED_MICRO_DEVICES_404161", "27.02.2017")]
-        [TestCase("ADVANCED_MICRO_DEVICES_404161", "08.04.2018")]
+        [TestCase("ADVANCED_MICRO_DEVICES_404161", "27.05.2017")]
+        [TestCase("ADVANCED_MICRO_DEVICES_404161", "18.06.2018")]
         [TestCase("ADVANCED_MICRO_DEVICES_404161", "05.05.2000")]
         public void TryGetLastLowInfoCountNewHighs(string filename, string dateString)
         {
@@ -278,9 +278,9 @@ namespace TradingSystemTests.TestCases
             Assert.IsTrue(_history.TryGetLowMetaInfo(DateTime.Parse(dateString), out var lowMetaInfo));
 
             if (dateString.Contains("2000") || dateString.Contains("2018"))
-                Assert.IsTrue(lowMetaInfo.NewHighsCount > 20);
+                Assert.IsTrue(lowMetaInfo.NewHighsCollection.Count > 20);
             if (dateString.Contains("2017"))
-                Assert.IsTrue(lowMetaInfo.NewHighsCount < 10);
+                Assert.IsTrue(lowMetaInfo.NewHighsCollection.Count < 10);
         }
 
 
@@ -300,6 +300,22 @@ namespace TradingSystemTests.TestCases
             Assert.IsTrue(lowMetaInfo.HasNewLow);
         }
 
+        /// <summary>
+        /// Test Für eine History wo der  Erste Preis 1995 ist dann der nächste erst 1999
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="dateString"></param>
+        [TestCase("ADVANCED_MICRO_DEVICES_404161", "17.02.2017")]
+        public void CountNewHighsAndLowTestGreaterThanZero(string filename, string dateString)
+        {
+            var data = CreateTradingRecordFromFileName(filename);
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
+
+            Assert.IsTrue(_history.TryGetLowMetaInfo(DateTime.Parse(dateString), out var lowMetaInfo));
+            Assert.IsTrue(lowMetaInfo.NewHighsCollection.Count > 0);
+        }
+
+        [TestCase("UNIVERSAL_HEALTH_SERVICES_B_401758")]
         [TestCase("WIRECARD_AG_428924")]
         public void WireCardNoExceptionTest(string filename)
         {
@@ -313,44 +329,120 @@ namespace TradingSystemTests.TestCases
         [TestCase()]
         public void CountNewHighsAndLowTest()
         {
-            var data = CreateTestRecordsFromCode();
+            var data = CreateTestRecordsFromCodeUpDownSymetric();
             _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
 
             Assert.IsTrue(_history.TryGetLowMetaInfo(_history.LastItem.Asof, out var lowMetaInfo));
-            Assert.IsTrue(lowMetaInfo.NewHighsCount == 0);
+            Assert.IsTrue(lowMetaInfo.NewHighsCollection.Count == 1);
 
-            Assert.IsTrue(_history.TryGetLowMetaInfo(new DateTime(2019,06,1),  out var lowMetaInfoPeak));
-            Assert.IsTrue(lowMetaInfoPeak.NewHighsCount == 148);
+            Assert.IsTrue(_history.TryGetLowMetaInfo(new DateTime(2019, 06, 1), out var lowMetaInfoPeak));
+            Assert.IsTrue(lowMetaInfoPeak.NewHighsCollection.Count == 149);
         }
 
-        private IEnumerable<ITradingRecord> CreateTestRecordsFromCode()
+        /// <summary>
+        /// Testet ob die Highs auch korrekt nachgezogen werden
+        /// </summary>
+        [TestCase]
+        public void CountNewHighsAndLowRollingHighsTest()
+        {
+            var data = CreateTestRecordsFromCodeUpDownSteps();
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, new PriceHistoryCollectionSettings());
+
+            Assert.IsTrue(_history.TryGetLowMetaInfo(new DateTime(2019, 06, 1), out var lowMetaInfo));
+
+            var lastHigh = lowMetaInfo.High;
+
+            Assert.IsTrue(_history.TryGetLowMetaInfo(new DateTime(2019, 10, 30), out var lowMetaInfoPeak));
+            Assert.IsTrue(lowMetaInfoPeak.High.AdjustedPrice > lastHigh.AdjustedPrice);
+
+        }
+
+        /// <summary>
+        /// Testet ob die der, Count der neuen Highs auch korrekt angepasst wird
+        /// was passiert wenn ein Wertpapier 300 Tage in Fole steigen würde => Dann düfte der Count der New Highs auch nie mehr als die Länger der Periode sein z.b.: 150 Tage etc..
+        /// </summary>
+        [TestCase]
+        public void CountNewHighsRollingTest()
+        {
+            var data = CreateTestRecordsFromCodeOnlyOneWay(PriceMovementType.Rising, 301);
+            var settings = new PriceHistoryCollectionSettings();
+            _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, settings);
+
+            Assert.IsTrue(_history.TryGetLowMetaInfo(_history.LastItem.Asof, out var lowMetaInfo));
+            Assert.IsTrue(lowMetaInfo.NewHighsCollection.Count < settings.MovingLowsLengthInDays);
+        }
+
+
+        private IEnumerable<ITradingRecord> CreateTestRecordsFromCodeUpDownSymetric()
         {
             ITradingRecord lastRecord = new TradingRecord() { Asof = new DateTime(2019, 01, 01), AdjustedPrice = 100, Price = 100, Name = "Test", SecurityId = 1 };
 
             for (var i = 0; i < 300; i++)
             {
                 var record = i < 151
-                    ? AdjustRecord(lastRecord)
-                    : AdjustRecord(lastRecord, false);
+                    ? AdjustRecord(lastRecord, PriceMovementType.Rising)
+                    : AdjustRecord(lastRecord, PriceMovementType.Sinking);
                 yield return record;
                 lastRecord = record;
             }
-
         }
 
-        private ITradingRecord AdjustRecord(ITradingRecord lastRecord, bool improve = true)
+        private IEnumerable<ITradingRecord> CreateTestRecordsFromCodeUpDownSteps()
+        {
+            ITradingRecord lastRecord = new TradingRecord() { Asof = new DateTime(2019, 01, 01), AdjustedPrice = 100, Price = 100, Name = "Test", SecurityId = 1 };
+
+            var mode = PriceMovementType.Rising;
+
+            for (var i = 1; i <= 901; i++)
+            {
+                if (i % 150 == 0)
+                    mode = mode == PriceMovementType.Rising ? PriceMovementType.Sideway : PriceMovementType.Rising;
+
+                var record = AdjustRecord(lastRecord, mode);
+                yield return record;
+                lastRecord = record;
+            }
+        }
+
+        /// <summary>
+        /// generiert mir Einträge in eine Richtung
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <param name="countRecords">die Anzahl der Records die generiert werden soll</param>
+        /// <returns></returns>
+        private IEnumerable<ITradingRecord> CreateTestRecordsFromCodeOnlyOneWay(PriceMovementType mode, int countRecords = 601)
+        {
+            ITradingRecord lastRecord = new TradingRecord() { Asof = new DateTime(2019, 01, 01), AdjustedPrice = 100, Price = 100, Name = "Test", SecurityId = 1 };
+
+            for (var i = 1; i <= countRecords; i++)
+            {
+                var record = AdjustRecord(lastRecord, mode);
+                yield return record;
+                lastRecord = record;
+            }
+        }
+        private ITradingRecord AdjustRecord(ITradingRecord lastRecord, PriceMovementType mode)
         {
             var record = new TradingRecord(lastRecord) { Asof = lastRecord.Asof.AddDays(1) };
-            if (improve)
+
+            switch (mode)
             {
-                record.AdjustedPrice *= 1.01M;
-                record.Price *= 1.01M;
+                case PriceMovementType.Rising:
+                    record.AdjustedPrice *= 1.01M;
+                    record.Price *= 1.01M;
+                    break;
+                case PriceMovementType.Sinking:
+                    record.AdjustedPrice *= 0.99M;
+                    record.Price *= 0.99M;
+                    break;
+                case PriceMovementType.Sideway:
+                    record.AdjustedPrice *= 1M;
+                    record.Price *= 1M;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
-            else
-            {
-                record.AdjustedPrice *= 0.99M;
-                record.Price *= 0.99M;
-            }
+
             return record;
         }
 
@@ -409,5 +501,12 @@ namespace TradingSystemTests.TestCases
 
 
 
+    }
+
+    internal enum PriceMovementType
+    {
+        Rising,
+        Sinking,
+        Sideway
     }
 }

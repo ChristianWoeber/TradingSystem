@@ -48,8 +48,12 @@ namespace Trading.UI.Wpf.ViewModels
         [SmartDataGridColumnProperty("Valid", true, ColumnSortIndex = 9, ColumnType = SmartDataGridColumnType.Image)]
         public bool Valid => _tradingCandidateBase.ScoringResult.IsValid;
 
-        [SmartDataGridColumnProperty("Rank", true, ColumnSortIndex = 10)]
+        [SmartDataGridColumnProperty("Anzahl der Hochs", true, ColumnSortIndex = 10)]
+        public int CountNewHighs => _tradingCandidateBase.ScoringResult.LowMetaInfo.NewHighsCount;
+
+        [SmartDataGridColumnProperty("Rank", true, ColumnSortIndex = 11)]
         public int Rank => _index + 1;
+
 
         #endregion
     }

@@ -56,6 +56,7 @@
     <Compile Include="Interfaces\IAdjustmentProvider.cs" />
     <Compile Include="Interfaces\ICalculationContext.cs" />
     <Compile Include="Interfaces\ICashManager.cs" />
+    <Compile Include="Interfaces\ICollectionOfPeriodeHighs.cs" />
     <Compile Include="Interfaces\IDailyReturnMetaInfo.cs" />
     <Compile Include="Interfaces\IExposureReceiver.cs" />
     <Compile Include="Interfaces\IHistogrammCollection.cs" />

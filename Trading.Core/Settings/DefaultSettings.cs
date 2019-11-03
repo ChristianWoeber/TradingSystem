@@ -44,9 +44,9 @@ namespace Trading.Core.Settings
         public decimal MaximumInitialPositionSize { get; set; } = new decimal(0.05);
 
         /// <summary>
-        /// Die maximale gesamte Positionsgröße - 33% - diese kann nach dem ersen aufstocken erreicht werden - 10% dann 20% dann 33%
+        /// Die maximale gesamte Positionsgröße - 33% - diese kann nach dem ersten aufstocken erreicht werden - 10% dann 20% dann 33%
         /// </summary>
-        public decimal MaximumPositionSize { get; set; } = new decimal(0.20);
+        public decimal MaximumPositionSize { get; set; } = new decimal(0.10);
 
         /// <summary>
         /// Cash Puffer Größe 50 Bps

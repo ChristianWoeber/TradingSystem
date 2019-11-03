@@ -371,9 +371,17 @@ namespace Trading.Calculation
                 //hol mir das letzte Item
                 if (_lowMetaInfos.TryGetLastItem(item.Asof.AddDays(-1), out var lastLowMetaInfo))
                 {
+                    if (item.Asof.Year == 2018 && item.Asof.Month ==4)
+                    {
+
+                    }
+
                     //das High aktualisieren
-                    if (item.AdjustedPrice > lastLowMetaInfo.High?.AdjustedPrice)
-                        lastLowMetaInfo.UpdateHigh(item, lastLowMetaInfo.NewHighsCount++);
+                    if (item.AdjustedPrice > lastLowMetaInfo.High.AdjustedPrice)
+                    {
+                        lastLowMetaInfo.NewHighsCollection.Add(item);
+                        lastLowMetaInfo.UpdateHigh(item);
+                    }
 
                     //manipulation des letzten Eintrags
                     lastLowMetaInfo.UpdateLowMetaInfo(item);
@@ -406,8 +414,10 @@ namespace Trading.Calculation
                 ITradingRecord last = null;
 
                 var records = new List<ITradingRecord>();
+                var newHighsCollection = new List<ITradingRecord>();
 
-                var countNewHighs = 0;
+                var positveRetunsCount = _dailyReturns.Count(x => x.Value.AbsoluteReturn > 0);
+
                 //neu berechnen
                 foreach (var record in _priceHistory.Range(item.Asof.AddDays(-_priceHistory.Settings.MovingLowsLengthInDays), item.Asof))
                 {
@@ -427,7 +437,7 @@ namespace Trading.Calculation
                     //auch das high merken
                     if (record.AdjustedPrice > high.AdjustedPrice)
                     {
-                        countNewHighs++;
+                        newHighsCollection.Add(record);
                         high = new CalculationRecordMetaInfo(record);
                     }
 
@@ -437,10 +447,10 @@ namespace Trading.Calculation
                 //wenn lastLowMetaInfo == null bin ich beim ersten Record
                 _lowMetaInfos.Add(item.Asof, lastLowMetaInfo != null
                         ? new LowMetaInfo(first, low, last, lastLowMetaInfo, true)
-                        : new LowMetaInfo(low, last, records));
+                        : new LowMetaInfo(low, last, records,newHighsCollection));
 
                 //das high nachziehen
-                _lowMetaInfos.LastItem.Value.UpdateHigh(high, countNewHighs);
+                _lowMetaInfos.LastItem.Value.UpdateHigh(high);
             }
             catch (Exception e)
             {

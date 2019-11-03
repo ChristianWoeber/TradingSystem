@@ -53,6 +53,6 @@ namespace Trading.DataStructures.Interfaces
         /// der Count der Angibt wieviele Neue Hochs in der Periode erreicht werden konnten
         /// und somit aussage kraft über die Trendstabilität widerspiegelt
         /// </summary>
-        int NewHighsCount { get; set; }
+        ICollectionOfPeriodeHighs NewHighsCollection { get;  }
     }
 }

@@ -59,8 +59,8 @@ namespace Trading.UI.Wpf.ViewModels
         {
             Settings = new SettingsViewModel(new ConservativePortfolioSettings());
             IndexSettings = new IndexBacktestSettings();
-            StartDateTime = new DateTime(2000, 01, 01);
-            EndDateTime = StartDateTime.AddYears(2);
+            StartDateTime = new DateTime(2015, 01, 01);
+            EndDateTime = new DateTime(2019, 05, 15);
 
 
             //Command

@@ -52,6 +52,7 @@
     <Compile Include="CalculationContext.cs" />
     <Compile Include="CalculationContext.LastItemDictionaryBase.cs" />
     <Compile Include="CalculationHandler.cs" />
+    <Compile Include="CollectionOfPeriodeHighs.cs" />
     <Compile Include="Collections\BinarySearchCollections.cs" />
     <Compile Include="Collections\BinarySearchOption.cs" />
     <Compile Include="Collections\PriceHistoryCollection.cs" />

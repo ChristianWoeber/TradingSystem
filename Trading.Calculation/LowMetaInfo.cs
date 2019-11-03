@@ -55,33 +55,27 @@ namespace Trading.Calculation
         /// </summary>
         public bool CanMoveToNextStep { get; set; }
 
+
         /// <summary>
-        /// der Count der Angibt wieviele Neue Hochs in der Periode erreicht werden konnten
+        /// Ein Collection die die neuen Hochs der Periode führt
         /// und somit aussage kraft über die Trendstabilität widerspiegelt
         /// </summary>
-        public int NewHighsCount { get; set; }
+
+        public ICollectionOfPeriodeHighs NewHighsCollection { get; }
+
 
         private LowMetaInfo()
         {
-
+            NewHighsCollection = new CollectionOfPeriodeHighs();
         }
 
-        //glätte hier die kurve
-        //TODO: eigentlich gehört hier auch ein movingaverage genommen 15 Tage => brauche für die pricehistory ein setting dass ich im konstruktor mit üergebe
-        private void CalcPerformance()
-        {
-            var first = PeriodeRecords.Count < 16
-                ? PeriodeRecords[0]
-                : PeriodeRecords[PeriodeRecords.Count - 16];
-            CanMoveToNextStep = 1 - (first.AdjustedPrice / Last.AdjustedPrice) > 0;
-        }
-
-        public LowMetaInfo(ITradingRecord low, ITradingRecord last, List<ITradingRecord> periodeRecords, bool hasNewLow = true) : this()
+        public LowMetaInfo(ITradingRecord low, ITradingRecord last, List<ITradingRecord> periodeRecords, List<ITradingRecord> highs, bool hasNewLow = true) : this()
         {
             Low = low;
             Last = last;
             PeriodeRecords = periodeRecords;
             First = PeriodeRecords[0];
+            NewHighsCollection.AddRange(highs);
             HasNewLow = hasNewLow;
             MovingAverage = Math.Round(PeriodeRecords.Select(x => x.AdjustedPrice).Average(), 6);
             CalcPerformance();
@@ -92,14 +86,10 @@ namespace Trading.Calculation
         {
             Low = low;
             Last = last;
-            PeriodeRecords = new List<ITradingRecord>(lastLowMetaInfo.PeriodeRecords);
+            PeriodeRecords =/* new List<ITradingRecord>(*/lastLowMetaInfo.PeriodeRecords/*)*/;
             HasNewLow = hasNewLow;
             First = lastLowMetaInfo.First;
-
-            if (hasNewLow && lastLowMetaInfo.NewHighsCount > 0)
-                lastLowMetaInfo.NewHighsCount--;
-
-            NewHighsCount = lastLowMetaInfo.NewHighsCount;
+            NewHighsCollection = new CollectionOfPeriodeHighs(lastLowMetaInfo.NewHighsCollection);
             High = lastLowMetaInfo.High;
             MovingAverage = lastLowMetaInfo.MovingAverage;
             MovingAverageDelta = lastLowMetaInfo.MovingAverageDelta;
@@ -111,7 +101,7 @@ namespace Trading.Calculation
             Low = low;
             First = first;
             Last = last;
-            PeriodeRecords = lastLowMetaInfo.PeriodeRecords;
+            PeriodeRecords = /* new List<ITradingRecord>(*/lastLowMetaInfo.PeriodeRecords/*)*/;
             HasNewLow = hasNewLow;
             High = lastLowMetaInfo.High;
             MovingAverage = Math.Round(PeriodeRecords.Select(x => x.AdjustedPrice).Average(), 6);
@@ -119,9 +109,14 @@ namespace Trading.Calculation
             CalcPerformance();
         }
 
-        public override string ToString()
+        //glätte hier die kurve
+        //TODO: eigentlich gehört hier auch ein movingaverage genommen 15 Tage => brauche für die pricehistory ein setting dass ich im konstruktor mit üergebe
+        private void CalcPerformance()
         {
-            return $"NewLow: {HasNewLow} LowDate: {Low.Asof.ToShortDateString()} lastDate: {Last.Asof.ToShortDateString()} firstDate: {First.Asof.ToShortDateString()}";
+            var first = PeriodeRecords.Count < 16
+                ? PeriodeRecords[0]
+                : PeriodeRecords[PeriodeRecords.Count - 16];
+            CanMoveToNextStep = 1 - (first.AdjustedPrice / Last.AdjustedPrice) > 0;
         }
 
         public void UpdateLowMetaInfo(ITradingRecord newLast)
@@ -138,6 +133,9 @@ namespace Trading.Calculation
 
             MovingAverageDelta = 1 - oldMovingAverage / MovingAverage;
 
+            //den ersten Eintrag entfernen, aber nur wenn der älter oder gleich -150 Tage ist
+            if (NewHighsCollection.First?.Asof <= First.Asof)
+                NewHighsCollection.Shift();
             //removeOldestItem
             PeriodeRecords.RemoveAt(0);
             //addnew one
@@ -146,10 +144,15 @@ namespace Trading.Calculation
             First = PeriodeRecords[0];
         }
 
-        public void UpdateHigh(ITradingRecord newHigh, int countNewHighs)
+        public void UpdateHigh(ITradingRecord newHigh)
         {
             High = newHigh ?? Last;
-            NewHighsCount = countNewHighs;
         }
+
+        public override string ToString()
+        {
+            return $"NewLow: {HasNewLow} LowDate: {Low.Asof.ToShortDateString()} lastDate: {Last.Asof.ToShortDateString()} firstDate: {First.Asof.ToShortDateString()}";
+        }
+
     }
 }
