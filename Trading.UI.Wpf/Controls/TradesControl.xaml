@@ -13,10 +13,17 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <arts:SmartTextBox Icon="Magnify" Width="300" HorizontalAlignment="Left" Margin="5" MinHeight="30"  ></arts:SmartTextBox>
-        <arts:SmartDataGrid Grid.Row="1" x:Name="SmartDataGridTrades" ItemsSource="{Binding Trades}" >
+        <arts:SmartTextBox Icon="Magnify" 
+                           x:Name="FilterTextBox" 
+                           Width="300" 
+                           HorizontalAlignment="Left" 
+                           Margin="5"
+                           MinHeight="30" 
+                           TextChangedDelay="750"></arts:SmartTextBox>
+        <arts:SmartDataGrid Grid.Row="1" x:Name="SmartDataGridTrades" ItemsSource="{Binding Trades}" FilterText="{Binding ElementName=FilterTextBox, Path=Text}" >
             <arts:SmartDataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Show Position in Chart"
@@ -26,5 +33,12 @@
                 </ContextMenu>
             </arts:SmartDataGrid.ContextMenu>
         </arts:SmartDataGrid>
+        <StatusBar Grid.Row="2">
+        <StatusBarItem>
+            <arts:SmartTextBlock Background="Transparent" Text="Anzahl der Trades: " Appearance="Header4">
+                <Run Text="{Binding ElementName=SmartDataGridTrades, Path=.Items.Count, Mode=OneWay}"></Run>
+            </arts:SmartTextBlock>
+        </StatusBarItem>
+        </StatusBar>
     </Grid>
 </UserControl>

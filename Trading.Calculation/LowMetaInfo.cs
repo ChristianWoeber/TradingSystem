@@ -36,6 +36,11 @@ namespace Trading.Calculation
         public List<ITradingRecord> PeriodeRecords { get; }
 
         /// <summary>
+        /// die Anzahl der Positiven Daily Returns in der Periode
+        /// </summary>
+        public IPositveDailyReturnsCollectionMetaInfo PositiveDailyRetunsMetaInfo { get; internal set; }
+
+        /// <summary>
         /// Gibt an ob es ein neus Low gibt
         /// </summary>
         public bool HasNewLow { get; }
@@ -69,11 +74,13 @@ namespace Trading.Calculation
             NewHighsCollection = new CollectionOfPeriodeHighs();
         }
 
-        public LowMetaInfo(ITradingRecord low, ITradingRecord last, List<ITradingRecord> periodeRecords, List<ITradingRecord> highs, bool hasNewLow = true) : this()
+        public LowMetaInfo(ITradingRecord low, ITradingRecord last, List<ITradingRecord> periodeRecords,
+            List<ITradingRecord> highs, IPositveDailyReturnsCollectionMetaInfo positiveDailyReturnsMetaInfo, bool hasNewLow = true) : this()
         {
             Low = low;
             Last = last;
             PeriodeRecords = periodeRecords;
+            PositiveDailyRetunsMetaInfo = positiveDailyReturnsMetaInfo;
             First = PeriodeRecords[0];
             NewHighsCollection.AddRange(highs);
             HasNewLow = hasNewLow;
@@ -90,6 +97,7 @@ namespace Trading.Calculation
             HasNewLow = hasNewLow;
             First = lastLowMetaInfo.First;
             NewHighsCollection = new CollectionOfPeriodeHighs(lastLowMetaInfo.NewHighsCollection);
+            PositiveDailyRetunsMetaInfo = lastLowMetaInfo.PositiveDailyRetunsMetaInfo;
             High = lastLowMetaInfo.High;
             MovingAverage = lastLowMetaInfo.MovingAverage;
             MovingAverageDelta = lastLowMetaInfo.MovingAverageDelta;

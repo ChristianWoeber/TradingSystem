@@ -118,6 +118,11 @@ namespace Trading.Core.Settings
         public bool UsePreviousDayPricesForBacktest { get; set; }
 
         /// <summary>
+        /// Gibt on ob ein Positiver Rebalance Grund Score
+        /// </summary>
+        public bool UseAbsoluteValueForRebalanceScoringResult { get; set; }
+
+        /// <summary>
         /// Der Pfas mit dem Ordern der die Indizes Preishistorien enthält
         /// </summary>
         public string IndicesDirectory { get; set; }
@@ -228,6 +233,11 @@ namespace Trading.Core.Settings
         /// Flag das angibt ob (immer) die Preise des Vortages für den backtest herangezogen werden solllen
         /// </summary>
         public bool UsePreviousDayPricesForBacktest { get; set; }
+
+        /// <summary>
+        /// Gibt on ob ein Positiver Rebalance Grund Score verwendet werden soll
+        /// </summary>
+        public bool UseAbsoluteValueForRebalanceScoringResult { get; set; }
 
         /// <summary>
         /// der Pfad in dem die Daten zu den Indices liegen

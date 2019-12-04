@@ -106,9 +106,11 @@ namespace Trading.Core.Backtest
                     continue;
 
                 //Geblockte Kandidaten entfernen
-                foreach (var candidateBase in candidates.Where(candidateBase => _blockedCandidates.Contains(candidateBase.Record.SecurityId)))
+                for (var i = 0; i < candidates.Count - 1; i++)
                 {
-                    candidates.Remove(candidateBase);
+                    var currentCandidate = candidates[0];
+                    if (_blockedCandidates.Contains(currentCandidate.Record.SecurityId))
+                        candidates.Remove(currentCandidate);
                 }
 
                 var asof = candidates?.OrderByDescending(x => x.Record.Asof).FirstOrDefault()?.Record.Asof;
@@ -189,6 +191,19 @@ namespace Trading.Core.Backtest
         public void AddBlockedCandidate(int securityId)
         {
             _blockedCandidates.Add(securityId);
+        }
+
+        public void AddBlockedCandidates(IEnumerable<int> securityIds)
+        {
+            foreach (var securityId in securityIds)
+            {
+                AddBlockedCandidate(securityId);
+            }
+        }
+
+        public IEnumerable<int> GetBlockedCandidates()
+        {
+            return _blockedCandidates;
         }
     }
 }

@@ -61,10 +61,12 @@
     <Compile Include="DailyReturnMetaInfo.cs" />
     <Compile Include="DrawdownItem.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="HistogrammCollection.cs" />
     <Compile Include="LowMetaInfo.cs" />
     <Compile Include="MaxDrawdown.cs" />
     <Compile Include="MovingVolaMetaInfo.cs" />
     <Compile Include="PeriodeResult.cs" />
+    <Compile Include="PositveDailyReturnsCollectionMetaInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Quote.cs" />
   </ItemGroup>

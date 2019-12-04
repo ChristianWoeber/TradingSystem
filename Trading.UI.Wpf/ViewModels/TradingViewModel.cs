@@ -316,7 +316,7 @@ namespace Trading.UI.Wpf.ViewModels
             using (SmartBusyRegion.Start(this))
             {
                 var indexOutput = new IndexResult { IndicesDirectory = Globals.IndicesBasePath };
-                var exposureWatcher = new ExposureWatcher(indexOutput, new FileExposureDataProvider(Globals.PriceHistoryDirectory));
+                var exposureWatcher = new ExposureWatcher(indexOutput, new FileExposureDataProvider(Globals.IndicesBasePath));
                 var backtestHandler = new BacktestHandler(exposureWatcher);
                 _cancellationSource = new CancellationTokenSource();
                 await backtestHandler.RunIndexBacktest(StartDateTime, EndDateTime, _cancellationSource.Token);
@@ -349,8 +349,11 @@ namespace Trading.UI.Wpf.ViewModels
                 //einen BacktestHandler erstellen
                 _candidatesProvider = new CandidatesProvider(_scoringProvider);
 
+                var blocked = _backtestHandler?.GetBlockedCandidates();
                 //backtestHandler erstellen
                 _backtestHandler = new BacktestHandler(_portfolioManager, _candidatesProvider, loggingProvider);
+                if (blocked != null)
+                    _backtestHandler.AddBlockedCandidates(blocked);
 
                 //Backtest
                 _cancellationSource = new CancellationTokenSource();

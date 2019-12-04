@@ -42,16 +42,11 @@ namespace Trading.Parsing
                 {
                     lock (_lockObj)
                     {
-                        //return _rowHeaderFromIndex ?? (_rowHeaderFromIndex = _matchedFields.OrderBy(x => x.MatchingIndex)
-                        //           .Select(x => x.KeyWord)
-                        //           .Aggregate((a, b) => a + Delimiter + b));
-
                         _rowHeaderFromIndex = _matchedFields.OrderBy(x => x.MatchingIndex)
                                    .Select(x => x.KeyWord)
                                  .Aggregate((a, b) => a + Delimiter + b);
                         return _rowHeaderFromIndex;
                     }
-
                 }
                 return _rowHeaderFromIndex;
             }

@@ -139,7 +139,7 @@
                                            BusyText="Erstelle Backtest"
                                            ProgressRegion="{Binding ProgressRegion}"
                                            BusyAppearance="{Binding IsBusy, Converter={x:Static converter:SmartBusyRegionToBusyAppearanceConverter.Inst}}"></arts:SmartBusyOverlay>
-                    <controls:MainChartControl Grid.Column="0" Grid.Row="1" />
+                    <controls:MainChartControl Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
 
                 </Grid>
             </arts:SmartFlyout.Content>

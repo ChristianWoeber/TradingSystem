@@ -36,6 +36,7 @@ namespace Trading.UI.Wpf.ViewModels
             LoggingPath = initialDir;
             IndicesDirectory = Globals.IndicesBasePath;
             AllocationToRiskBuffer = defaultSettings.AllocationToRiskBuffer;
+            UseAbsoluteValueForRebalanceScoringResult = true;
         }
 
 
@@ -346,6 +347,17 @@ namespace Trading.UI.Wpf.ViewModels
             }
         }
 
+        public bool UseAbsoluteValueForRebalanceScoringResult
+        {
+            get => PortfolioSettings.UseAbsoluteValueForRebalanceScoringResult;
+            set
+            {
+                if (value == PortfolioSettings.UseAbsoluteValueForRebalanceScoringResult)
+                    return;
+                PortfolioSettings.UseAbsoluteValueForRebalanceScoringResult = value;
+                OnPropertyChanged();
+            }
+        }
 
         public void UpdateFromDeserializedSettings(IPortfolioSettings settings)
         {

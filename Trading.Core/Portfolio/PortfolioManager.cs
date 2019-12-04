@@ -185,9 +185,9 @@ namespace Trading.Core.Portfolio
             //Den Bewertungszeitpunkt setzen      
             PortfolioAsof = asof;
 
-            var candidates = candidatesBase.Select(x => new TradingCandidate(x, TransactionsHandler, this)).ToList();
+            var candidates = candidatesBase.Select(x => new TradingCandidate(x, TransactionsHandler, this, PortfolioSettings)).ToList();
             //das bestehenden Portfolio evaluieren und mit dem neuen Score in die Candidatenliste einfügen 
-            candidates.AddRange(RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, this, true)));
+            candidates.AddRange(RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, this, PortfolioSettings, true)));
 
             //Nur wenn es bereits ein CurrentPortfolio gibt und an TradingTagen
             if (TransactionsHandler.CurrentPortfolio.IsInitialized && PortfolioAsof.DayOfWeek == PortfolioSettings.TradingDay)
@@ -346,7 +346,18 @@ namespace Trading.Core.Portfolio
                 candidate.TargetWeight = (decimal)StopLossSettings.ReductionValue * currentWeight;
             }
 
-            //Position wurde bereits einmal mit Target 10% eröffnet und wird totalverkauft
+            ////wenn das Target kleiner als die inital größe ist totalverkaufen
+            //else if (currentWeight <= PortfolioSettings.MaximumInitialPositionSize)
+            //{
+            //    candidate.TargetWeight = decimal.Zero;
+            //    candidate.TransactionType = TransactionType.Close;
+            //}
+            //else
+            //{
+            //    candidate.TargetWeight = PortfolioSettings.MaximumPositionSize;
+            //}
+
+            //wenn das target zwischen maximum und initial liegt halbieren
             else if (currentWeight.IsBetween(decimal.Zero,
                 PortfolioSettings.MaximumInitialPositionSize * 2 - PortfolioSettings.MaximumPositionSizeBuffer))
             {
@@ -736,7 +747,7 @@ namespace Trading.Core.Portfolio
         /// </summary>
         public void CloseAllPositions()
         {
-            foreach (var candidate in RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, this, true)))
+            foreach (var candidate in RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, this, PortfolioSettings,true)))
             {
                 if (TemporaryCandidates.ContainsKey(candidate.SecurityId))
                     continue;

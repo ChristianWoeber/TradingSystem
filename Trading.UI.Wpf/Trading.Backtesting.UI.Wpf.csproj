@@ -173,6 +173,8 @@
     <Compile Include="Globals.cs" />
     <Compile Include="Models\LoggingSaveProvider.cs" />
     <Compile Include="Models\BacktestTransactionsCacheProvider.cs" />
+    <Compile Include="NewHighsCountScoringProvider.cs" />
+    <Compile Include="NewHighsCountScoringResult.cs" />
     <Compile Include="Utils\FileHelper.cs" />
     <Compile Include="Utils\FintsSecuritiesRepo.cs" />
     <Compile Include="ViewModels\CashInfoCollection.cs" />

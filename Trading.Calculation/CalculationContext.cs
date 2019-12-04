@@ -371,17 +371,16 @@ namespace Trading.Calculation
                 //hol mir das letzte Item
                 if (_lowMetaInfos.TryGetLastItem(item.Asof.AddDays(-1), out var lastLowMetaInfo))
                 {
-                    if (item.Asof.Year == 2018 && item.Asof.Month ==4)
-                    {
-
-                    }
-
                     //das High aktualisieren
                     if (item.AdjustedPrice > lastLowMetaInfo.High.AdjustedPrice)
                     {
                         lastLowMetaInfo.NewHighsCollection.Add(item);
                         lastLowMetaInfo.UpdateHigh(item);
                     }
+
+                    //TODO: die Daily Returns weiterschleifen
+                    var newFirst = _dailyReturns.Get(lastLowMetaInfo.PositiveDailyRetunsMetaInfo.FirstItem.ToRecord.Asof.AddDays(1));
+                    lastLowMetaInfo.PositiveDailyRetunsMetaInfo.Shift(_dailyReturns.LastItem.Value, newFirst.Value);
 
                     //manipulation des letzten Eintrags
                     lastLowMetaInfo.UpdateLowMetaInfo(item);
@@ -416,7 +415,9 @@ namespace Trading.Calculation
                 var records = new List<ITradingRecord>();
                 var newHighsCollection = new List<ITradingRecord>();
 
-                var positveRetunsCount = _dailyReturns.Count(x => x.Value.AbsoluteReturn > 0);
+                //TODO Count Positive Daily Returns hinzufügen
+                //erstelle hier einmalig die MetaInfo
+                var dailyReturnsMetaInfo = PositveDailyReturnsCollectionMetaInfo.Create(_dailyReturns.Items);
 
                 //neu berechnen
                 foreach (var record in _priceHistory.Range(item.Asof.AddDays(-_priceHistory.Settings.MovingLowsLengthInDays), item.Asof))
@@ -447,7 +448,7 @@ namespace Trading.Calculation
                 //wenn lastLowMetaInfo == null bin ich beim ersten Record
                 _lowMetaInfos.Add(item.Asof, lastLowMetaInfo != null
                         ? new LowMetaInfo(first, low, last, lastLowMetaInfo, true)
-                        : new LowMetaInfo(low, last, records,newHighsCollection));
+                        : new LowMetaInfo(low, last, records, newHighsCollection, dailyReturnsMetaInfo));
 
                 //das high nachziehen
                 _lowMetaInfos.LastItem.Value.UpdateHigh(high);
@@ -490,83 +491,6 @@ namespace Trading.Calculation
             {
                 yield return (kvp.Key, kvp.Value);
             }
-        }
-    }
-
-    public class HistogrammCollection : List<PeriodeResult>, IHistogrammCollection
-    {
-
-        public HistogrammCollection(int classCount = 5)
-        {
-            ClassCount = classCount;
-        }
-
-        public HistogrammCollection(IEnumerable<PeriodeResult> results, int periodeInYears, decimal relativeFrequency)
-        {
-            PeriodeInYears = periodeInYears;
-            RelativeFrequency = relativeFrequency;
-            AddRange(results);
-        }
-
-        /// <summary>
-        /// das Maximum
-        /// </summary>
-        public IPeriodeResult Maximum => this.OrderByDescending(x => x.Performance).FirstOrDefault();
-
-        /// <summary>
-        /// Das Minimum
-        /// </summary>
-        public IPeriodeResult Minimum => this.OrderByDescending(x => x.Performance).LastOrDefault();
-
-        /// <summary>
-        /// Bestimmt die Klassenbreite
-        /// </summary>
-        public int ClassCount { get; }
-
-        /// <summary>
-        /// die Periode für die Rollierende Berechnung
-        /// </summary>
-        public int PeriodeInYears { get; }
-
-        /// <summary>
-        /// die Relative Häufigkeit der Klasse
-        /// </summary>
-        public decimal RelativeFrequency { get; }
-
-        /// <summary>
-        /// der Count der Collection
-        /// </summary>
-        int IHistogrammCollection.Count => this.Count;
-
-        /// <summary>
-        /// Enumeriert die aktuelle Klasse und zieht das minimum und maximum immer nach
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<IHistogrammCollection> EnumHistogrammClasses()
-        {
-            var span = Maximum.Performance - Minimum.Performance;
-            var classWidth = span / ClassCount;
-            var currentMax = 0M;
-            var currentMin = Minimum.Performance;
-            for (var i = 0; i < ClassCount; i++)
-            {
-                if (currentMax == 0)
-                    currentMax = Minimum.Performance + classWidth;
-                else
-                {
-                    currentMin = currentMax;
-                    currentMax += classWidth;
-                }
-
-                var result = this.OrderByDescending(x => x.Performance).Where(x => x.Performance < currentMax && x.Performance > currentMin).ToList();
-                var rel = (decimal)result.Count / this.Count;
-                yield return new HistogrammCollection(result, this[0].RollingPeriodeInYears, rel);
-            }
-        }
-
-        IEnumerable<IHistogrammCollection> IHistogrammCollection.EnumHistogrammClasses()
-        {
-            throw new NotImplementedException();
         }
     }
 }

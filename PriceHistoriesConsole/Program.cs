@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Trading.Calculation.Collections;
 using Trading.Core.Models;
 using Trading.DataStructures.Interfaces;
@@ -14,8 +11,6 @@ namespace PriceHistoriesConsole
 {
     class Program
     {
-
-
         static void Main(string[] args)
         {
             var path = "";

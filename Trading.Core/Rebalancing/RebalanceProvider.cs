@@ -38,11 +38,11 @@ namespace Trading.Core.Rebalancing
 
         public void RebalanceTemporaryPortfolio(List<ITradingCandidate> bestCandidates, List<ITradingCandidate> allCandidates)
         {
-            if (allCandidates.Count > 0 && allCandidates[0].PortfolioAsof >= new DateTime(2016, 12, 08))
+            if (allCandidates.Count > 0 && allCandidates[0].PortfolioAsof >= new DateTime(2017, 07, 14))
             {
                 var date = allCandidates[0].PortfolioAsof;
                 //JsonUtils.SerializeToFile(bestCandidates, $"BestCandidates_CleanUpCash{date.ToShortDateString()}.txt");
-               // JsonUtils.SerializeToFile(allCandidates, $"AllCandidates_CleanUpCash{date.ToShortDateString()}.txt");
+                // JsonUtils.SerializeToFile(allCandidates, $"AllCandidates_CleanUpCash{date.ToShortDateString()}.txt");
             }
 
             //investierte Candidaten
@@ -86,9 +86,10 @@ namespace Trading.Core.Rebalancing
 
             for (var i = calculatedScoreCandidatesReversed.Count - 1; i >= 0; i--)
             {
+                //Nur solange weitermachen bis ich das minimum meiner Risikoquote erreicht habe
                 if (targetSum >= _adjustmentProvider.MinimumBoundary)
                     break;
-
+                //der aktuele Candidate
                 var candidate = calculatedScoreCandidatesReversed[i];
                 if (_temporaryPortfolio.ContainsCandidate(candidate))
                     continue;
@@ -99,8 +100,14 @@ namespace Trading.Core.Rebalancing
                         targetSum += candidate.TargetWeight;
                     continue;
                 }
-
+                //der investionsgrad
                 targetSum += candidate.TargetWeight;
+
+                //dann ist der Preis pro aktie größer als meine Position die ich öffnen will, sprich ich würde 0 Stücke eröffnen
+                //achtung darf hier nur das Delta nehmen
+                if (candidate.Record.AdjustedPrice >= _adjustmentProvider.PortfolioValue * Math.Abs(candidate.TargetWeight - candidate.CurrentWeight))
+                    continue;
+
                 //den Kandidaten entsprechend anpassen
                 _adjustmentProvider.AddToTemporaryPortfolio(candidate);
                 calculatedScoreCandidatesReversed.Remove(candidate);
@@ -112,7 +119,12 @@ namespace Trading.Core.Rebalancing
             {
                 //dann muss ich die schwächsten Candidaten entsprechend abschichten
                 //und dazu merge ich die investierten mit den temporären
-                var temporaryCandidates = _adjustmentProvider.TemporaryCandidates.Values.Union(allCandidates.Where(x => x.IsInvested)).OrderByDescending(x => x.RebalanceScore.Score).ToList();
+                //allerdings müssen die Stops ausgeschlossen werden, die sind an dieser Stelle ja bereits behandelt worden
+                var temporaryCandidates = _adjustmentProvider.TemporaryCandidates.Values
+                    .Where(tempCandidate => !tempCandidate.HasStopp && !tempCandidate.IsBelowStopp)
+                    .Union(allCandidates.Where(x => x.IsInvested))
+                    .OrderByDescending(x => x.RebalanceScore.Score)
+                    .ToList();
                 CashHandler.CleanUpCash(temporaryCandidates);
             }
 

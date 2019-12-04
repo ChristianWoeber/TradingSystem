@@ -19,28 +19,31 @@ namespace Trading.Core.Candidates
         [JsonConverter(typeof(PortfolioValuationConverter))]
         private readonly IAdjustmentProvider _adjustmentProvider;
 
+        private readonly IPortfolioSettings _settings;
+
         public TradingCandidate()
         {
 
         }
 
-        public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, IAdjustmentProvider adjustmentProvider, bool isInvested = false)
+        public TradingCandidate(ITradingCandidateBase tradingCandidateBase, ITransactionsHandler transactionsHandler, IAdjustmentProvider adjustmentProvider, IPortfolioSettings settings, bool isInvested = false)
         {
             _tradingCandidateBase = tradingCandidateBase;
             _transactionsHandler = transactionsHandler;
             _adjustmentProvider = adjustmentProvider;
+            _settings = settings;
 
             //Initialisierungen
             IsInvested = isInvested;
             PortfolioAsof = adjustmentProvider.PortfolioAsof;
-            RebalanceScore = new RebalanceScoringResult(tradingCandidateBase.ScoringResult);
-            IncrementationStrategyProvider = new DefaultIncrementationStrategy(this,_adjustmentProvider);
+            IncrementationStrategyProvider = new DefaultIncrementationStrategy(this, _adjustmentProvider, settings);
 
             Record = tradingCandidateBase.Record;
             ScoringResult = tradingCandidateBase.ScoringResult;
             AveragePrice = transactionsHandler.GetAveragePrice(SecurityId, PortfolioAsof) ?? Record.AdjustedPrice;
             LastTransaction = transactionsHandler.GetSingle(SecurityId, null);
             CurrentWeight = GetCurrentWeight();
+            RebalanceScore = new RebalanceScoringResult(tradingCandidateBase.ScoringResult,this,settings);
 
             //Das Target Weight wird auch mit dem current initialisiert
             TargetWeight = CurrentWeight;
@@ -60,7 +63,7 @@ namespace Trading.Core.Candidates
             if (shares == null)
                 return 0;
 
-            return (Record.AdjustedPrice * shares.Value) / _adjustmentProvider.PortfolioValue;
+            return Math.Round((Record.AdjustedPrice * shares.Value) / _adjustmentProvider.PortfolioValue, 4);
         }
 
         /// <summary>
@@ -139,22 +142,23 @@ namespace Trading.Core.Candidates
         public decimal? PerformanceUnderlying { get; }
 
 
-        /// <summary>
-        /// Gibt on ob ich die aktuelle Position erhöhen darf
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool CanBeIncremented
-        {
-            get
-            {
-                //gibt an ob sich die Position unter den Top 5 Performern, gemessen am Total Return des Position, befindet
-                var isUnderTopPositions = _adjustmentProvider.PositionWatcher.IsUnderTopPositions(SecurityId);
-                var meta = _adjustmentProvider.PositionWatcher.GetStopLossMeta(this);
-                if (Record.AdjustedPrice >= meta?.High.Price && isUnderTopPositions)
-                    return true;
-                return false;
-            }
-        }
+        ///// <summary>
+        ///// Gibt on ob ich die aktuelle Position erhöhen darf
+        ///// </summary>
+        //[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        //public bool CanBeIncremented
+        //{
+        //    get
+        //    {
+        //        //gibt an ob sich die Position unter den Top 5 Performern, gemessen am Total Return des Position, befindet
+        //        //Der Top errechnet sich nun dynamisch aus der maximalen Positionsgröße
+        //        var isUnderTopPositions = _adjustmentProvider.PositionWatcher.IsUnderTopPositions(SecurityId, (int)(1 / _settings.MaximumPositionSize));
+        //        var meta = _adjustmentProvider.PositionWatcher.GetStopLossMeta(this);
+        //        if (Record.AdjustedPrice >= meta?.High.Price && isUnderTopPositions)
+        //            return true;
+        //        return false;
+        //    }
+        //}
 
         /// <summary>
         /// Gibt die Info zur StopLoss Meta nach aussen

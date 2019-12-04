@@ -354,6 +354,7 @@ namespace TradingSystemTests.TestCases
 
             Assert.IsTrue(_history.TryGetLowMetaInfo(new DateTime(2019, 10, 30), out var lowMetaInfoPeak));
             Assert.IsTrue(lowMetaInfoPeak.High.AdjustedPrice > lastHigh.AdjustedPrice);
+            Assert.IsTrue(lowMetaInfoPeak.PositiveDailyRetunsMetaInfo.Count < 150);
 
         }
 
@@ -369,7 +370,8 @@ namespace TradingSystemTests.TestCases
             _history = (PriceHistoryCollection)PriceHistoryCollection.Create(data, settings);
 
             Assert.IsTrue(_history.TryGetLowMetaInfo(_history.LastItem.Asof, out var lowMetaInfo));
-            Assert.IsTrue(lowMetaInfo.NewHighsCollection.Count < settings.MovingLowsLengthInDays);
+            Assert.IsTrue(lowMetaInfo.NewHighsCollection.Count == settings.MovingLowsLengthInDays);
+            Assert.IsTrue(lowMetaInfo.PositiveDailyRetunsMetaInfo.Count == settings.MovingLowsLengthInDays-1);
         }
 
 

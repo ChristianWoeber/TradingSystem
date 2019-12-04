@@ -8,6 +8,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <wCharting:WLineChartControl x:Name="ChartControl" MinWidth="1200" MinHeight="1100" />
+        <wCharting:WLineChartControl x:Name="ChartControl" MinWidth="600" MinHeight="500" />
     </Grid>
 </UserControl>

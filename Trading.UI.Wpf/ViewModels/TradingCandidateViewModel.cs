@@ -49,7 +49,7 @@ namespace Trading.UI.Wpf.ViewModels
         public bool Valid => _tradingCandidateBase.ScoringResult.IsValid;
 
         [SmartDataGridColumnProperty("Anzahl der Hochs", true, ColumnSortIndex = 10)]
-        public int CountNewHighs => _tradingCandidateBase.ScoringResult.LowMetaInfo.NewHighsCount;
+        public int CountNewHighs => _tradingCandidateBase.ScoringResult.LowMetaInfo.NewHighsCollection.Count;
 
         [SmartDataGridColumnProperty("Rank", true, ColumnSortIndex = 11)]
         public int Rank => _index + 1;

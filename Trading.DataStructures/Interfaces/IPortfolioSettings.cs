@@ -79,5 +79,10 @@ namespace Trading.DataStructures.Interfaces
         /// Flag das angibt ob (immer) die Preise des Vortages für den backtest herangezogen werden solllen
         /// </summary>
         bool UsePreviousDayPricesForBacktest { get; set; }
+
+        /// <summary>
+        /// Gibt on ob ein Positiver Rebalance Grund Score
+        /// </summary>
+        bool UseAbsoluteValueForRebalanceScoringResult { get; set; }
     }
 }

@@ -50,10 +50,13 @@ namespace Trading.Core.Transactions
 
         public int CalculateTargetShares(ITradingCandidate candidate, decimal targetAmount)
         {
+            if (targetAmount == Decimal.Zero && candidate.TransactionType == TransactionType.Open)
+                throw new ArgumentOutOfRangeException(nameof(targetAmount), "Der Target Amnount darf nicht Zero sein");
+
             //die gesamt ziel shares bestimmen, werden immer abgerundet
             //aussder wird bei aktivem investment nicht der target amount, sondern der
-            var completeTargetShares = (int)Math.Floor(!candidate.IsInvested 
-                ? targetAmount / candidate.Record.AdjustedPrice 
+            var completeTargetShares = (int)Math.Floor(!candidate.IsInvested
+                ? targetAmount / candidate.Record.AdjustedPrice
                 : GetCurrentTargetAmount() / candidate.Record.AdjustedPrice);
             if (candidate.IsInvested)
             {
@@ -77,7 +80,7 @@ namespace Trading.Core.Transactions
 
             //das darf ich nur machen wenn ich Positionen aufstocke
             if (candidate.IsInvested)
-            {              
+            {
                 //wenn ich investiert bin brauch ich nur die Diffenz zurückgeben
                 return Math.Round(completeTargetAmount - (candidate.CurrentPosition.Shares * candidate.Record.AdjustedPrice));
             }
@@ -114,6 +117,8 @@ namespace Trading.Core.Transactions
 
         public decimal CalculateEffectiveAmountEur(ITradingCandidate candidate, int targetShares)
         {
+            if (targetShares == 0 && candidate.TransactionType != TransactionType.Close)
+                throw new ArgumentOutOfRangeException(nameof(targetShares), "Die Zielshares dürfen nicht zero sein");
             // das effektive gewicht
             return Math.Round(targetShares * candidate.Record.AdjustedPrice, 4);
         }

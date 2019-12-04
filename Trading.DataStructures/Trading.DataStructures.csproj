@@ -65,6 +65,7 @@
     <Compile Include="Interfaces\IMovingVolaMetaInfo.cs" />
     <Compile Include="Interfaces\IPeriodeResult.cs" />
     <Compile Include="Interfaces\IPositionWatchService.cs" />
+    <Compile Include="Interfaces\IPositveDailyReturnsCollectionMetaInfo.cs" />
     <Compile Include="Interfaces\IPriceHistoryCollectionSettings.cs" />
     <Compile Include="Interfaces\IPortfolioValuation.cs" />
     <Compile Include="Interfaces\IPriceHistoryCollection.cs" />
