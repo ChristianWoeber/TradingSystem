@@ -9,7 +9,7 @@ namespace Trading.DataStructures.Interfaces
         /// <summary>
         /// Methode um anpassen des temporären portfolios
         /// </summary>
-        /// <param name="candidate">der Trading candidate</param>   
+        /// <param name="candidate">der Trading candidate</param>
         void AddToTemporaryPortfolio(ITradingCandidate candidate);
 
         /// <summary>

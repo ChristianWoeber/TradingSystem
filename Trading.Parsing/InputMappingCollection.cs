@@ -38,7 +38,7 @@ namespace Trading.Parsing
         {
             get
             {
-                if (_rowHeaderFromIndex == null)
+                if (_rowHeaderFromIndex == null && _matchedFields != null)
                 {
                     lock (_lockObj)
                     {

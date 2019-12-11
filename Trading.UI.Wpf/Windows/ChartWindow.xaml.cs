@@ -79,12 +79,12 @@ namespace Trading.UI.Wpf.Windows
                 securityFints.HighlightingRanges.Add(new Range<SDate>(range.Item1, range.Item2));
             }
 
-
             ChartControl.Data.Add(securityFints);
             ChartControl.Cursors[2].CursorDate = _chartDate;
             ChartControl.Cursors[1].CursorDate = _chartDate.AddDays(-150);
             ChartControl.ViewBeginDate = _chartDate.AddYears(-1);
             ChartControl.ViewEndDate = _chartDate.AddYears(1);
+            ChartControl.PrimaryScale.Logarithmic = true;
         }
 
         private DateTime _currentOpen;

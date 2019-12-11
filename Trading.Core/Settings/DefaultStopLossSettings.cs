@@ -28,6 +28,11 @@ namespace Trading.Core.Settings
         public int MinimumStopHoldingPeriodeInDays { get; set; } = 7;
 
         /// <summary>
+        /// Gibt on ob Stops komplett entfernt werden sollen
+        /// </summary>
+        public bool ReduceStopCompletly { get; set; } = true;
+
+        /// <summary>
         /// Gibt zurück ob es die aktuelle Position ausstoppt
         /// </summary>
         /// <param name="candidate">der Trading Candidate</param>

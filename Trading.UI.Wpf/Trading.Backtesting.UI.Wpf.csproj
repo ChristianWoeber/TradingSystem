@@ -182,6 +182,7 @@
     <Compile Include="ViewModels\IIndexBacktestSettings.cs" />
     <Compile Include="ViewModels\EventArgs\IndexBacktestResultEventArgs.cs" />
     <Compile Include="ViewModels\IndexBacktestSettings.cs" />
+    <Compile Include="ViewModels\MoveToTradingDayEventArgs.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\StoppLossRepo.cs" />
     <Compile Include="ViewModels\Trade.cs" />

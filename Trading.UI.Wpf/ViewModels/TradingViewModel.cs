@@ -67,7 +67,8 @@ namespace Trading.UI.Wpf.ViewModels
             RunNewBacktestCommand = new RelayCommand(OnRunBacktest);
             RunNewIndexBacktestCommand = new RelayCommand(OnRunIndexBacktest);
             LoadBacktestCommand = new RelayCommand(OnLoadBacktest);
-            MoveCursorToNextTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDayEvent?.Invoke(this, _portfolioManager.PortfolioSettings.TradingDay));
+            MoveCursorToNextTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDayEvent?.Invoke(this, new MoveToTradingDayEventArgs(_portfolioManager.PortfolioSettings.TradingDay)));
+            MoveCursorToLastTradingDayCommand = new RelayCommand(() => MoveCursorToNextTradingDayEvent?.Invoke(this, new MoveToTradingDayEventArgs(_portfolioManager.PortfolioSettings.TradingDay, false)));
             MoveCursorToNextStoppDayCommand = new RelayCommand(() => MoveCursorToNextStoppDayEvent?.Invoke(this, System.EventArgs.Empty));
             ShowSelectedPositionCommand = new RelayCommand(ShowNewSelectedPositionWindow);
             ShowSelectedCandidateCommand = new RelayCommand(ShowSelectedCandidateWindow);
@@ -80,6 +81,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         }
 
+     
 
         public TradingViewModel(IScoringProvider scoringProvider) : this()
         {
@@ -88,7 +90,6 @@ namespace Trading.UI.Wpf.ViewModels
 
 
         public ObservableCollection<TradeViewModel> Trades { get; } = new ObservableCollection<TradeViewModel>();
-
 
 
         private void OnShowTradingCandidates()
@@ -254,7 +255,7 @@ namespace Trading.UI.Wpf.ViewModels
 
         public event EventHandler<BacktestResultEventArgs> BacktestCompletedEvent;
 
-        public event EventHandler<DayOfWeek> MoveCursorToNextTradingDayEvent;
+        public event EventHandler<MoveToTradingDayEventArgs> MoveCursorToNextTradingDayEvent;
 
         public event EventHandler MoveCursorToNextStoppDayEvent;
 
@@ -271,6 +272,8 @@ namespace Trading.UI.Wpf.ViewModels
         public ICommand LoadBacktestCommand { get; }
 
         public ICommand MoveCursorToNextTradingDayCommand { get; }
+
+        public ICommand MoveCursorToLastTradingDayCommand { get; }
 
         public ICommand MoveCursorToNextStoppDayCommand { get; }
 
@@ -330,6 +333,9 @@ namespace Trading.UI.Wpf.ViewModels
             //Pm erstellen für den Backtest
             using (var region = SmartBusyRegion.Start(this, true))
             {
+                //die bestehnenden Trades Clearen
+                Trades.Clear();
+
                 ProgressRegion = region.ProgessRegion;
                 //Clean up
                 var files = Directory.GetFiles(Settings.LoggingPath);
@@ -556,6 +562,7 @@ namespace Trading.UI.Wpf.ViewModels
         private decimal _averagePortfolioSize;
         private static Dictionary<int, string> _nameCatalog;
         private SmartProgressRegion _progressRegion;
+        private DateTime _chartDate;
 
         public void UpdateCash(DateTime toDateTime)
         {
@@ -773,7 +780,8 @@ namespace Trading.UI.Wpf.ViewModels
         public SettingsViewModel Settings { get; }
 
         public bool HasPortfolioManager => _portfolioManager != null;
-        public DateTime ChartDate { get; set; }
+
+    
 
         #endregion
 
@@ -790,6 +798,18 @@ namespace Trading.UI.Wpf.ViewModels
 
         #endregion
 
+
+        public DateTime ChartDate
+        {
+            get => _chartDate;
+            set
+            {
+                if (value.Equals(_chartDate))
+                    return;
+                _chartDate = value;
+                OnPropertyChanged();
+            }
+        }
 
         public SmartProgressRegion ProgressRegion
         {

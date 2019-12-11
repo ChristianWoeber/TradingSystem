@@ -44,6 +44,11 @@ namespace Trading.DataStructures.Interfaces
         int MinimumStopHoldingPeriodeInDays { get; set; }
 
         /// <summary>
+        /// Gibt on ob Stops komplett entfernt werden sollen
+        /// </summary>
+        bool ReduceStopCompletly { get; set; }
+
+        /// <summary>
         /// Gibt zurück ab welchem Time-Lag in tagen die Positon wider ausgestoppt werden darf 
         /// </summary>
         /// <param name="candidate"></param>

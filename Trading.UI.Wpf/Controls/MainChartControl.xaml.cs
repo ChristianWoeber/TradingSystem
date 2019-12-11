@@ -24,7 +24,15 @@ namespace Trading.UI.Wpf.Controls
 
             //Events registrieren
             DataContextChanged += OnDataContextChanged;
-            ChartControl.PreviewMouseLeftButtonDown += OnChartControlClicked; ;
+            ChartControl.PreviewMouseLeftButtonDown += OnChartControlClicked;
+            Unloaded += (sender, args) =>
+            {
+                //De-Register events
+                _model.BacktestCompletedEvent -= OnBacktestCompleted;
+                _model.IndexBacktestCompletedEvent -= OnIndexBacktestCompleted;
+                _model.MoveCursorToNextTradingDayEvent -= OnMoveCursorToNextTradingDay;
+                _model.MoveCursorToNextStoppDayEvent -= OnMoveCursorToNextStoppDayEvent;
+            };
 
         }
 
@@ -33,12 +41,11 @@ namespace Trading.UI.Wpf.Controls
             if (!(DataContext is TradingViewModel model))
                 return;
 
+            if (_model != null)
+                return;
+
             _model = model;
-            //De-Register events
-            _model.BacktestCompletedEvent -= OnBacktestCompleted;
-            _model.IndexBacktestCompletedEvent -= OnIndexBacktestCompleted;
-            _model.MoveCursorToNextTradingDayEvent -= OnMoveCursorToNextTradingDay;
-            _model.MoveCursorToNextStoppDayEvent -= OnMoveCursorToNextStoppDayEvent;
+
             //Register events
             _model.BacktestCompletedEvent += OnBacktestCompleted;
             _model.IndexBacktestCompletedEvent += OnIndexBacktestCompleted;
@@ -58,7 +65,7 @@ namespace Trading.UI.Wpf.Controls
             _model.UpdateHoldings(date.Value.ToDateTime());
         }
 
-        private void OnMoveCursorToNextTradingDay(object sender, DayOfWeek tradingDay)
+        private void OnMoveCursorToNextTradingDay(object sender, MoveToTradingDayEventArgs args)
         {
             if (ChartControl.Cursors[1]?.IsSet == false)
                 return;
@@ -66,18 +73,23 @@ namespace Trading.UI.Wpf.Controls
             var date = ChartControl.Cursors[1]?.CursorDate;
             if (date == null || date.Value <= DateTime.MinValue)
                 return;
+            //der Modifier auf Basis der IsNext Property
+            var modifier = args.IsNext ? 1 : -1;
 
             //Zum nächsten Trading Tag gehen
-            var temp = date.Value.AddDays(1);
+            var temp = date.Value.AddDays(modifier);
 
-            while (temp.DayOfWeekEnum != tradingDay)
+            while (temp.DayOfWeekEnum != args.TradingDay)
             {
-                temp = temp.AddDays(1);
+                temp = temp.AddDays(modifier);
             }
             //und den Cursor entsprechend setzen
             ChartControl.Cursors[1].CursorDate = temp;
             _model.UpdateHoldings(temp, true);
         }
+
+
+
 
         private void OnIndexBacktestCompleted(object sender, IndexBacktestResultEventArgs e)
         {
@@ -101,6 +113,7 @@ namespace Trading.UI.Wpf.Controls
             ChartControl.Data.Add(new WLineChartFINTS(indexFints) { Color = Colors.LightCoral, StrokeThickness = 0.75 });
             ChartControl.ViewBeginDate = simulationFints.BeginDate;
             ChartControl.ViewEndDate = simulationFints.EndDate;
+            ChartControl.PrimaryScale.Logarithmic = true;
 
         }
 
@@ -127,6 +140,7 @@ namespace Trading.UI.Wpf.Controls
             ChartControl.Data.Add(new WLineChartFINTS(indexFints) { Color = Colors.LightCoral, Caption = args.Settings.IndexType.ToString(), StrokeThickness = 0.75 });
             ChartControl.ViewBeginDate = navFints.BeginDate;
             ChartControl.ViewEndDate = navFints.EndDate;
+            ChartControl.PrimaryScale.Logarithmic = true;
         }
 
         private static FINTS<double> GetIndexFints(BacktestResultEventArgs args, FINTS<double> navFints)
@@ -161,8 +175,11 @@ namespace Trading.UI.Wpf.Controls
 
         private void OnChartControlClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            if (_model == null)
+                return;
+
             if (!_model.HasPortfolioManager)
-               return;
+                return;
 
             if (ChartControl.Cursors[0]?.IsSet == false)
                 return;

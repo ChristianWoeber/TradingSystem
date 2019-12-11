@@ -33,7 +33,7 @@ namespace Trading.UI.Wpf
             Globals.TransactionsDirectory = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/Transactions"));
             Globals.PortfolioValuationDirectory = Path.GetFullPath(Path.Combine(Globals.BasePath, @"Data/PortfolioValue"));
 
-            Globals.IsTestMode = false;
+            Globals.IsTestMode = true;
 
             //var dlg = SmartDialog.Create(new SmartDialogDefaultConfiguration("Eingabe erforderlich",
             //    "Möchten Sie den Offline-Modus verwenden?", null){Buttons = SmartDialogButtons.YesAndNo});

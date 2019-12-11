@@ -12,12 +12,17 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <arts:SmartTextBlock Text="aktuelles Chart Datum: " Appearance="Header3" Margin="5" Background="Transparent">
+            <Run Text="{Binding CurrentChartDate, Mode=OneWay, StringFormat=d}"></Run>
+        </arts:SmartTextBlock>
+
         <arts:SmartDataGrid AutoGenerateColumns="False" ItemsSource="{Binding Holdings, Mode=OneWay}" 
                             SelectedItem="{Binding SelectedPosition}"
                             x:Name="SmartDataGridHoldings"
-                            HeaderFontSize="4" Grid.Row="0" Margin="10">
+                            HeaderFontSize="4" Grid.Row="1" Margin="10">
             <arts:SmartDataGrid.Columns >
                 <DataGridTemplateColumn Width="25">
                     <DataGridTemplateColumn.CellTemplate>
@@ -41,7 +46,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-             
+
                 <arts:SmartDataGridColumn Binding="{Binding SecurityId, Mode=OneWay}" 
                                           ColumnEditingItemsSource="{Binding Source={x:Static viewModels:TradingViewModel.NameCatalog}}"
                                           Header="Name"  />
@@ -92,7 +97,7 @@
             </arts:SmartDataGrid.ContextMenu>
         </arts:SmartDataGrid>
 
-        <StackPanel Grid.Row="1">
+        <StackPanel Grid.Row="2">
             <arts:SmartTextBlock Text="Cash-Entwicklung" FontWeight="DemiBold" Appearance="Header2" Margin="10 10 5 0"/>
             <Expander Header="Cash Werte aufklappen" Margin="7.5 2">
                 <arts:SmartDataGrid ItemsSource="{Binding Cash}" AutoGenerateColumns="False" Margin="10" MaxHeight="500">

@@ -17,6 +17,9 @@ namespace Trading.UI.Wpf
             {
                 if (LowMetaInfo == null)
                     return 0;
+                //Wenn die vola größer oder gleich 1 ist, dann handelt es sich um keinen validen kandidaten
+                if (Volatility >= 1)
+                    return 0;
 
                 // Ich gewichte die Performance,
                 // die aktuellsten Daten haben die größten Gewichte
@@ -29,11 +32,11 @@ namespace Trading.UI.Wpf
                 var increaseFactor = 1 + LowMetaInfo.NewHighsCollection.Count * 0.05M;
                 var newHighsAdjusted = avgPerf * increaseFactor;
 
-                //var increaseFactorPositve = 1 + LowMetaInfo.PositiveDailyRetunsMetaInfo.Count * 0.01M;
-                //var newHighsAndPositiveAdjusted = newHighsAdjusted * increaseFactorPositve;
+                var increaseFactorPositve = 1 + LowMetaInfo.PositiveDailyRetunsMetaInfo.Count * 0.01M;
+                var newHighsAndPositiveAdjusted = newHighsAdjusted * increaseFactorPositve;
 
                 //danach zinse ich quais die vola ab wenn null dann nehm ich als default 35%
-                return Math.Round(newHighsAdjusted * (1 - Volatility ?? 0.35M) * 100, 2);
+                return Math.Round(newHighsAndPositiveAdjusted * (1 - Volatility ?? 0.35M) * 100, 2);
             }
         }
     }

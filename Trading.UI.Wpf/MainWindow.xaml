@@ -12,6 +12,10 @@
         WindowState="Maximized"
         d:DataContext="{d:DesignInstance viewModels:TradingViewModel}"
         Title="Backtest" Height="800" Width="1200">
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Alt" Key="Left" Command="{Binding MoveCursorToLastTradingDayCommand}"/>
+        <KeyBinding Modifiers="Alt" Key="Right" Command="{Binding MoveCursorToNextTradingDayCommand}"/>
+    </Window.InputBindings>
     <Grid>
         <arts:SmartFlyout PanelBackground="DimGray" >
             <arts:SmartFlyout.Items>
@@ -23,7 +27,7 @@
 
                 <arts:SmartFlyoutItem HeaderText="Holdings" TextAppearance="Header2"  HeaderTextForeground="White" Width="950">
                     <arts:SmartFlyoutItem.FlyoutContent>
-                        <controls:CurrentHoldingsControl />
+                        <controls:CurrentHoldingsControl    />
                     </arts:SmartFlyoutItem.FlyoutContent>
                 </arts:SmartFlyoutItem>
 

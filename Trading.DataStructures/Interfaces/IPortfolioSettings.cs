@@ -81,7 +81,7 @@ namespace Trading.DataStructures.Interfaces
         bool UsePreviousDayPricesForBacktest { get; set; }
 
         /// <summary>
-        /// Gibt on ob ein Positiver Rebalance Grund Score
+        /// Gibt on ob ein Positiver Rebalance Grund Score, gesetzt wird, wenn die Performance des Wertpapiers positiv ist
         /// </summary>
         bool UseAbsoluteValueForRebalanceScoringResult { get; set; }
     }

@@ -342,8 +342,16 @@ namespace Trading.Core.Portfolio
             //wennn die Position bereits am maximum ist
             if (currentWeight > PortfolioSettings.MaximumPositionSize - PortfolioSettings.MaximumPositionSizeBuffer)
             {
-                //in dem Fall um den Factor verringern
-                candidate.TargetWeight = (decimal)StopLossSettings.ReductionValue * currentWeight;
+                if (candidate.HasStopp && candidate.IsBelowStopp && StopLossSettings.ReduceStopCompletly)
+                {
+                    candidate.TargetWeight = decimal.Zero;
+                    candidate.TransactionType = TransactionType.Close;
+                }
+                else
+                {
+                    //in dem Fall um den Factor verringern
+                    candidate.TargetWeight = (decimal)StopLossSettings.ReductionValue * currentWeight;
+                }
             }
 
             ////wenn das Target kleiner als die inital größe ist totalverkaufen
@@ -747,7 +755,7 @@ namespace Trading.Core.Portfolio
         /// </summary>
         public void CloseAllPositions()
         {
-            foreach (var candidate in RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, this, PortfolioSettings,true)))
+            foreach (var candidate in RankCurrentPortfolio().Select(x => new TradingCandidate(x, TransactionsHandler, this, PortfolioSettings, true)))
             {
                 if (TemporaryCandidates.ContainsKey(candidate.SecurityId))
                     continue;
